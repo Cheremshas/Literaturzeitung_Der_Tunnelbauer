@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiteraturZeitung – Der Tunnelbauer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --c1: #FF6B35;
+    --c2: #2D4A7A;
+    --c3: #F7C948;
+    --c4: #3D9970;
+    --c5: #C0392B;
+    --bg: #FAFAF7;
+    --bg2: #F0EDE6;
+    --text: #1A1A2E;
+    --muted: #6B6B7A;
+    --white: #FFFFFF;
+    --border: #E0DDD6;
+    --card: #FFFFFF;
+    --admin-bar: 48px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ADMIN BAR */
+  #admin-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--admin-bar);
+    background: var(--c2);
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    z-index: 9999;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  #admin-bar.visible { display: flex; }
+  #admin-bar .ab-left { display: flex; align-items: center; gap: 12px; }
+  #admin-bar .ab-indicator { width: 8px; height: 8px; background: var(--c3); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  #admin-bar button {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background .2s;
+  }
+  #admin-bar button:hover { background: rgba(255,255,255,0.25); }
+  #admin-bar button.danger { background: rgba(192,57,43,0.6); border-color: rgba(192,57,43,0.8); }
+  #admin-bar button.danger:hover { background: rgba(192,57,43,0.9); }
+
+  body.admin-mode { padding-top: var(--admin-bar); }
+
+  /* LOGIN OVERLAY */
+  #login-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,46,0.85);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #login-overlay.visible { display: flex; }
+  #login-box {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 360px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+  #login-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 0.25rem;
+    color: var(--c2);
+  }
+  #login-box p { color: var(--muted); font-size: 13px; margin-bottom: 1.5rem; }
+  #login-box input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  #login-box input:focus { border-color: var(--c2); }
+  #login-box .btn-login {
+    width: 100%;
+    padding: 11px;
+    background: var(--c2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  #login-box .btn-login:hover { background: #1d3357; }
+  #login-error { color: var(--c5); font-size: 13px; margin-top: 8px; display: none; }
+  #login-close {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+    margin-top: -0.5rem;
+    margin-right: -0.5rem;
+  }
+
+  /* EDITABLE */
+  [contenteditable="true"] {
+    outline: 2px dashed var(--c3);
+    outline-offset: 2px;
+    border-radius: 4px;
+    cursor: text;
+    transition: outline .15s;
+    min-height: 1em;
+  }
+  [contenteditable="true"]:focus { outline: 2.5px solid var(--c1); background: rgba(255,107,53,0.04); }
+  .edit-hint {
+    display: none;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--c1);
+    margin-bottom: 4px;
+  }
+  body.admin-mode .edit-hint { display: block; }
+
+  /* HEADER */
+  header {
+    background: var(--c2);
+    color: white;
+    padding: 3rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 300px; height: 300px;
+    background: var(--c3);
+    opacity: 0.12;
+    border-radius: 50%;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 20%;
+    width: 200px; height: 200px;
+    background: var(--c1);
+    opacity: 0.15;
+    border-radius: 50%;
+  }
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .header-kicker {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--c3);
+    margin-bottom: .75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-kicker::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 40px;
+    background: var(--c3);
+    opacity: .6;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    line-height: 1.1;
+    margin-bottom: .5rem;
+    color: white;
+  }
+  header h1 em {
+    font-style: italic;
+    color: var(--c3);
+  }
+  .header-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 1rem;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .header-meta span { display: flex; align-items: center; gap: 5px; }
+  .admin-login-btn {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 2rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    z-index: 2;
+    transition: all .2s;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  .admin-login-btn:hover { color: white; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.18); }
+
+  /* NAV */
+  nav {
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  body.admin-mode nav { top: var(--admin-bar); }
+  nav ul {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    list-style: none;
+    gap: 0;
+    overflow-x: auto;
+  }
+  nav a {
+    display: block;
+    padding: .85rem 1.1rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color .15s, border-color .15s;
+  }
+  nav a:hover, nav a.active { color: var(--c1); border-color: var(--c1); }
+
+  /* MAIN */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  section { margin-bottom: 4rem; }
+  section:last-child { margin-bottom: 0; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--c1);
+    margin-bottom: .5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: var(--border);
+    max-width: 60px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    color: var(--c2);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  /* REZENSION */
+  .rezension-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  @media(max-width:640px){ .rezension-grid { grid-template-columns: 1fr; } }
+  .book-card {
+    background: var(--c2);
+    border-radius: 14px;
+    padding: 2rem 1.5rem;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .book-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: var(--c3);
+    opacity: 0.2;
+    border-radius: 50%;
+  }
+  .book-cover {
+    width: 100px;
+    height: 140px;
+    background: var(--c3);
+    border-radius: 4px 8px 8px 4px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    box-shadow: 4px 4px 16px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+  }
+  .book-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: .25rem;
+    position: relative;
+    z-index: 1;
+  }
+  .book-card .author {
+    font-size: 12px;
+    opacity: .7;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .book-meta-list {
+    list-style: none;
+    font-size: 12px;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+  }
+  .book-meta-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .book-meta-list li:last-child { border-bottom: none; }
+  .book-meta-list li span:first-child { opacity: .6; }
+  .book-meta-list li span:last-child { font-weight: 500; text-align: right; }
+
+  .prose {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--text);
+  }
+  .prose p { margin-bottom: 1.1em; }
+  .prose p:last-child { margin-bottom: 0; }
+
+  .rating-stars {
+    display: flex;
+    gap: 3px;
+    margin: 1.25rem 0;
+  }
+  .star { font-size: 20px; color: var(--c3); }
+  .star.empty { color: var(--border); }
+
+  /* ZITATE */
+  .zitate-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .zitat-card {
+    background: var(--card);
+    border-left: 4px solid var(--c1);
+    border-radius: 0 12px 12px 0;
+    padding: 1.5rem 1.75rem;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .zitat-card::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    color: var(--c1);
+    opacity: 0.12;
+    position: absolute;
+    top: -10px; left: 12px;
+    line-height: 1;
+  }
+  .zitat-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--c2);
+    position: relative;
+    z-index: 1;
+    margin-bottom: .75rem;
+  }
+  .zitat-source {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .zitat-tag {
+    display: inline-block;
+    background: rgba(255,107,53,0.1);
+    color: var(--c1);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: .75rem;
+  }
+
+  /* THEMEN */
+  .themen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.25rem;
+  }
+  .thema-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 1.5rem;
+    border: 1.5px solid var(--border);
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    cursor: default;
+  }
+  .thema-card:hover { transform: translateY(-3px); border-color: var(--c3); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .thema-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .thema-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: .4rem;
+    color: var(--c2);
+  }
+  .thema-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* INTERVIEWS */
+  .interview-list { display: flex; flex-direction: column; gap: 2rem; }
+  .interview-card {
+    background: var(--card);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    display: grid;
+    grid-template-columns: 5px 1fr;
+  }
+  .interview-accent { }
+  .interview-body { padding: 1.75rem 2rem; }
+  .interviewee {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 1.25rem;
+  }
+  .avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+  .interviewee-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--c2);
+    margin-bottom: 2px;
+  }
+  .interviewee-info p { font-size: 12px; color: var(--muted); }
+  .qa-list { list-style: none; }
+  .qa-item { margin-bottom: 1.25rem; }
+  .qa-item:last-child { margin-bottom: 0; }
+  .qa-q {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c1);
+    margin-bottom: .35rem;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .qa-q::before { content: 'F:'; flex-shrink: 0; }
+  .qa-a {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    padding-left: 24px;
+    border-left: 2px solid var(--border);
+    margin-left: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--c2);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 2rem;
+    font-size: 13px;
+    margin-top: 4rem;
+  }
+  footer strong { color: white; }
+
+  /* ADMIN: Add buttons */
+  .add-btn {
+    display: none;
+    background: var(--c3);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    color: var(--text);
+    transition: background .15s, transform .1s;
+  }
+  .add-btn:hover { background: #e8b835; transform: scale(1.02); }
+  body.admin-mode .add-btn { display: inline-block; }
+  .del-btn {
+    display: none;
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--c5);
+    margin-left: 8px;
+    vertical-align: middle;
+    transition: background .15s;
+  }
+  .del-btn:hover { background: rgba(192,57,43,0.18); }
+  body.admin-mode .del-btn { display: inline-block; }
+
+  /* Smooth scroll */
+  html { scroll-behavior: smooth; }
+
+  /* SAVE INDICATOR */
+  #save-msg {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--c4);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .3s, transform .3s;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  #save-msg.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- SAVE INDICATOR -->
+<div id="save-msg">✓ Gespeichert!</div>
+
+<!-- ADMIN BAR -->
+<div id="admin-bar">
+  <div class="ab-left">
+    <div class="ab-indicator"></div>
+    <span>Admin-Modus aktiv</span>
+    <button onclick="saveAll()">💾 Alles speichern</button>
+    <button onclick="addZitat()">+ Zitat</button>
+    <button onclick="addInterview()">+ Interview</button>
+    <button onclick="addThema()">+ Thema</button>
+  </div>
+  <button class="danger" onclick="logout()">Abmelden</button>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div id="login-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <h2>Admin-Login</h2>
+        <p>Passwort eingeben, um die Seite zu bearbeiten.</p>
+      </div>
+      <button id="login-close" onclick="closeLogin()">×</button>
+    </div>
+    <input type="password" id="pw-input" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" onclick="doLogin()">Anmelden</button>
+    <div id="login-error">Falsches Passwort. Versuche es erneut.</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-kicker">📰 LiteraturZeitung · Schulprojekt</div>
+    <h1>Der Tunnelbauer<br><em>Marie Nelsen</em></h1>
+    <div class="header-meta">
+      <span>📖 Buchanalyse</span>
+      <span>🎭 Charaktere & Motive</span>
+      <span>💬 Zitate & Interviews</span>
+    </div>
+  </div>
+  <button class="admin-login-btn" onclick="openLogin()">⚙ Admin</button>
+</header>
+
+<!-- NAV -->
+<nav>
+  <ul>
+    <li><a href="#rezension" class="active">Rezension</a></li>
+    <li><a href="#zitate">Zitate</a></li>
+    <li><a href="#themen">Themen & Motive</a></li>
+    <li><a href="#interviews">Interviews</a></li>
+  </ul>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- REZENSION -->
+  <section id="rezension">
+    <div class="section-label">Buchrezension</div>
+
+    <div class="rezension-grid">
+      <div>
+        <div class="edit-hint">✏ Titel bearbeiten</div>
+        <h2 class="section-title" data-key="rez-title" contenteditable="false">Der Tunnelbauer – eine Reise in die Tiefe</h2>
+
+        <div class="rating-stars" id="stars-container" title="Klicken um Bewertung zu ändern">
+          <span class="star" data-val="1">★</span>
+          <span class="star" data-val="2">★</span>
+          <span class="star" data-val="3">★</span>
+          <span class="star" data-val="4">★</span>
+          <span class="star empty" data-val="5">★</span>
+        </div>
+
+        <div class="edit-hint">✏ Rezensionstext bearbeiten</div>
+        <div class="prose" data-key="rez-text" contenteditable="false">
+          <p>Marie Nelsens Roman <em>„Der Tunnelbauer"</em> ist ein eindrucksvolles Werk, das auf mehreren Ebenen funktioniert: als packende Geschichte über einen einsamen Ingenieur, als Metapher für menschliche Isolation und als philosophische Betrachtung über das Graben – im wörtlichen wie im übertragenen Sinne.</p>
+          <p>Im Mittelpunkt steht Hermann Schacht, ein alter Tunnelbauer, der sich in seiner Arbeit verliert und dabei langsam den Kontakt zur Außenwelt verliert. Nelsen schreibt mit einer Präzision, die an die Tunnelwände selbst erinnert: glatt, kalt und doch voller verborgener Risse.</p>
+          <p>Besonders beeindruckend ist, wie die Autorin die innere Welt ihrer Figur mit der physischen Arbeit verknüpft. Jeder Meter, den Hermann gräbt, ist gleichzeitig ein Schritt tiefer in seine eigene Vergangenheit.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="book-card">
+          <div class="book-cover">🕳️</div>
+          <h3>Der Tunnelbauer</h3>
+          <p class="author">Marie Nelsen</p>
+          <ul class="book-meta-list">
+            <li><span>Verlag</span><span>Hanser Verlag</span></li>
+            <li><span>Erschienen</span><span>2021</span></li>
+            <li><span>Seiten</span><span>312</span></li>
+            <li><span>Genre</span><span>Literaturloman</span></li>
+            <li><span>Sprache</span><span>Deutsch</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZITATE -->
+  <section id="zitate">
+    <div class="section-label">Zitate</div>
+    <h2 class="section-title">Bedeutsame Stellen aus dem Buch</h2>
+
+    <div class="zitate-grid" id="zitate-container">
+
+      <div class="zitat-card" data-color="#FF6B35">
+        <div class="zitat-tag" contenteditable="false" data-key="z1-tag">Einsamkeit</div>
+        <button class="del-btn" onclick="this.closest('.zitat-card').remove()">✕ löschen</button>
+        <div class="zitat-text" contenteditable="false" data-key="z1-text">„Man gräbt nicht, um voranzukommen. Man gräbt, weil man nicht weiß, wo oben ist."</div>
+        <div class="zitat-source" contenteditable="false" data-key="z1-src">— Kapitel 3, S. 47</div>
+      </div>
+
+      <div class="zitat-card" style="border-left-color:#2D4A7A">
+        <div class="zitat-tag" style="background:rgba(45,74,122,0.1);color:#2D4A7A" contenteditable="false" data-key="z2-tag">Arbeit & Identität</div>
+        <button class="del-btn" onclick="this.closest('.zitat-card').remove()">✕ löschen</button>
+        <div class="zitat-text" contenteditable="false" data-key="z2-text">„Ein Tunnel ist nicht das Ende. Er ist das Versprechen, dass es auf der anderen Seite weitergeht."</div>
+        <div class="zitat-source" contenteditable="false" data-key="z2-src">— Kapitel 11, S. 142</div>
+      </div>
+
+      <div class="zitat-card" style="border-left-color:#3D9970">
+        <div class="zitat-tag" style="background:rgba(61,153,112,0.1);color:#3D9970" contenteditable="false" data-key="z3-tag">Hoffnung</div>
+        <button class="del-btn" onclick="this.closest('.zitat-card').remove()">✕ löschen</button>
+        <div class="zitat-text" contenteditable="false" data-key="z3-text">„Das Licht am Ende des Tunnels – ich habe es nie geglaubt. Aber ich habe nie aufgehört zu graben."</div>
+        <div class="zitat-source" contenteditable="false" data-key="z3-src">— Kapitel 19, S. 278</div>
+      </div>
+
+    </div>
+    <button class="add-btn" onclick="addZitat()">+ Neues Zitat hinzufügen</button>
+  </section>
+
+  <!-- THEMEN -->
+  <section id="themen">
+    <div class="section-label">Analyse</div>
+    <h2 class="section-title">Themen & Motive</h2>
+
+    <div class="themen-grid" id="themen-container">
+
+      <div class="thema-card">
+        <div class="thema-icon" style="background:rgba(255,107,53,0.12)">🕳️</div>
+        <h3 contenteditable="false" data-key="t1-title">Der Tunnel als Metapher</h3>
+        <p contenteditable="false" data-key="t1-text">Der Tunnel symbolisiert den inneren Rückzug des Protagonisten. Je tiefer er gräbt, desto weiter entfernt er sich von der Gesellschaft.</p>
+        <button class="del-btn" onclick="this.closest('.thema-card').remove()">✕</button>
+      </div>
+
+      <div class="thema-card">
+        <div class="thema-icon" style="background:rgba(45,74,122,0.12)">👤</div>
+        <h3 contenteditable="false" data-key="t2-title">Identität & Verlust</h3>
+        <p contenteditable="false" data-key="t2-text">Hermann verliert im Laufe des Romans seine berufliche und soziale Identität. Wer ist man, wenn die Arbeit wegfällt?</p>
+        <button class="del-btn" onclick="this.closest('.thema-card').remove()">✕</button>
+      </div>
+
+      <div class="thema-card">
+        <div class="thema-icon" style="background:rgba(247,201,72,0.2)">🌅</div>
+        <h3 contenteditable="false" data-key="t3-title">Hoffnung & Neubeginn</h3>
+        <p contenteditable="false" data-key="t3-text">Trotz aller Dunkelheit enthält der Roman eine zarte Hoffnung: dass jeder Tunnel irgendwo endet.</p>
+        <button class="del-btn" onclick="this.closest('.thema-card').remove()">✕</button>
+      </div>
+
+      <div class="thema-card">
+        <div class="thema-icon" style="background:rgba(61,153,112,0.12)">🤝</div>
+        <h3 contenteditable="false" data-key="t4-title">Menschliche Verbindung</h3>
+        <p contenteditable="false" data-key="t4-text">Die wenigen Momente echter Verbindung im Buch stechen umso stärker hervor – ein Blick, ein Gespräch, eine Berührung.</p>
+        <button class="del-btn" onclick="this.closest('.thema-card').remove()">✕</button>
+      </div>
+
+    </div>
+    <button class="add-btn" onclick="addThema()">+ Neues Thema hinzufügen</button>
+  </section>
+
+  <!-- INTERVIEWS -->
+  <section id="interviews">
+    <div class="section-label">Fiktive Interviews</div>
+    <h2 class="section-title">Im Gespräch mit den Figuren</h2>
+
+    <div class="interview-list" id="interview-container">
+
+      <div class="interview-card">
+        <div class="interview-accent" style="background:#FF6B35"></div>
+        <div class="interview-body">
+          <div class="interviewee">
+            <div class="avatar" style="background:#FF6B35">HS</div>
+            <div class="interviewee-info">
+              <h3 contenteditable="false" data-key="i1-name">Hermann Schacht</h3>
+              <p contenteditable="false" data-key="i1-role">Protagonisiert, Tunnelbauer, 67 Jahre alt</p>
+            </div>
+            <button class="del-btn" onclick="this.closest('.interview-card').remove()">✕ löschen</button>
+          </div>
+          <ul class="qa-list" id="qa-i1">
+            <li class="qa-item">
+              <div class="qa-q" contenteditable="false" data-key="i1q1">Herr Schacht, warum haben Sie Ihr Leben dem Tunnelbau gewidmet?</div>
+              <div class="qa-a" contenteditable="false" data-key="i1a1">„Weil die Erde ehrlich ist. Sie lügt nicht. Wenn man gräbt, weiß man, was man bekommt. Menschen... Menschen lügen viel mehr."</div>
+            </li>
+            <li class="qa-item">
+              <div class="qa-q" contenteditable="false" data-key="i1q2">Haben Sie je Angst vor der Dunkelheit gehabt?</div>
+              <div class="qa-a" contenteditable="false" data-key="i1a2">„Die Dunkelheit ist mein Zuhause. Es ist das Licht, das mich manchmal erschreckt."</div>
+            </li>
+          </ul>
+          <button class="add-btn" onclick="addQA('qa-i1', 'i1')" style="margin-top:.75rem;font-size:12px;padding:6px 12px">+ Frage & Antwort</button>
+        </div>
+      </div>
+
+      <div class="interview-card">
+        <div class="interview-accent" style="background:#2D4A7A"></div>
+        <div class="interview-body">
+          <div class="interviewee">
+            <div class="avatar" style="background:#2D4A7A">KM</div>
+            <div class="interviewee-info">
+              <h3 contenteditable="false" data-key="i2-name">Klara Meier</h3>
+              <p contenteditable="false" data-key="i2-role">Hermans Tochter, Ärztin, 38 Jahre alt</p>
+            </div>
+            <button class="del-btn" onclick="this.closest('.interview-card').remove()">✕ löschen</button>
+          </div>
+          <ul class="qa-list" id="qa-i2">
+            <li class="qa-item">
+              <div class="qa-q" contenteditable="false" data-key="i2q1">Wie war es, mit einem Vater aufzuwachsen, der immer „unter der Erde" war?</div>
+              <div class="qa-a" contenteditable="false" data-key="i2a1">„Ich habe früh gelernt, alleine zu sein. Aber ich habe auch gelernt, auf ihn zu warten. Er kam immer zurück – schmutziger, aber irgendwie erleichtert."</div>
+            </li>
+            <li class="qa-item">
+              <div class="qa-q" contenteditable="false" data-key="i2q2">Was wünschen Sie sich für ihn?</div>
+              <div class="qa-a" contenteditable="false" data-key="i2a2">„Dass er irgendwann aufhört zu graben. Und einfach... bleibt."</div>
+            </li>
+          </ul>
+          <button class="add-btn" onclick="addQA('qa-i2', 'i2')" style="margin-top:.75rem;font-size:12px;padding:6px 12px">+ Frage & Antwort</button>
+        </div>
+      </div>
+
+    </div>
+    <button class="add-btn" onclick="addInterview()">+ Neues Interview hinzufügen</button>
+  </section>
+
+</main>
+
+<footer>
+  <p><strong>LiteraturZeitung – Der Tunnelbauer</strong></p>
+  <p style="margin-top:.5rem">Schulprojekt · Marie Nelsen · © 2025</p>
+</footer>
+
+<script>
+  // ========== AUTH ==========
+  const ADMIN_PW = 'tunnelbauer2025';
+  let isAdmin = false;
+
+  function openLogin() {
+    document.getElementById('login-overlay').classList.add('visible');
+    setTimeout(() => document.getElementById('pw-input').focus(), 100);
+  }
+  function closeLogin() {
+    document.getElementById('login-overlay').classList.remove('visible');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('login-error').style.display = 'none';
+  }
+  function doLogin() {
+    const pw = document.getElementById('pw-input').value;
+    if (pw === ADMIN_PW) {
+      isAdmin = true;
+      closeLogin();
+      enableAdmin();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  }
+  function logout() {
+    isAdmin = false;
+    disableAdmin();
+  }
+
+  function enableAdmin() {
+    document.body.classList.add('admin-mode');
+    document.getElementById('admin-bar').classList.add('visible');
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+      el.contentEditable = 'true';
+    });
+    loadSaved();
+  }
+  function disableAdmin() {
+    document.body.classList.remove('admin-mode');
+    document.getElementById('admin-bar').classList.remove('visible');
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+      el.contentEditable = 'false';
+    });
+  }
+
+  // ========== SAVE / LOAD ==========
+  function saveAll() {
+    const data = {};
+    document.querySelectorAll('[data-key]').forEach(el => {
+      data[el.dataset.key] = el.innerHTML;
+    });
+    data['__stars'] = currentStars;
+    localStorage.setItem('tunnelbauer_data', JSON.stringify(data));
+    const msg = document.getElementById('save-msg');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2000);
+  }
+
+  function loadSaved() {
+    const raw = localStorage.getItem('tunnelbauer_data');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    Object.entries(data).forEach(([key, val]) => {
+      if (key === '__stars') { setStars(val); return; }
+      const el = document.querySelector('[data-key="' + key + '"]');
+      if (el) el.innerHTML = val;
+    });
+  }
+
+  // Load on page start (read-only)
+  window.addEventListener('DOMContentLoaded', () => {
+    loadSaved();
+    updateStarsDisplay();
+  });
+
+  // Auto-save on input (debounced)
+  let saveTimer;
+  document.addEventListener('input', (e) => {
+    if (e.target.hasAttribute('data-key')) {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveAll, 1500);
+    }
+  });
+
+  // ========== STARS RATING ==========
+  let currentStars = 4;
+  function setStars(n) { currentStars = n; updateStarsDisplay(); }
+  function updateStarsDisplay() {
+    document.querySelectorAll('#stars-container .star').forEach(s => {
+      const v = parseInt(s.dataset.val);
+      s.className = 'star' + (v <= currentStars ? '' : ' empty');
+    });
+  }
+  document.getElementById('stars-container').addEventListener('click', (e) => {
+    if (!isAdmin) return;
+    const s = e.target.closest('.star');
+    if (s) { setStars(parseInt(s.dataset.val)); saveAll(); }
+  });
+
+  // ========== ADD CONTENT ==========
+  const colors = ['#FF6B35','#2D4A7A','#3D9970','#C0392B','#F7C948'];
+  let colorIdx = 0;
+  function nextColor() { return colors[colorIdx++ % colors.length]; }
+
+  function addZitat() {
+    const c = nextColor();
+    const id = 'z' + Date.now();
+    const div = document.createElement('div');
+    div.className = 'zitat-card';
+    div.style.borderLeftColor = c;
+    div.innerHTML = `
+      <div class="zitat-tag" style="background:${c}20;color:${c}" contenteditable="true" data-key="${id}-tag">Thema</div>
+      <button class="del-btn" onclick="this.closest('.zitat-card').remove()">✕ löschen</button>
+      <div class="zitat-text" contenteditable="true" data-key="${id}-text">„Neues Zitat hier eingeben..."</div>
+      <div class="zitat-source" contenteditable="true" data-key="${id}-src">— Kapitel X, S. XX</div>
+    `;
+    document.getElementById('zitate-container').appendChild(div);
+  }
+
+  function addThema() {
+    const id = 't' + Date.now();
+    const emojis = ['💡','🔍','⚡','🌊','🏔️','🌿'];
+    const em = emojis[Math.floor(Math.random() * emojis.length)];
+    const c = nextColor();
+    const div = document.createElement('div');
+    div.className = 'thema-card';
+    div.innerHTML = `
+      <div class="thema-icon" style="background:${c}20">${em}</div>
+      <h3 contenteditable="true" data-key="${id}-title">Neues Thema</h3>
+      <p contenteditable="true" data-key="${id}-text">Beschreibung des Themas hier eingeben...</p>
+      <button class="del-btn" onclick="this.closest('.thema-card').remove()">✕</button>
+    `;
+    document.getElementById('themen-container').appendChild(div);
+  }
+
+  let interviewCount = 3;
+  function addInterview() {
+    const c = nextColor();
+    const id = 'i' + Date.now();
+    const qaId = 'qa-' + id;
+    const div = document.createElement('div');
+    div.className = 'interview-card';
+    div.innerHTML = `
+      <div class="interview-accent" style="background:${c}"></div>
+      <div class="interview-body">
+        <div class="interviewee">
+          <div class="avatar" style="background:${c}">??</div>
+          <div class="interviewee-info">
+            <h3 contenteditable="true" data-key="${id}-name">Name der Figur</h3>
+            <p contenteditable="true" data-key="${id}-role">Rolle im Buch, Alter</p>
+          </div>
+          <button class="del-btn" onclick="this.closest('.interview-card').remove()">✕ löschen</button>
+        </div>
+        <ul class="qa-list" id="${qaId}">
+          <li class="qa-item">
+            <div class="qa-q" contenteditable="true" data-key="${id}q1">Frage hier eingeben?</div>
+            <div class="qa-a" contenteditable="true" data-key="${id}a1">„Antwort der Figur hier eingeben..."</div>
+          </li>
+        </ul>
+        <button class="add-btn" onclick="addQA('${qaId}','${id}')" style="margin-top:.75rem;font-size:12px;padding:6px 12px">+ Frage & Antwort</button>
+      </div>
+    `;
+    document.getElementById('interview-container').appendChild(div);
+  }
+
+  function addQA(qaId, iId) {
+    const n = Date.now();
+    const li = document.createElement('li');
+    li.className = 'qa-item';
+    li.innerHTML = `
+      <div class="qa-q" contenteditable="true" data-key="${iId}q${n}">Neue Frage eingeben?</div>
+      <div class="qa-a" contenteditable="true" data-key="${iId}a${n}">„Antwort hier eingeben..."</div>
+      <button class="del-btn" onclick="this.closest('.qa-item').remove()" style="margin-top:4px">✕</button>
+    `;
+    document.getElementById(qaId).appendChild(li);
+  }
+
+  // ========== NAV ACTIVE STATE ==========
+  const sections = document.querySelectorAll('main section');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  });
+</script>
+</body>
+</html>
