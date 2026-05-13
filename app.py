@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'tunnelbauer2025')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Cheremsha')
 DB_PATH = 'data.db'
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
