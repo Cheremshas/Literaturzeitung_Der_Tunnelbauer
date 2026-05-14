@@ -1,921 +1,2768 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LiteraturZeitung – Der Tunnelbauer</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<style>
-:root{
-  --c1:#FF6B35;--c2:#2D4A7A;--c3:#F7C948;--c4:#3D9970;--c5:#C0392B;
-  --bg:#FAFAF7;--bg2:#F0EDE6;--text:#1A1A2E;--muted:#6B6B7A;
-  --white:#fff;--border:#E0DDD6;--card:#fff;--abar:48px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiteraturZeitung – Der Tunnelbauer</title>
 
-/* ── ADMIN BAR ── */
-#abar{position:fixed;top:0;left:0;right:0;height:var(--abar);background:var(--c2);color:#fff;display:none;align-items:center;justify-content:space-between;padding:0 1.25rem;z-index:9999;font-size:13px;gap:8px;flex-wrap:nowrap;overflow-x:auto}
-#abar.on{display:flex}
-.ab-dot{width:8px;height:8px;background:var(--c3);border-radius:50%;animation:pulse 1.5s infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.ab-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;white-space:nowrap;transition:background .15s}
-.ab-btn:hover{background:rgba(255,255,255,.28)}
-.ab-btn.red{background:rgba(192,57,43,.5);border-color:rgba(192,57,43,.7)}
-.ab-btn.red:hover{background:rgba(192,57,43,.85)}
-.ab-sep{width:1px;height:20px;background:rgba(255,255,255,.2);flex-shrink:0}
-body.adm{padding-top:var(--abar)}
+  <link
+    href="https://fonts.googleapis.com/css2?
+          family=Oswald:wght@400;500;700&
+          family=Lora:ital,wght@0,400;0,600;1,400&
+          family=Inter:wght@300;400;500;600&
+          display=swap"
+    rel="stylesheet"
+  >
 
-/* ── LOGIN ── */
-#loginov{display:none;position:fixed;inset:0;background:rgba(26,26,46,.85);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-#loginov.on{display:flex}
-#loginbox{background:#fff;border-radius:16px;padding:2.5rem;width:360px;box-shadow:0 24px 64px rgba(0,0,0,.4)}
-#loginbox h2{font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:.25rem;color:var(--c2)}
-#loginbox p{color:var(--muted);font-size:13px;margin-bottom:1.5rem}
-#loginbox input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px;outline:none;transition:border-color .2s}
-#loginbox input:focus{border-color:var(--c2)}
-#loginbox .btnL{width:100%;padding:11px;background:var(--c2);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
-#loginbox .btnL:hover{background:#1d3357}
-#lgerr{color:var(--c5);font-size:13px;margin-top:8px;display:none}
-#lgclose{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+  <style>
+    /* ══════════════════════════════════════════
+       DESIGN TOKENS  –  inspired by the book cover:
+       deep black background, gold accent, silver text
+       ══════════════════════════════════════════ */
+    :root {
+      --black:    #0D0D0D;
+      --dark:     #141414;
+      --card:     #1A1A1A;
+      --border:   #2A2A2A;
+      --border2:  #333;
+      --gold:     #E8A020;
+      --gold-dim: #A06A10;
+      --silver:   #C0C0C0;
+      --white:    #F0EDE6;
+      --text:     #D8D4CC;
+      --muted:    #787060;
+      --red:      #C0392B;
+      --admin-h:  48px;
+    }
 
-/* ── EDITABLE ── */
-body.adm [contenteditable]{outline:2px dashed var(--c3);outline-offset:2px;border-radius:3px;cursor:text;min-height:1em}
-body.adm [contenteditable]:focus{outline:2.5px solid var(--c1);background:rgba(255,107,53,.04)}
-.ehint{display:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c1);margin-bottom:4px}
-body.adm .ehint{display:block}
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* ── EDIT TOOLBAR (floats near element) ── */
-#etoolbar{display:none;position:fixed;background:var(--c2);border-radius:10px;padding:6px 8px;gap:6px;z-index:9998;box-shadow:0 8px 24px rgba(0,0,0,.25);align-items:center}
-#etoolbar.on{display:flex}
-#etoolbar button{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s}
-#etoolbar button:hover{background:rgba(255,255,255,.3)}
-#etoolbar .esep{width:1px;height:20px;background:rgba(255,255,255,.2)}
+    html { scroll-behavior: smooth; }
 
-/* ── EMOJI PICKER ── */
-#epicker{display:none;position:fixed;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:12px;z-index:10001;box-shadow:0 16px 48px rgba(0,0,0,.2);width:300px}
-#epicker.on{display:block}
-.ep-search{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;font-family:inherit}
-.ep-search:focus{border-color:var(--c2)}
-.ep-grid{display:flex;flex-wrap:wrap;gap:2px;max-height:200px;overflow-y:auto}
-.ep-btn{width:34px;height:34px;border:none;background:none;border-radius:7px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
-.ep-btn:hover{background:var(--bg2)}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
 
-/* ── COLOR PICKER POPUP ── */
-#cpicker{display:none;position:fixed;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px;z-index:10001;box-shadow:0 16px 48px rgba(0,0,0,.2);width:240px}
-#cpicker.on{display:block}
-#cpicker h4{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em}
-.cp-swatches{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.cp-sw{width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:transform .1s,border-color .15s}
-.cp-sw:hover{transform:scale(1.15)}
-.cp-sw.sel{border-color:var(--text)}
-#cpicker input[type=color]{width:100%;height:34px;border:none;border-radius:8px;cursor:pointer;padding:0 4px}
-.cp-preview{width:100%;height:28px;border-radius:6px;margin-top:8px;border:1.5px solid var(--border)}
 
-/* ── IMAGE UPLOAD MODAL ── */
-#imgmodal{display:none;position:fixed;inset:0;background:rgba(26,26,46,.7);z-index:10001;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
-#imgmodal.on{display:flex}
-#imgbox{background:#fff;border-radius:16px;padding:2rem;width:400px;box-shadow:0 24px 64px rgba(0,0,0,.35)}
-#imgbox h3{font-size:1rem;font-weight:600;margin-bottom:1rem;color:var(--c2)}
-.dropzone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:1rem}
-.dropzone:hover,.dropzone.drag{border-color:var(--c1);background:rgba(255,107,53,.04)}
-.dropzone p{font-size:13px;color:var(--muted);margin-top:.5rem}
-.dropzone .dz-icon{font-size:2.5rem}
-#imgfile{display:none}
-#imgpreview{display:none;max-width:100%;border-radius:8px;margin-bottom:1rem}
-.img-btns{display:flex;gap:8px}
-.img-btns button{flex:1;padding:9px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:500;font-family:inherit}
-#imgconfirm{background:var(--c4);color:#fff}
-#imgcancel{background:var(--bg2);color:var(--text)}
+    /* ══════════════════════════════════════════
+       ADMIN BAR
+       ══════════════════════════════════════════ */
+    #admin-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--admin-h);
+      background: #0A0A0A;
+      border-bottom: 1px solid var(--gold);
+      color: var(--white);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 0 1.25rem;
+      z-index: 9000;
+      font-size: 12px;
+      overflow-x: auto;
+    }
 
-/* ── SAVE TOAST ── */
-#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--c4);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;z-index:9999;pointer-events:none}
-#toast.on{opacity:1;transform:translateY(0)}
+    #admin-bar.visible { display: flex; }
 
-/* ── DEL BTN ── */
-.delbtn{display:none;background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--c5);transition:background .15s;font-family:inherit}
-.delbtn:hover{background:rgba(192,57,43,.18)}
-body.adm .delbtn{display:inline-flex;align-items:center;gap:4px}
-.addbtn{display:none;background:var(--c3);border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-top:1rem;color:var(--text);transition:background .15s;font-family:inherit}
-.addbtn:hover{background:#e8b835}
-body.adm .addbtn{display:inline-block}
+    body.admin-mode { padding-top: var(--admin-h); }
 
-/* ── HEADER ── */
-header{background:var(--c2);color:#fff;padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}
-header::before{content:'';position:absolute;top:-40px;right:-40px;width:300px;height:300px;background:var(--c3);opacity:.12;border-radius:50%}
-header::after{content:'';position:absolute;bottom:-60px;left:20%;width:200px;height:200px;background:var(--c1);opacity:.15;border-radius:50%}
-.hinner{max-width:900px;margin:0 auto;position:relative;z-index:1}
-.hkick{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--c3);margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
-.hkick::after{content:'';display:block;height:1px;width:40px;background:var(--c3);opacity:.6}
-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,6vw,4rem);line-height:1.1;color:#fff}
-header h1 em{font-style:italic;color:var(--c3)}
-.hmeta{font-size:13px;color:rgba(255,255,255,.65);margin-top:1rem;display:flex;gap:16px;flex-wrap:wrap}
-.admin-trigger{position:absolute;bottom:1.5rem;right:2rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:5px 14px;border-radius:20px;font-size:11px;cursor:pointer;z-index:2;transition:all .2s;font-family:inherit}
-.admin-trigger:hover{color:#fff;border-color:rgba(255,255,255,.5)}
+    .ab-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      animation: blink 1.6s infinite;
+    }
 
-/* ── NAV ── */
-nav{background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100}
-body.adm nav{top:var(--abar)}
-nav ul{max-width:900px;margin:0 auto;padding:0 2rem;display:flex;list-style:none;overflow-x:auto}
-nav a{display:block;padding:.85rem 1.1rem;color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s}
-nav a:hover,nav a.act{color:var(--c1);border-color:var(--c1)}
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
 
-/* ── MAIN ── */
-main{max-width:900px;margin:0 auto;padding:3rem 2rem}
-section{margin-bottom:4rem}
-.slabel{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--c1);margin-bottom:.5rem;display:flex;align-items:center;gap:8px}
-.slabel::after{content:'';flex:1;height:1.5px;background:var(--border);max-width:60px}
-.stitle{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2.1rem);color:var(--c2);margin-bottom:1.5rem;line-height:1.2}
+    .ab-sep {
+      width: 1px;
+      height: 18px;
+      background: var(--border2);
+      flex-shrink: 0;
+    }
 
-/* ── REZENSION ── */
-.rezgrid{display:grid;grid-template-columns:1fr 280px;gap:2.5rem;align-items:start}
-@media(max-width:640px){.rezgrid{grid-template-columns:1fr}}
-.bookcard{background:var(--c2);border-radius:14px;padding:2rem 1.5rem;color:#fff;text-align:center;position:relative;overflow:hidden}
-.bookcard::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:var(--c3);opacity:.2;border-radius:50%}
-.bookcover{width:100px;height:140px;background:var(--c3);border-radius:4px 8px 8px 4px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:2.5rem;box-shadow:4px 4px 16px rgba(0,0,0,.3);position:relative;z-index:1;overflow:hidden}
-.bookcover img{width:100%;height:100%;object-fit:cover;border-radius:4px 8px 8px 4px}
-.bc-edit{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;cursor:pointer;z-index:2;font-size:1.3rem;border-radius:4px 8px 8px 4px}
-body.adm .bookcover:hover .bc-edit{display:flex}
-.bookcard h3{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:.25rem;position:relative;z-index:1}
-.bookcard .bauth{font-size:12px;opacity:.7;margin-bottom:1rem;position:relative;z-index:1}
-.bmeta{list-style:none;font-size:12px;text-align:left;position:relative;z-index:1}
-.bmeta li{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:8px}
-.bmeta li:last-child{border-bottom:none}
-.bmeta li span:first-child{opacity:.6}
-.bmeta li span:last-child{font-weight:500;text-align:right}
-.prose{font-size:15px;line-height:1.85;color:var(--text)}
-.prose p{margin-bottom:1.1em}
-.prose p:last-child{margin-bottom:0}
-.stars{display:flex;gap:3px;margin:1.25rem 0;cursor:default}
-.star{font-size:22px;color:var(--c3)}
-.star.e{color:var(--border)}
-body.adm .stars{cursor:pointer}
+    .ab-btn {
+      background: rgba(232, 160, 32, 0.12);
+      border: 1px solid rgba(232, 160, 32, 0.3);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s;
+      font-family: inherit;
+    }
 
-/* ── ZITATE ── */
-.zgrid{display:grid;gap:1.5rem}
-.zcard{background:var(--card);border-left:4px solid var(--c1);border-radius:0 12px 12px 0;padding:1.5rem 1.75rem;position:relative;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-.zcard::before{content:'\201C';font-family:'Playfair Display',serif;font-size:5rem;color:var(--c1);opacity:.12;position:absolute;top:-10px;left:12px;line-height:1}
-.ztag{display:inline-block;background:rgba(255,107,53,.1);color:var(--c1);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;margin-bottom:.75rem}
-.ztext{font-family:'DM Serif Display',serif;font-size:1.1rem;font-style:italic;line-height:1.6;color:var(--c2);position:relative;z-index:1;margin-bottom:.75rem}
-.zsrc{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.zcard-actions{display:none;gap:6px;margin-top:.75rem}
-body.adm .zcard-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+    .ab-btn:hover {
+      background: rgba(232, 160, 32, 0.25);
+      border-color: var(--gold);
+    }
 
-/* ── THEMEN ── */
-.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.25rem}
-.tcard{background:var(--card);border-radius:14px;padding:1.5rem;border:1.5px solid var(--border);transition:transform .2s,border-color .2s,box-shadow .2s}
-.tcard:hover{transform:translateY(-3px);border-color:var(--c3);box-shadow:0 8px 24px rgba(0,0,0,.1)}
-.ticon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem}
-.tcard h3{font-size:15px;font-weight:600;margin-bottom:.4rem;color:var(--c2)}
-.tcard p{font-size:13px;color:var(--muted);line-height:1.55}
-.tcard-actions{display:none;gap:6px;margin-top:.75rem;flex-wrap:wrap}
-body.adm .tcard-actions{display:flex}
+    .ab-btn.danger {
+      background: rgba(192, 57, 43, 0.15);
+      border-color: rgba(192, 57, 43, 0.4);
+      color: #e74c3c;
+    }
 
-/* ── INTERVIEWS ── */
-.ilist{display:flex;flex-direction:column;gap:2rem}
-.icard{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.07);display:grid;grid-template-columns:5px 1fr}
-.iaccent{}
-.ibody{padding:1.75rem 2rem}
-.iee{display:flex;align-items:center;gap:14px;margin-bottom:1.25rem}
-.avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;position:relative}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.av-edit{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;cursor:pointer;border-radius:50%;font-size:1rem}
-body.adm .avatar:hover .av-edit{display:flex}
-.iinfo h3{font-size:16px;font-weight:600;color:var(--c2);margin-bottom:2px}
-.iinfo p{font-size:12px;color:var(--muted)}
-.qalist{list-style:none}
-.qaitem{margin-bottom:1.25rem}
-.qaitem:last-child{margin-bottom:0}
-.qaq{font-size:13px;font-weight:600;color:var(--c1);margin-bottom:.35rem;display:flex;gap:8px;align-items:flex-start}
-.qaq::before{content:'F:';flex-shrink:0}
-.qaa{font-size:14px;line-height:1.7;color:var(--text);padding-left:24px;border-left:2px solid var(--border);margin-left:2px}
-.qa-actions{display:none;gap:6px;margin-top:.4rem;padding-left:24px}
-body.adm .qa-actions{display:flex}
-.icard-actions{display:none;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
-body.adm .icard-actions{display:flex;align-items:center}
+    .ab-btn.danger:hover {
+      background: rgba(192, 57, 43, 0.3);
+    }
 
-footer{background:var(--c2);color:rgba(255,255,255,.7);text-align:center;padding:2rem;font-size:13px;margin-top:4rem}
-footer strong{color:#fff}
-</style>
+
+    /* ══════════════════════════════════════════
+       LOGIN OVERLAY
+       ══════════════════════════════════════════ */
+    #login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+
+    #login-overlay.visible { display: flex; }
+
+    #login-box {
+      background: var(--dark);
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      padding: 2.5rem;
+      width: 360px;
+      box-shadow: 0 0 60px rgba(232, 160, 32, 0.15);
+    }
+
+    #login-box h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    #login-box p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 1.5rem;
+    }
+
+    #login-box input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--black);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      color: var(--white);
+      font-size: 14px;
+      font-family: inherit;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #login-box input:focus { border-color: var(--gold); }
+
+    #login-box .btn-login {
+      width: 100%;
+      padding: 11px;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      border-radius: 3px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #login-box .btn-login:hover { background: #c88c18; }
+
+    #login-error {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    #login-close {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--muted);
+      line-height: 1;
+      margin-top: -0.5rem;
+      margin-right: -0.5rem;
+    }
+
+
+    /* ══════════════════════════════════════════
+       EDITABLE FIELDS
+       ══════════════════════════════════════════ */
+    body.admin-mode [contenteditable="true"] {
+      outline: 1px dashed rgba(232, 160, 32, 0.5);
+      outline-offset: 2px;
+      border-radius: 2px;
+      cursor: text;
+      min-height: 1em;
+    }
+
+    body.admin-mode [contenteditable="true"]:focus {
+      outline: 1.5px solid var(--gold);
+      background: rgba(232, 160, 32, 0.04);
+    }
+
+    .edit-hint {
+      display: none;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 4px;
+    }
+
+    body.admin-mode .edit-hint { display: block; }
+
+
+    /* ══════════════════════════════════════════
+       EMOJI PICKER
+       ══════════════════════════════════════════ */
+    #emoji-picker {
+      display: none;
+      position: fixed;
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 12px;
+      z-index: 10001;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+      width: 300px;
+    }
+
+    #emoji-picker.visible { display: block; }
+
+    .ep-search {
+      width: 100%;
+      padding: 7px 10px;
+      background: var(--black);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      color: var(--white);
+      font-size: 13px;
+      margin-bottom: 8px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .ep-search:focus { border-color: var(--gold); }
+
+    .ep-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .ep-btn {
+      width: 34px;
+      height: 34px;
+      background: none;
+      border: none;
+      border-radius: 5px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+    }
+
+    .ep-btn:hover { background: var(--border); }
+
+
+    /* ══════════════════════════════════════════
+       COLOR PICKER
+       ══════════════════════════════════════════ */
+    #color-picker {
+      display: none;
+      position: fixed;
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 14px;
+      z-index: 10001;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+      width: 240px;
+    }
+
+    #color-picker.visible { display: block; }
+
+    #color-picker h4 {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .cp-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .cp-swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.1s, border-color 0.15s;
+    }
+
+    .cp-swatch:hover     { transform: scale(1.15); }
+    .cp-swatch.selected  { border-color: var(--white); }
+
+    #color-picker input[type="color"] {
+      width: 100%;
+      height: 32px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 0 4px;
+      background: var(--black);
+    }
+
+    .cp-preview {
+      width: 100%;
+      height: 24px;
+      border-radius: 4px;
+      margin-top: 8px;
+      border: 1px solid var(--border2);
+    }
+
+
+    /* ══════════════════════════════════════════
+       IMAGE UPLOAD MODAL
+       ══════════════════════════════════════════ */
+    #img-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    #img-modal.visible { display: flex; }
+
+    #img-box {
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 2rem;
+      width: 400px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    }
+
+    #img-box h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border2);
+      border-radius: 6px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 1rem;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragging {
+      border-color: var(--gold);
+      background: rgba(232, 160, 32, 0.05);
+    }
+
+    .dropzone .dz-icon { font-size: 2.5rem; }
+
+    .dropzone p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    #img-file  { display: none; }
+
+    #img-preview {
+      display: none;
+      max-width: 100%;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+
+    .img-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .img-btns button {
+      flex: 1;
+      padding: 9px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    #img-confirm { background: var(--gold);  color: var(--black); }
+    #img-cancel  { background: var(--border); color: var(--text); }
+
+
+    /* ══════════════════════════════════════════
+       TOAST
+       ══════════════════════════════════════════ */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--gold);
+      color: var(--black);
+      padding: 10px 18px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 9999;
+      pointer-events: none;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    #toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+
+    /* ══════════════════════════════════════════
+       ADMIN ACTION BUTTONS  (edit/delete/color)
+       ══════════════════════════════════════════ */
+    .admin-actions {
+      display: none;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    body.admin-mode .admin-actions { display: flex; }
+
+    .act-btn {
+      background: rgba(232, 160, 32, 0.1);
+      border: 1px solid rgba(232, 160, 32, 0.25);
+      color: var(--gold);
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+
+    .act-btn:hover { background: rgba(232, 160, 32, 0.22); }
+
+    .act-btn.del {
+      background: rgba(192, 57, 43, 0.08);
+      border-color: rgba(192, 57, 43, 0.25);
+      color: #e74c3c;
+    }
+
+    .act-btn.del:hover { background: rgba(192, 57, 43, 0.2); }
+
+    .add-btn {
+      display: none;
+      background: rgba(232, 160, 32, 0.12);
+      border: 1px dashed rgba(232, 160, 32, 0.4);
+      color: var(--gold);
+      padding: 9px 20px;
+      border-radius: 3px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 1.25rem;
+      font-family: inherit;
+      transition: background 0.15s, border-color 0.15s;
+      width: 100%;
+    }
+
+    .add-btn:hover {
+      background: rgba(232, 160, 32, 0.2);
+      border-color: var(--gold);
+    }
+
+    body.admin-mode .add-btn { display: block; }
+
+
+    /* ══════════════════════════════════════════
+       HEADER  –  dark with gold stripe (like the book)
+       ══════════════════════════════════════════ */
+    header {
+      background: var(--black);
+      border-bottom: 3px solid var(--gold);
+      position: relative;
+    }
+
+    .header-stripe {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: var(--gold);
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 2rem 2.5rem 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: end;
+    }
+
+    .header-kicker {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-kicker::after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 50px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2.6rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--white);
+      line-height: 1.0;
+    }
+
+    header h1 em {
+      display: block;
+      font-style: normal;
+      font-size: 0.45em;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 1rem;
+      letter-spacing: 0.06em;
+    }
+
+    .header-book-thumb {
+      width: 100px;
+      flex-shrink: 0;
+    }
+
+    .header-book-thumb img {
+      width: 100px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow:
+        4px 4px 0 var(--gold-dim),
+        8px 8px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .admin-trigger {
+      position: absolute;
+      bottom: 1.25rem;
+      right: 1.5rem;
+      background: none;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 3px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .admin-trigger:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    @media (max-width: 500px) {
+      .header-book-thumb { display: none; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       NAV
+       ══════════════════════════════════════════ */
+    nav {
+      background: var(--dark);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    body.admin-mode nav { top: var(--admin-h); }
+
+    nav ul {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      list-style: none;
+      overflow-x: auto;
+    }
+
+    nav a {
+      display: block;
+      padding: 0.9rem 1.1rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+
+    /* ══════════════════════════════════════════
+       MAIN LAYOUT
+       ══════════════════════════════════════════ */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    section { margin-bottom: 5rem; }
+    section:last-child { margin-bottom: 0; }
+
+    .section-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 80px;
+    }
+
+    .section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 2rem;
+    }
+
+    .prose {
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      line-height: 1.9;
+      color: var(--text);
+    }
+
+    .prose p          { margin-bottom: 1.1em; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose em         { color: var(--gold); font-style: italic; }
+
+
+    /* ══════════════════════════════════════════
+       REZENSION
+       ══════════════════════════════════════════ */
+    .rez-grid {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    @media (max-width: 640px) {
+      .rez-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Book card – dark panel */
+    .book-card {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .book-cover-wrap {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: #0A0A0A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      overflow: hidden;
+    }
+
+    .book-cover-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .book-cover-edit-btn {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--gold);
+      font-size: 1.5rem;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 12px;
+      gap: 6px;
+    }
+
+    body.admin-mode .book-cover-wrap:hover .book-cover-edit-btn {
+      display: flex;
+    }
+
+    .book-info {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .book-info h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.2rem;
+    }
+
+    .book-author {
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+    }
+
+    .book-meta {
+      list-style: none;
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+    }
+
+    .book-meta li {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .book-meta li:last-child { border-bottom: none; }
+
+    .book-meta li span:first-child { color: var(--muted); }
+    .book-meta li span:last-child  { color: var(--silver); font-weight: 500; }
+
+    /* Stars */
+    .stars-row {
+      display: flex;
+      gap: 4px;
+      margin: 1.25rem 0 0.25rem;
+    }
+
+    .star-btn {
+      font-size: 22px;
+      color: var(--border2);
+      cursor: default;
+      transition: color 0.1s;
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .star-btn.lit  { color: var(--gold); }
+
+    body.admin-mode .star-btn { cursor: pointer; }
+    body.admin-mode .star-btn:hover { color: var(--gold); }
+
+    .stars-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+
+    /* ══════════════════════════════════════════
+       ZITATE
+       ══════════════════════════════════════════ */
+    .zitate-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .zitat-card {
+      background: var(--dark);
+      border-left: 4px solid var(--gold);
+      border-radius: 0 3px 3px 0;
+      padding: 1.5rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .zitat-card::before {
+      content: '\201C';
+      font-family: 'Oswald', sans-serif;
+      font-size: 7rem;
+      color: var(--gold);
+      opacity: 0.07;
+      position: absolute;
+      top: -20px;
+      left: 10px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .zitat-tag {
+      display: inline-block;
+      background: rgba(232, 160, 32, 0.12);
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 600;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 2px 10px;
+      border-radius: 2px;
+      margin-bottom: 0.75rem;
+    }
+
+    .zitat-text {
+      font-family: 'Lora', serif;
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.65;
+      color: var(--silver);
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0.75rem;
+    }
+
+    .zitat-source {
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+
+    /* ══════════════════════════════════════════
+       THEMEN
+       ══════════════════════════════════════════ */
+    .themen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .thema-card {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .thema-card:hover {
+      border-color: var(--gold-dim);
+      transform: translateY(-2px);
+    }
+
+    .thema-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 4px;
+      background: rgba(232, 160, 32, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .thema-card h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+
+    .thema-card p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+
+    /* ══════════════════════════════════════════
+       INTERVIEWS
+       ══════════════════════════════════════════ */
+    .interview-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .interview-card {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .interview-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--black);
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+      cursor: default;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-initials { position: relative; z-index: 1; }
+
+    .avatar-edit-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    body.admin-mode .avatar:hover .avatar-edit-overlay {
+      display: flex;
+    }
+
+    .interview-info h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .interview-info p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .interview-body { padding: 1.5rem; }
+
+    .qa-item { margin-bottom: 1.25rem; }
+    .qa-item:last-child { margin-bottom: 0; }
+
+    .qa-question {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .qa-question::before {
+      content: 'F:';
+      flex-shrink: 0;
+      color: var(--gold-dim);
+    }
+
+    .qa-answer {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-style: italic;
+      line-height: 1.75;
+      color: var(--silver);
+      padding-left: 24px;
+      border-left: 2px solid var(--border2);
+      margin-left: 2px;
+    }
+
+    .qa-actions {
+      display: none;
+      gap: 6px;
+      margin-top: 0.4rem;
+      padding-left: 24px;
+    }
+
+    body.admin-mode .qa-actions { display: flex; }
+
+
+    /* ══════════════════════════════════════════
+       COMMENTS
+       ══════════════════════════════════════════ */
+    .comments-summary {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      border-radius: 2px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .avg-score {
+      font-family: 'Oswald', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .avg-details {
+      flex: 1;
+    }
+
+    .avg-stars { display: flex; gap: 3px; margin-bottom: 4px; }
+
+    .avg-star {
+      font-size: 18px;
+      color: var(--border2);
+    }
+
+    .avg-star.lit { color: var(--gold); }
+
+    .avg-count {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Comment form */
+    .comment-form {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .comment-form h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--silver);
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 500px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--black);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      color: var(--white);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus { border-color: var(--gold); }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 90px;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Star rating selector */
+    .star-select {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 0.75rem;
+      align-items: center;
+    }
+
+    .star-select span {
+      font-size: 12px;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .star-pick {
+      font-size: 22px;
+      color: var(--border2);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.1s, transform 0.1s;
+    }
+
+    .star-pick.lit   { color: var(--gold); }
+    .star-pick:hover { transform: scale(1.15); }
+
+    .btn-submit {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      border-radius: 3px;
+      padding: 10px 24px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-submit:hover { background: #c88c18; }
+
+    .btn-submit:disabled {
+      background: var(--border2);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    /* Comment list */
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .comment-card {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .comment-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .comment-author {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--silver);
+    }
+
+    .comment-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comment-stars {
+      display: flex;
+      gap: 2px;
+    }
+
+    .comment-star {
+      font-size: 14px;
+      color: var(--border2);
+    }
+
+    .comment-star.lit { color: var(--gold); }
+
+    .comment-date {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .comment-body {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .comment-del {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0;
+      transition: color 0.15s;
+      font-family: inherit;
+    }
+
+    .comment-del:hover { color: var(--red); }
+
+    body.admin-mode .comment-del { display: inline; }
+
+
+    /* ══════════════════════════════════════════
+       FOOTER
+       ══════════════════════════════════════════ */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+      padding: 2rem;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      margin-top: 5rem;
+    }
+
+    footer strong { color: var(--gold); }
+  </style>
 </head>
 <body>
-<div id="toast">✓ Gespeichert!</div>
 
-<!-- ADMIN BAR -->
-<div id="abar">
-  <div class="ab-dot"></div>
-  <span style="font-weight:600;margin-right:4px">Admin</span>
-  <div class="ab-sep"></div>
-  <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
-  <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
-  <button class="ab-btn" onclick="addThema()">+ Thema</button>
-  <button class="ab-btn" onclick="addInterview()">+ Interview</button>
-  <div class="ab-sep"></div>
-  <button class="ab-btn red" onclick="logout()">Abmelden</button>
-</div>
+  <!-- ── TOAST ── -->
+  <div id="toast">✓ Gespeichert</div>
 
-<!-- LOGIN -->
-<div id="loginov">
-  <div id="loginbox">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div><h2>Admin-Login</h2><p>Passwort eingeben, um zu bearbeiten.</p></div>
-      <button id="lgclose" onclick="closeLogin()">×</button>
-    </div>
-    <input type="password" id="pwinput" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btnL" onclick="doLogin()">Anmelden</button>
-    <div id="lgerr">Falsches Passwort. Bitte erneut versuchen.</div>
+
+  <!-- ── ADMIN BAR ── -->
+  <div id="admin-bar">
+    <div class="ab-dot"></div>
+    <span style="font-weight:600; color:var(--gold)">Admin</span>
+    <div class="ab-sep"></div>
+    <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
+    <button class="ab-btn" onclick="addThema()">+ Thema</button>
+    <button class="ab-btn" onclick="addInterview()">+ Interview</button>
+    <div class="ab-sep"></div>
+    <button class="ab-btn danger" onclick="logout()">Abmelden</button>
   </div>
-</div>
 
-<!-- EMOJI PICKER -->
-<div id="epicker">
-  <input class="ep-search" type="text" placeholder="Emoji suchen..." oninput="filterEmoji(this.value)">
-  <div class="ep-grid" id="epgrid"></div>
-</div>
 
-<!-- COLOR PICKER -->
-<div id="cpicker">
-  <h4>Farbe wählen</h4>
-  <div class="cp-swatches" id="cpswatches"></div>
-  <input type="color" id="cpcustom" oninput="cpCustom(this.value)">
-  <div class="cp-preview" id="cppreview"></div>
-</div>
-
-<!-- IMAGE UPLOAD MODAL -->
-<div id="imgmodal">
-  <div id="imgbox">
-    <h3 id="imgmodalTitle">Bild hochladen</h3>
-    <div class="dropzone" id="dropzone" onclick="document.getElementById('imgfile').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
-      <div class="dz-icon">📁</div>
-      <p>Klicken oder Datei hierher ziehen<br><small style="color:var(--muted)">PNG, JPG, GIF, WebP – max 16MB</small></p>
-    </div>
-    <input type="file" id="imgfile" accept="image/*" onchange="previewImg(this)">
-    <img id="imgpreview" src="" alt="">
-    <div class="img-btns">
-      <button id="imgconfirm" onclick="confirmImg()">Hochladen & Einfügen</button>
-      <button id="imgcancel" onclick="closeImgModal()">Abbrechen</button>
-    </div>
-  </div>
-</div>
-
-<!-- HEADER -->
-<header>
-  <div class="hinner">
-    <div class="hkick">📰 LiteraturZeitung · Schulprojekt</div>
-    <h1>Der Tunnelbauer<br><em>Marie Nelsen</em></h1>
-    <div class="hmeta" id="hmeta" contenteditable="false" data-key="header-subtitle">Buchanalyse · Charaktere &amp; Motive · Zitate &amp; Interviews</div>
-  </div>
-  <button class="admin-trigger" onclick="openLogin()">⚙ Admin</button>
-</header>
-
-<!-- NAV -->
-<nav><ul>
-  <li><a href="#rezension" class="act">Rezension</a></li>
-  <li><a href="#zitate">Zitate</a></li>
-  <li><a href="#themen">Themen &amp; Motive</a></li>
-  <li><a href="#interviews">Interviews</a></li>
-</ul></nav>
-
-<main>
-
-<!-- REZENSION -->
-<section id="rezension">
-  <div class="slabel">Buchrezension</div>
-  <div class="rezgrid">
-    <div>
-      <div class="ehint">✏ Titel bearbeiten</div>
-      <h2 class="stitle" contenteditable="false" data-key="rez-title">Der Tunnelbauer – eine Reise in die Tiefe</h2>
-      <div class="stars" id="starsrow" title="Klicken zum Bewerten">
-        <span class="star" data-v="1">★</span>
-        <span class="star" data-v="2">★</span>
-        <span class="star" data-v="3">★</span>
-        <span class="star" data-v="4">★</span>
-        <span class="star e" data-v="5">★</span>
-      </div>
-      <div class="ehint">✏ Text bearbeiten</div>
-      <div class="prose" contenteditable="false" data-key="rez-text">
-        <p>Marie Nelsens Roman <em>„Der Tunnelbauer"</em> ist ein eindrucksvolles Werk, das auf mehreren Ebenen funktioniert.</p>
-        <p>Im Mittelpunkt steht Hermann Schacht, ein alter Tunnelbauer, der sich in seiner Arbeit verliert.</p>
-      </div>
-    </div>
-    <div>
-      <div class="bookcard" id="bookcardEl">
-        <div class="bookcover" id="bookcoverEl">
-          <span id="bookcoverEmoji">🕳️</span>
-          <div class="bc-edit" onclick="openImgModal('book-cover')">📷</div>
+  <!-- ── LOGIN ── -->
+  <div id="login-overlay">
+    <div id="login-box">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start">
+        <div>
+          <h2>Admin-Login</h2>
+          <p>Passwort eingeben, um die Seite zu bearbeiten.</p>
         </div>
-        <h3 contenteditable="false" data-key="book-title">Der Tunnelbauer</h3>
-        <p class="bauth" contenteditable="false" data-key="book-author">Marie Nelsen</p>
-        <ul class="bmeta">
-          <li><span>Verlag</span><span contenteditable="false" data-key="book-verlag">Hanser Verlag</span></li>
-          <li><span>Erschienen</span><span contenteditable="false" data-key="book-year">2021</span></li>
-          <li><span>Seiten</span><span contenteditable="false" data-key="book-pages">312</span></li>
-          <li><span>Genre</span><span contenteditable="false" data-key="book-genre">Literaturoman</span></li>
-        </ul>
+        <button id="login-close" onclick="closeLogin()">×</button>
+      </div>
+      <input
+        type="password"
+        id="pw-input"
+        placeholder="Passwort"
+        onkeydown="if(event.key==='Enter') doLogin()"
+      >
+      <button class="btn-login" onclick="doLogin()">Anmelden</button>
+      <div id="login-error">Falsches Passwort. Versuche es erneut.</div>
+    </div>
+  </div>
+
+
+  <!-- ── EMOJI PICKER ── -->
+  <div id="emoji-picker">
+    <input
+      class="ep-search"
+      type="text"
+      placeholder="Suchen…"
+      oninput="filterEmoji(this.value)"
+    >
+    <div class="ep-grid" id="ep-grid"></div>
+  </div>
+
+
+  <!-- ── COLOR PICKER ── -->
+  <div id="color-picker">
+    <h4>Farbe wählen</h4>
+    <div class="cp-swatches" id="cp-swatches"></div>
+    <input
+      type="color"
+      id="cp-custom"
+      oninput="cpCustomColor(this.value)"
+    >
+    <div class="cp-preview" id="cp-preview"></div>
+  </div>
+
+
+  <!-- ── IMAGE UPLOAD MODAL ── -->
+  <div id="img-modal">
+    <div id="img-box">
+      <h3>Bild hochladen</h3>
+      <div
+        class="dropzone"
+        id="dropzone"
+        onclick="document.getElementById('img-file').click()"
+        ondragover="event.preventDefault(); this.classList.add('dragging')"
+        ondragleave="this.classList.remove('dragging')"
+        ondrop="handleDrop(event)"
+      >
+        <div class="dz-icon">📁</div>
+        <p>Klicken oder Datei hierher ziehen<br>
+        <small>PNG, JPG, GIF, WebP – max 16 MB</small></p>
+      </div>
+      <input type="file" id="img-file" accept="image/*" onchange="previewImage(this)">
+      <img id="img-preview" src="" alt="">
+      <div class="img-btns">
+        <button id="img-confirm" onclick="confirmUpload()">Hochladen</button>
+        <button id="img-cancel"  onclick="closeImgModal()">Abbrechen</button>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ZITATE -->
-<section id="zitate">
-  <div class="slabel">Zitate</div>
-  <h2 class="stitle">Bedeutsame Stellen aus dem Buch</h2>
-  <div class="zgrid" id="zcon"></div>
-  <button class="addbtn" onclick="addZitat()">+ Neues Zitat</button>
-</section>
 
-<!-- THEMEN -->
-<section id="themen">
-  <div class="slabel">Analyse</div>
-  <h2 class="stitle">Themen &amp; Motive</h2>
-  <div class="tgrid" id="tcon"></div>
-  <button class="addbtn" onclick="addThema()">+ Neues Thema</button>
-</section>
-
-<!-- INTERVIEWS -->
-<section id="interviews">
-  <div class="slabel">Fiktive Interviews</div>
-  <h2 class="stitle">Im Gespräch mit den Figuren</h2>
-  <div class="ilist" id="icon"></div>
-  <button class="addbtn" onclick="addInterview()">+ Neues Interview</button>
-</section>
-
-</main>
-
-<footer>
-  <p><strong>LiteraturZeitung – Der Tunnelbauer</strong></p>
-  <p style="margin-top:.5rem">Schulprojekt · Marie Nelsen · © 2025</p>
-</footer>
-
-<script>
-// ════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════
-let isAdmin = false;
-let stars = 4;
-let DATA = {kv:{},zitate:[],themen:[],interviews:[]};
-
-// Pending image upload
-let imgTarget = null; // 'book-cover' | {type:'interview',id} | {type:'avatar',id}
-let imgFile = null;
-
-// Color picker state
-let cpTarget = null; // callback fn
-let cpCurrent = '#FF6B35';
-
-// Emoji picker state
-let epTarget = null; // callback fn
-
-// ════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════
-async function loadData() {
-  const r = await fetch('/api/data');
-  DATA = await r.json();
-  renderAll();
-}
-
-function renderAll() {
-  // KV
-  Object.entries(DATA.kv).forEach(([k,v]) => {
-    const el = document.querySelector('[data-key="'+k+'"]');
-    if (el) el.innerHTML = v;
-  });
-  // Stars
-  stars = parseInt(DATA.kv['stars'] || 4);
-  renderStars();
-  // Book cover img
-  const covImg = DATA.kv['book-cover-img'];
-  if (covImg) setBookCoverImg(covImg);
-  // Sections
-  renderZitate();
-  renderThemen();
-  renderInterviews();
-}
-
-loadData();
-
-// ════════════════════════════════════════════
-// STARS
-// ════════════════════════════════════════════
-function renderStars() {
-  document.querySelectorAll('#starsrow .star').forEach(s => {
-    s.className = 'star' + (parseInt(s.dataset.v) <= stars ? '' : ' e');
-  });
-}
-document.getElementById('starsrow').addEventListener('click', e => {
-  if (!isAdmin) return;
-  const s = e.target.closest('.star');
-  if (!s) return;
-  stars = parseInt(s.dataset.v);
-  renderStars();
-  saveKV({'stars': String(stars)});
-});
-
-// ════════════════════════════════════════════
-// AUTH
-// ════════════════════════════════════════════
-function openLogin() { document.getElementById('loginov').classList.add('on'); setTimeout(()=>document.getElementById('pwinput').focus(),100); }
-function closeLogin() { document.getElementById('loginov').classList.remove('on'); document.getElementById('pwinput').value=''; document.getElementById('lgerr').style.display='none'; }
-async function doLogin() {
-  const pw = document.getElementById('pwinput').value;
-  const r = await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
-  if (r.ok) { isAdmin=true; closeLogin(); enableAdmin(); }
-  else { document.getElementById('lgerr').style.display='block'; document.getElementById('pwinput').value=''; document.getElementById('pwinput').focus(); }
-}
-function logout() { isAdmin=false; disableAdmin(); }
-function enableAdmin() {
-  document.body.classList.add('adm');
-  document.getElementById('abar').classList.add('on');
-  document.querySelectorAll('[contenteditable]').forEach(el=>el.contentEditable='true');
-}
-function disableAdmin() {
-  document.body.classList.remove('adm');
-  document.getElementById('abar').classList.remove('on');
-  document.querySelectorAll('[contenteditable]').forEach(el=>el.contentEditable='false');
-  closeAllPickers();
-}
-
-// ════════════════════════════════════════════
-// SAVE
-// ════════════════════════════════════════════
-async function saveKV(obj) {
-  await fetch('/api/kv',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(obj)});
-  showToast();
-}
-function showToast() {
-  const t=document.getElementById('toast');
-  t.classList.add('on');
-  clearTimeout(t._t);
-  t._t=setTimeout(()=>t.classList.remove('on'),2200);
-}
-
-async function saveAll() {
-  const kv = {};
-  document.querySelectorAll('[data-key]').forEach(el=>{ kv[el.dataset.key]=el.innerHTML; });
-  kv['stars']=String(stars);
-  await saveKV(kv);
-}
-
-// Auto-save on contenteditable blur
-document.addEventListener('blur', async e => {
-  if (!isAdmin) return;
-  const el = e.target;
-  if (!el.hasAttribute('data-key')) return;
-  await saveKV({[el.dataset.key]: el.innerHTML});
-}, true);
-
-// ════════════════════════════════════════════
-// CLOSE ALL PICKERS ON OUTSIDE CLICK
-// ════════════════════════════════════════════
-document.addEventListener('click', e => {
-  if (!document.getElementById('epicker').contains(e.target) && !e.target.closest('.open-emoji')) {
-    document.getElementById('epicker').classList.remove('on');
-  }
-  if (!document.getElementById('cpicker').contains(e.target) && !e.target.closest('.open-color')) {
-    document.getElementById('cpicker').classList.remove('on');
-  }
-});
-function closeAllPickers() {
-  document.getElementById('epicker').classList.remove('on');
-  document.getElementById('cpicker').classList.remove('on');
-}
-
-// ════════════════════════════════════════════
-// EMOJI PICKER
-// ════════════════════════════════════════════
-const EMOJIS = ['😀','😎','🤔','🥸','😤','😢','😡','🤩','😇','🧐','👤','👥','🧑','👨','👩','🧓','👶','🕵️','🧙','🧟','🧑‍💻','🧑‍🏫','🧑‍🔬','🧑‍🎨','🗺️','🏔️','🌋','🕳️','🌅','🌊','🌿','🌲','🌸','⚡','💥','🔥','❄️','💫','✨','🌈','🎭','🎨','🎬','🎤','🎵','🎶','📖','📚','📝','✏️','🖊️','🔍','🔬','🔭','💡','💡','🏠','🏛️','🏗️','⛏️','🔧','🔨','⚙️','🛠️','🚇','🚂','🚀','✈️','🤝','💪','🧠','👁️','💬','❤️','💙','💚','💛','🧡','💜','🖤','🤍','💔','💯','✅','❌','⚠️','❓','❗','🎯','🏆','🥇','⭐','🌟','💎','👑','🎁','🎊','🎉','🌍','🌏','🌐','🗽','🗼','🏯','⛩️','🕌','🕍','⛪'];
-
-function initEmojiPicker() {
-  renderEmojiGrid(EMOJIS);
-}
-function renderEmojiGrid(list) {
-  const grid = document.getElementById('epgrid');
-  grid.innerHTML = list.map(e=>`<button class="ep-btn" onclick="pickEmoji('${e}')">${e}</button>`).join('');
-}
-function filterEmoji(q) {
-  if (!q) { renderEmojiGrid(EMOJIS); return; }
-  renderEmojiGrid(EMOJIS.filter(e=>e.includes(q)));
-}
-function openEmojiPicker(btn, cb) {
-  epTarget = cb;
-  const picker = document.getElementById('epicker');
-  picker.classList.add('on');
-  const r = btn.getBoundingClientRect();
-  picker.style.top = (r.bottom + window.scrollY + 6) + 'px';
-  picker.style.left = Math.min(r.left, window.innerWidth - 316) + 'px';
-  document.querySelector('.ep-search').value = '';
-  renderEmojiGrid(EMOJIS);
-}
-function pickEmoji(e) {
-  if (epTarget) epTarget(e);
-  document.getElementById('epicker').classList.remove('on');
-}
-initEmojiPicker();
-
-// ════════════════════════════════════════════
-// COLOR PICKER
-// ════════════════════════════════════════════
-const SWATCHES = ['#FF6B35','#2D4A7A','#F7C948','#3D9970','#C0392B','#8E44AD','#16A085','#E67E22','#1ABC9C','#2980B9','#D35400','#27AE60','#E74C3C','#34495E','#F39C12','#7F8C8D','#2ECC71','#E91E63','#00BCD4','#FF5722'];
-
-function initColorPicker() {
-  const sw = document.getElementById('cpswatches');
-  sw.innerHTML = SWATCHES.map(c=>`<div class="cp-sw" style="background:${c}" data-c="${c}" onclick="pickColor('${c}')"></div>`).join('');
-}
-function openColorPicker(btn, current, cb) {
-  cpTarget = cb;
-  cpCurrent = current || '#FF6B35';
-  const picker = document.getElementById('cpicker');
-  picker.classList.add('on');
-  const r = btn.getBoundingClientRect();
-  picker.style.top = (r.bottom + window.scrollY + 6) + 'px';
-  picker.style.left = Math.min(r.left, window.innerWidth - 256) + 'px';
-  document.getElementById('cpcustom').value = cpCurrent;
-  document.getElementById('cppreview').style.background = cpCurrent;
-  document.querySelectorAll('.cp-sw').forEach(s=>s.classList.toggle('sel', s.dataset.c===cpCurrent));
-}
-function pickColor(c) {
-  cpCurrent = c;
-  document.getElementById('cppreview').style.background = c;
-  document.getElementById('cpcustom').value = c;
-  document.querySelectorAll('.cp-sw').forEach(s=>s.classList.toggle('sel',s.dataset.c===c));
-  if (cpTarget) cpTarget(c);
-  setTimeout(()=>document.getElementById('cpicker').classList.remove('on'),150);
-}
-function cpCustom(c) {
-  cpCurrent = c;
-  document.getElementById('cppreview').style.background = c;
-  if (cpTarget) cpTarget(c);
-}
-initColorPicker();
-
-// ════════════════════════════════════════════
-// IMAGE UPLOAD
-// ════════════════════════════════════════════
-function openImgModal(target) {
-  imgTarget = target;
-  imgFile = null;
-  document.getElementById('imgpreview').style.display='none';
-  document.getElementById('imgpreview').src='';
-  document.getElementById('imgmodal').classList.add('on');
-}
-function closeImgModal() {
-  document.getElementById('imgmodal').classList.remove('on');
-  imgTarget=null; imgFile=null;
-}
-function previewImg(input) {
-  const f = input.files[0];
-  if (!f) return;
-  imgFile = f;
-  const prev = document.getElementById('imgpreview');
-  prev.src = URL.createObjectURL(f);
-  prev.style.display = 'block';
-}
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('dropzone').classList.remove('drag');
-  const f = e.dataTransfer.files[0];
-  if (!f) return;
-  imgFile = f;
-  const prev = document.getElementById('imgpreview');
-  prev.src = URL.createObjectURL(f);
-  prev.style.display = 'block';
-}
-async function confirmImg() {
-  if (!imgFile) { alert('Bitte zuerst eine Datei auswählen.'); return; }
-  const fd = new FormData();
-  fd.append('file', imgFile);
-  const r = await fetch('/api/upload', {method:'POST', body:fd});
-  const d = await r.json();
-  if (!d.ok) { alert('Upload fehlgeschlagen.'); return; }
-  const url = d.url;
-  // Apply image
-  if (imgTarget === 'book-cover') {
-    setBookCoverImg(url);
-    await saveKV({'book-cover-img': url});
-  } else if (imgTarget && imgTarget.type === 'avatar') {
-    setAvatarImg(imgTarget.id, url);
-    await fetch('/api/interview/'+imgTarget.id, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({...getInterviewData(imgTarget.id), avatar_img: url})});
-  }
-  closeImgModal();
-  showToast();
-}
-
-function setBookCoverImg(url) {
-  const cover = document.getElementById('bookcoverEl');
-  const emoji = document.getElementById('bookcoverEmoji');
-  let img = cover.querySelector('img');
-  if (!img) { img = document.createElement('img'); cover.insertBefore(img, cover.firstChild); }
-  img.src = url;
-  if (emoji) emoji.style.display='none';
-}
-
-function setAvatarImg(iid, url) {
-  const av = document.querySelector('#iv-'+iid+' .avatar');
-  if (!av) return;
-  let img = av.querySelector('img');
-  if (!img) { img = document.createElement('img'); av.insertBefore(img, av.firstChild); }
-  img.src = url;
-  av.querySelector('.av-initials').style.display = 'none';
-}
-
-function getInterviewData(iid) {
-  return DATA.interviews.find(i=>i.id===iid) || {};
-}
-
-// ════════════════════════════════════════════
-// RENDER ZITATE
-// ════════════════════════════════════════════
-function renderZitate() {
-  const con = document.getElementById('zcon');
-  con.innerHTML = '';
-  DATA.zitate.forEach(z => con.appendChild(makeZitat(z)));
-}
-
-function makeZitat(z) {
-  const div = document.createElement('div');
-  div.className = 'zcard';
-  div.id = 'zc-'+z.id;
-  div.style.borderLeftColor = z.border_color||'#FF6B35';
-  div.style.setProperty('--qcolor', z.border_color||'#FF6B35');
-  const tc = z.tag_color||z.border_color||'#FF6B35';
-  div.innerHTML = `
-    <div class="ztag" style="background:${tc}18;color:${tc}" contenteditable="false" data-key="ztag-${z.id}">${z.tag||'Thema'}</div>
-    <div class="ztext" contenteditable="false" data-key="ztext-${z.id}">${z.text||''}</div>
-    <div class="zsrc" contenteditable="false" data-key="zsrc-${z.id}">${z.source||''}</div>
-    <div class="zcard-actions">
-      <button class="delbtn open-color" onclick="openColorPicker(this,'${z.border_color}',c=>{setZitatColor('${z.id}',c)})">🎨 Farbe</button>
-      <button class="delbtn" onclick="deleteZitat('${z.id}')">✕ Löschen</button>
-    </div>`;
-  if (isAdmin) div.querySelectorAll('[contenteditable]').forEach(e=>e.contentEditable='true');
-  // Auto-save on blur
-  div.querySelectorAll('[data-key]').forEach(el => {
-    el.addEventListener('blur', ()=>saveZitatFromDOM(z.id));
-  });
-  return div;
-}
-
-function saveZitatFromDOM(zid) {
-  const d = {
-    tag: document.querySelector('[data-key="ztag-'+zid+'"]')?.innerHTML||'',
-    text: document.querySelector('[data-key="ztext-'+zid+'"]')?.innerHTML||'',
-    source: document.querySelector('[data-key="zsrc-'+zid+'"]')?.innerHTML||'',
-  };
-  const cur = DATA.zitate.find(z=>z.id===zid)||{};
-  fetch('/api/zitat/'+zid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...cur,...d})});
-}
-
-function setZitatColor(zid, color) {
-  const card = document.getElementById('zc-'+zid);
-  if (!card) return;
-  card.style.borderLeftColor = color;
-  const tag = card.querySelector('.ztag');
-  if (tag) { tag.style.color=color; tag.style.background=color+'18'; }
-  const cur = DATA.zitate.find(z=>z.id===zid)||{};
-  cur.border_color=color; cur.tag_color=color;
-  fetch('/api/zitat/'+zid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...cur,border_color:color,tag_color:color})});
-  showToast();
-}
-
-async function addZitat() {
-  const colors=['#FF6B35','#2D4A7A','#3D9970','#8E44AD','#E67E22'];
-  const c = colors[DATA.zitate.length % colors.length];
-  const r = await fetch('/api/zitat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tag:'Thema',text:'„Neues Zitat eingeben..."',source:'— Kapitel X, S. XX',border_color:c,tag_color:c})});
-  const d = await r.json();
-  const newZ = {id:d.id,tag:'Thema',text:'„Neues Zitat eingeben..."',source:'— Kapitel X, S. XX',border_color:c,tag_color:c};
-  DATA.zitate.push(newZ);
-  const el = makeZitat(newZ);
-  document.getElementById('zcon').appendChild(el);
-  if (isAdmin) el.querySelectorAll('[contenteditable]').forEach(e=>e.contentEditable='true');
-}
-
-async function deleteZitat(zid) {
-  if (!confirm('Zitat löschen?')) return;
-  await fetch('/api/zitat/'+zid,{method:'DELETE'});
-  DATA.zitate = DATA.zitate.filter(z=>z.id!==zid);
-  document.getElementById('zc-'+zid)?.remove();
-  showToast();
-}
-
-// ════════════════════════════════════════════
-// RENDER THEMEN
-// ════════════════════════════════════════════
-function renderThemen() {
-  const con = document.getElementById('tcon');
-  con.innerHTML='';
-  DATA.themen.forEach(t=>con.appendChild(makeThema(t)));
-}
-
-function makeThema(t) {
-  const div = document.createElement('div');
-  div.className='tcard';
-  div.id='tc-'+t.id;
-  div.innerHTML=`
-    <div class="ticon" style="background:${t.icon_bg||'rgba(255,107,53,0.12)'}">
-      <span id="ticon-${t.id}">${t.icon||'💡'}</span>
-    </div>
-    <h3 contenteditable="false" data-key="ttitle-${t.id}">${t.title||''}</h3>
-    <p contenteditable="false" data-key="tbody-${t.id}">${t.body||''}</p>
-    <div class="tcard-actions">
-      <button class="delbtn open-emoji" onclick="openEmojiPicker(this,e=>{setThemaIcon('${t.id}',e)})">😀 Emoji</button>
-      <button class="delbtn open-color" onclick="openColorPicker(this,'${t.icon_bg}',c=>{setThemaBg('${t.id}',c)})">🎨 Hintergrund</button>
-      <button class="delbtn" onclick="deleteThema('${t.id}')">✕ Löschen</button>
-    </div>`;
-  if (isAdmin) div.querySelectorAll('[contenteditable]').forEach(e=>e.contentEditable='true');
-  div.querySelectorAll('[data-key]').forEach(el=>{
-    el.addEventListener('blur',()=>saveThemaFromDOM(t.id));
-  });
-  return div;
-}
-
-function saveThemaFromDOM(tid) {
-  const d={title:document.querySelector('[data-key="ttitle-'+tid+'"]')?.innerHTML||'',body:document.querySelector('[data-key="tbody-'+tid+'"]')?.innerHTML||''};
-  const cur=DATA.themen.find(t=>t.id===tid)||{};
-  fetch('/api/thema/'+tid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...cur,...d})});
-}
-
-function setThemaIcon(tid,icon) {
-  const el=document.getElementById('ticon-'+tid);
-  if(el) el.textContent=icon;
-  const cur=DATA.themen.find(t=>t.id===tid)||{};
-  cur.icon=icon;
-  fetch('/api/thema/'+tid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...cur,icon})});
-  showToast();
-}
-
-function setThemaBg(tid,color) {
-  const card=document.getElementById('tc-'+tid);
-  if(!card) return;
-  card.querySelector('.ticon').style.background=color+'30';
-  const cur=DATA.themen.find(t=>t.id===tid)||{};
-  cur.icon_bg=color+'30';
-  fetch('/api/thema/'+tid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...cur,icon_bg:color+'30'})});
-  showToast();
-}
-
-async function addThema() {
-  const icons=['💡','🔍','⚡','🌊','🏔️','🌿','🎭','🧠'];
-  const cols=['#FF6B35','#2D4A7A','#3D9970','#8E44AD','#E67E22'];
-  const c=cols[DATA.themen.length%cols.length];
-  const r=await fetch('/api/thema',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({icon:icons[DATA.themen.length%icons.length],icon_bg:c+'20',title:'Neues Thema',body:'Beschreibung hier eingeben...'})});
-  const d=await r.json();
-  const newT={id:d.id,icon:icons[DATA.themen.length%icons.length],icon_bg:c+'20',title:'Neues Thema',body:'Beschreibung hier eingeben...'};
-  DATA.themen.push(newT);
-  const el=makeThema(newT);
-  document.getElementById('tcon').appendChild(el);
-  if(isAdmin) el.querySelectorAll('[contenteditable]').forEach(e=>e.contentEditable='true');
-}
-
-async function deleteThema(tid) {
-  if(!confirm('Thema löschen?')) return;
-  await fetch('/api/thema/'+tid,{method:'DELETE'});
-  DATA.themen=DATA.themen.filter(t=>t.id!==tid);
-  document.getElementById('tc-'+tid)?.remove();
-  showToast();
-}
-
-// ════════════════════════════════════════════
-// RENDER INTERVIEWS
-// ════════════════════════════════════════════
-function renderInterviews() {
-  const con=document.getElementById('icon');
-  con.innerHTML='';
-  DATA.interviews.forEach(iv=>con.appendChild(makeInterview(iv)));
-}
-
-function makeInterview(iv) {
-  const div=document.createElement('div');
-  div.className='icard';
-  div.id='iv-'+iv.id;
-  const avContent = iv.avatar_img
-    ? `<img src="${iv.avatar_img}" alt="">`
-    : `<span class="av-initials">${iv.initials||'??'}</span>`;
-  div.innerHTML=`
-    <div class="iaccent" style="background:${iv.accent_color||'#FF6B35'}"></div>
-    <div class="ibody">
-      <div class="icard-actions">
-        <button class="delbtn open-color" onclick="openColorPicker(this,'${iv.accent_color}',c=>{setIColor('${iv.id}',c)})">🎨 Akzentfarbe</button>
-        <button class="delbtn" onclick="openImgModal({type:'avatar',id:'${iv.id}'})">📷 Bild</button>
-        <button class="delbtn" onclick="deleteInterview('${iv.id}')">✕ Löschen</button>
-      </div>
-      <div class="iee">
-        <div class="avatar" style="background:${iv.avatar_color||'#FF6B35'}">
-          ${avContent}
-          <div class="av-edit" onclick="openImgModal({type:'avatar',id:'${iv.id}'})">📷</div>
-        </div>
-        <div class="iinfo">
-          <h3 contenteditable="false" data-key="iname-${iv.id}">${iv.name||''}</h3>
-          <p contenteditable="false" data-key="irole-${iv.id}">${iv.role||''}</p>
+  <!-- ════════════════════════════════════════
+       HEADER
+       ════════════════════════════════════════ -->
+  <header>
+    <div class="header-stripe"></div>
+    <div class="header-inner">
+      <div>
+        <div class="header-kicker">📰 LiteraturZeitung · Schulprojekt</div>
+        <h1>
+          <em>Maja Nielsen</em>
+          DER TUNNELBAUER
+        </h1>
+        <div
+          class="header-sub"
+          contenteditable="false"
+          data-key="header-sub"
+          id="header-sub"
+        >
+          Buchanalyse · Charaktere &amp; Motive · Zitate &amp; Interviews
         </div>
       </div>
-      <ul class="qalist" id="qal-${iv.id}">
-        ${(iv.qa||[]).map(q=>makeQAHtml(q,iv.id)).join('')}
-      </ul>
-      <button class="addbtn" style="font-size:12px;padding:6px 12px;margin-top:.5rem" onclick="addQA('${iv.id}')">+ Frage & Antwort</button>
-    </div>`;
-  if(isAdmin) div.querySelectorAll('[contenteditable]').forEach(e=>e.contentEditable='true');
-  div.querySelectorAll('[data-key]').forEach(el=>{
-    el.addEventListener('blur',()=>saveInterviewFromDOM(iv.id));
-  });
-  // QA blur listeners
-  (iv.qa||[]).forEach(q=>{
-    setTimeout(()=>{
-      div.querySelector('[data-key="qq-'+q.id+'"]')?.addEventListener('blur',()=>saveQAFromDOM(q.id));
-      div.querySelector('[data-key="qa-'+q.id+'"]')?.addEventListener('blur',()=>saveQAFromDOM(q.id));
-    },0);
-  });
-  return div;
-}
-
-function makeQAHtml(q,iid) {
-  return `<li class="qaitem" id="qi-${q.id}">
-    <div class="qaq" contenteditable="false" data-key="qq-${q.id}">${q.question||''}</div>
-    <div class="qaa" contenteditable="false" data-key="qa-${q.id}">${q.answer||''}</div>
-    <div class="qa-actions">
-      <button class="delbtn" onclick="deleteQA('${q.id}')">✕ Löschen</button>
+      <div class="header-book-thumb" id="header-thumb-wrap">
+        <img
+          src="/static/book_cover.png"
+          alt="Der Tunnelbauer"
+          id="header-thumb-img"
+        >
+      </div>
     </div>
-  </li>`;
-}
+    <button class="admin-trigger" onclick="openLogin()">⚙ Admin</button>
+  </header>
 
-function saveInterviewFromDOM(iid) {
-  const iv=DATA.interviews.find(i=>i.id===iid)||{};
-  const n=document.querySelector('[data-key="iname-'+iid+'"]')?.innerHTML||'';
-  const r=document.querySelector('[data-key="irole-'+iid+'"]')?.innerHTML||'';
-  fetch('/api/interview/'+iid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...iv,name:n,role:r})});
-}
 
-function saveQAFromDOM(qid) {
-  const q=document.querySelector('[data-key="qq-'+qid+'"]')?.innerHTML||'';
-  const a=document.querySelector('[data-key="qa-'+qid+'"]')?.innerHTML||'';
-  fetch('/api/qa/'+qid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,answer:a})});
-}
+  <!-- ════════════════════════════════════════
+       NAV
+       ════════════════════════════════════════ -->
+  <nav>
+    <ul>
+      <li><a href="#rezension"  class="active">Rezension</a></li>
+      <li><a href="#zitate">Zitate</a></li>
+      <li><a href="#themen">Themen &amp; Motive</a></li>
+      <li><a href="#interviews">Interviews</a></li>
+      <li><a href="#kommentare">Kommentare</a></li>
+    </ul>
+  </nav>
 
-function setIColor(iid,color) {
-  const card=document.getElementById('iv-'+iid);
-  if(!card) return;
-  card.querySelector('.iaccent').style.background=color;
-  const av=card.querySelector('.avatar');
-  if(av) av.style.background=color;
-  const iv=DATA.interviews.find(i=>i.id===iid)||{};
-  iv.accent_color=color; iv.avatar_color=color;
-  fetch('/api/interview/'+iid,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...iv,accent_color:color,avatar_color:color})});
-  showToast();
-}
 
-async function addInterview() {
-  const cols=['#FF6B35','#2D4A7A','#3D9970','#8E44AD'];
-  const c=cols[DATA.interviews.length%cols.length];
-  const r=await fetch('/api/interview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'Name der Figur',role:'Rolle im Buch',initials:'??',avatar_color:c,accent_color:c})});
-  const d=await r.json();
-  const newIV={id:d.id,name:'Name der Figur',role:'Rolle im Buch',initials:'??',avatar_color:c,accent_color:c,avatar_img:'',qa:[]};
-  DATA.interviews.push(newIV);
-  const el=makeInterview(newIV);
-  document.getElementById('icon').appendChild(el);
-  if(isAdmin) el.querySelectorAll('[contenteditable]').forEach(e=>e.contentEditable='true');
-}
+  <!-- ════════════════════════════════════════
+       MAIN
+       ════════════════════════════════════════ -->
+  <main>
 
-async function deleteInterview(iid) {
-  if(!confirm('Interview löschen?')) return;
-  await fetch('/api/interview/'+iid,{method:'DELETE'});
-  DATA.interviews=DATA.interviews.filter(i=>i.id!==iid);
-  document.getElementById('iv-'+iid)?.remove();
-  showToast();
-}
+    <!-- ─── REZENSION ─── -->
+    <section id="rezension">
+      <div class="section-label">Buchrezension</div>
 
-async function addQA(iid) {
-  const r=await fetch('/api/qa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({interview_id:iid,question:'Neue Frage?',answer:'„Antwort hier eingeben..."'})});
-  const d=await r.json();
-  const newQ={id:d.id,question:'Neue Frage?',answer:'„Antwort hier eingeben..."'};
-  const iv=DATA.interviews.find(i=>i.id===iid);
-  if(iv) iv.qa.push(newQ);
-  const list=document.getElementById('qal-'+iid);
-  if(list){
-    list.insertAdjacentHTML('beforeend',makeQAHtml(newQ,iid));
-    const li=list.querySelector('#qi-'+newQ.id);
-    if(isAdmin) li.querySelectorAll('[contenteditable]').forEach(e=>e.contentEditable='true');
-    li.querySelector('[data-key="qq-'+newQ.id+'"]')?.addEventListener('blur',()=>saveQAFromDOM(newQ.id));
-    li.querySelector('[data-key="qa-'+newQ.id+'"]')?.addEventListener('blur',()=>saveQAFromDOM(newQ.id));
-  }
-}
+      <div class="rez-grid">
 
-async function deleteQA(qid) {
-  await fetch('/api/qa/'+qid,{method:'DELETE'});
-  document.getElementById('qi-'+qid)?.remove();
-  showToast();
-}
+        <!-- Text column -->
+        <div>
+          <div class="edit-hint">✏ Titel bearbeiten</div>
+          <h2
+            class="section-title"
+            contenteditable="false"
+            data-key="rez-title"
+            id="rez-title"
+          >
+            Der Tunnelbauer – eine Reise in die Tiefe
+          </h2>
 
-// ════════════════════════════════════════════
-// NAV ACTIVE
-// ════════════════════════════════════════════
-const secs=document.querySelectorAll('main section');
-const navAs=document.querySelectorAll('nav a');
-window.addEventListener('scroll',()=>{
-  let cur='';
-  secs.forEach(s=>{if(window.scrollY>=s.offsetTop-140)cur=s.id});
-  navAs.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
-});
-</script>
+          <div class="stars-row" id="stars-row">
+            <button class="star-btn lit" data-v="1" onclick="setStar(1)">★</button>
+            <button class="star-btn lit" data-v="2" onclick="setStar(2)">★</button>
+            <button class="star-btn lit" data-v="3" onclick="setStar(3)">★</button>
+            <button class="star-btn lit" data-v="4" onclick="setStar(4)">★</button>
+            <button class="star-btn"     data-v="5" onclick="setStar(5)">★</button>
+          </div>
+          <div class="stars-label" id="stars-label">Unsere Bewertung: 4 / 5</div>
+
+          <br>
+
+          <div class="edit-hint">✏ Text bearbeiten</div>
+          <div
+            class="prose"
+            contenteditable="false"
+            data-key="rez-text"
+            id="rez-text"
+          >
+            <p>
+              Maja Nielsens Roman <em>„Der Tunnelbauer"</em> ist ein
+              eindrucksvolles Werk.
+            </p>
+          </div>
+        </div>
+
+        <!-- Book card column -->
+        <div>
+          <div class="book-card">
+            <div class="book-cover-wrap" id="book-cover-wrap">
+              <img
+                src="/static/book_cover.png"
+                alt="Buchcover"
+                id="book-cover-img"
+              >
+              <div
+                class="book-cover-edit-btn"
+                onclick="openImgModal('book-cover')"
+              >
+                📷 Bild ändern
+              </div>
+            </div>
+            <div class="book-info">
+              <h3
+                contenteditable="false"
+                data-key="book-title"
+              >
+                Der Tunnelbauer
+              </h3>
+              <div
+                class="book-author"
+                contenteditable="false"
+                data-key="book-author"
+              >
+                Maja Nielsen
+              </div>
+              <ul class="book-meta">
+                <li>
+                  <span>Verlag</span>
+                  <span contenteditable="false" data-key="book-verlag">Gerstenberg</span>
+                </li>
+                <li>
+                  <span>Erschienen</span>
+                  <span contenteditable="false" data-key="book-year">2022</span>
+                </li>
+                <li>
+                  <span>Seiten</span>
+                  <span contenteditable="false" data-key="book-pages">224</span>
+                </li>
+                <li>
+                  <span>Genre</span>
+                  <span contenteditable="false" data-key="book-genre">Jugendroman</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ─── ZITATE ─── -->
+    <section id="zitate">
+      <div class="section-label">Zitate</div>
+      <h2 class="section-title">Bedeutsame Stellen</h2>
+      <div class="zitate-list" id="zitate-container"></div>
+      <button class="add-btn" onclick="addZitat()">+ Neues Zitat hinzufügen</button>
+    </section>
+
+
+    <!-- ─── THEMEN ─── -->
+    <section id="themen">
+      <div class="section-label">Analyse</div>
+      <h2 class="section-title">Themen &amp; Motive</h2>
+      <div class="themen-grid" id="themen-container"></div>
+      <button class="add-btn" onclick="addThema()">+ Neues Thema hinzufügen</button>
+    </section>
+
+
+    <!-- ─── INTERVIEWS ─── -->
+    <section id="interviews">
+      <div class="section-label">Fiktive Interviews</div>
+      <h2 class="section-title">Im Gespräch mit den Figuren</h2>
+      <div class="interview-list" id="interview-container"></div>
+      <button class="add-btn" onclick="addInterview()">+ Neues Interview hinzufügen</button>
+    </section>
+
+
+    <!-- ─── KOMMENTARE ─── -->
+    <section id="kommentare">
+      <div class="section-label">Lesermeinungen</div>
+      <h2 class="section-title">Kommentare &amp; Bewertungen</h2>
+
+      <!-- Summary bar -->
+      <div class="comments-summary">
+        <div class="avg-score" id="avg-score">—</div>
+        <div class="avg-details">
+          <div class="avg-stars" id="avg-stars">
+            <span class="avg-star">★</span>
+            <span class="avg-star">★</span>
+            <span class="avg-star">★</span>
+            <span class="avg-star">★</span>
+            <span class="avg-star">★</span>
+          </div>
+          <div class="avg-count" id="avg-count">Noch keine Bewertungen</div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="comment-form">
+        <h3>Kommentar schreiben</h3>
+        <div class="form-row">
+          <input
+            class="form-input"
+            type="text"
+            id="c-author"
+            placeholder="Dein Name (optional)"
+            maxlength="80"
+          >
+          <div></div>
+        </div>
+        <textarea
+          class="form-input"
+          id="c-body"
+          placeholder="Dein Kommentar zum Buch…"
+          maxlength="1000"
+        ></textarea>
+        <div class="star-select">
+          <span>Deine Bewertung:</span>
+          <button class="star-pick lit" data-sv="1" onclick="setCommentStar(1)">★</button>
+          <button class="star-pick lit" data-sv="2" onclick="setCommentStar(2)">★</button>
+          <button class="star-pick lit" data-sv="3" onclick="setCommentStar(3)">★</button>
+          <button class="star-pick lit" data-sv="4" onclick="setCommentStar(4)">★</button>
+          <button class="star-pick lit" data-sv="5" onclick="setCommentStar(5)">★</button>
+        </div>
+        <button class="btn-submit" onclick="submitComment()">
+          Kommentar senden
+        </button>
+      </div>
+
+      <!-- Comment list -->
+      <div class="comment-list" id="comment-list"></div>
+    </section>
+
+  </main>
+
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <p>
+      <strong>LiteraturZeitung – Der Tunnelbauer</strong>
+      &nbsp;·&nbsp; Schulprojekt &nbsp;·&nbsp; Maja Nielsen &nbsp;·&nbsp; © 2025
+    </p>
+  </footer>
+
+
+  <!-- ════════════════════════════════════════
+       JAVASCRIPT
+       ════════════════════════════════════════ -->
+  <script>
+
+    // ──────────────────────────────────────────
+    //  STATE
+    // ──────────────────────────────────────────
+
+    let isAdmin        = false;
+    let currentStars   = 4;
+    let commentStars   = 5;
+    let DATA           = { kv: {}, zitate: [], themen: [], interviews: [], comments: [] };
+
+    // Image upload context
+    let imgTarget = null;  // 'book-cover' | { type:'avatar', id:'...' }
+    let imgFile   = null;
+
+    // Color picker context
+    let cpCallback = null;
+
+    // Emoji picker context
+    let epCallback = null;
+
+
+    // ──────────────────────────────────────────
+    //  BOOT  –  load data from server
+    // ──────────────────────────────────────────
+
+    async function boot() {
+      const res  = await fetch('/api/data');
+      DATA       = await res.json();
+      applyKV();
+      renderStars();
+      renderZitate();
+      renderThemen();
+      renderInterviews();
+      renderComments();
+      buildEmojiGrid();
+      buildColorSwatches();
+    }
+
+    boot();
+
+
+    // ──────────────────────────────────────────
+    //  APPLY KEY–VALUE DATA TO DOM
+    // ──────────────────────────────────────────
+
+    function applyKV() {
+      Object.entries(DATA.kv).forEach(([key, value]) => {
+        const el = document.querySelector('[data-key="' + key + '"]');
+        if (el) el.innerHTML = value;
+      });
+
+      currentStars = parseInt(DATA.kv['stars'] || 4, 10);
+
+      const coverImg = DATA.kv['book-cover-img'];
+      if (coverImg) {
+        document.getElementById('book-cover-img').src     = coverImg;
+        document.getElementById('header-thumb-img').src   = coverImg;
+      }
+    }
+
+
+    // ──────────────────────────────────────────
+    //  AUTH
+    // ──────────────────────────────────────────
+
+    function openLogin() {
+      document.getElementById('login-overlay').classList.add('visible');
+      setTimeout(() => document.getElementById('pw-input').focus(), 80);
+    }
+
+    function closeLogin() {
+      document.getElementById('login-overlay').classList.remove('visible');
+      document.getElementById('pw-input').value          = '';
+      document.getElementById('login-error').style.display = 'none';
+    }
+
+    async function doLogin() {
+      const pw  = document.getElementById('pw-input').value;
+      const res = await fetch('/api/auth', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ password: pw }),
+      });
+
+      if (res.ok) {
+        isAdmin = true;
+        closeLogin();
+        enableAdmin();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+        document.getElementById('pw-input').value = '';
+        document.getElementById('pw-input').focus();
+      }
+    }
+
+    function logout() {
+      isAdmin = false;
+      document.body.classList.remove('admin-mode');
+      document.getElementById('admin-bar').classList.remove('visible');
+      document.querySelectorAll('[contenteditable]').forEach(
+        el => { el.contentEditable = 'false'; }
+      );
+    }
+
+    function enableAdmin() {
+      document.body.classList.add('admin-mode');
+      document.getElementById('admin-bar').classList.add('visible');
+      document.querySelectorAll('[contenteditable]').forEach(
+        el => { el.contentEditable = 'true'; }
+      );
+    }
+
+
+    // ──────────────────────────────────────────
+    //  SAVE HELPERS
+    // ──────────────────────────────────────────
+
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.classList.add('visible');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('visible'), 2200);
+    }
+
+    async function saveKV(obj) {
+      await fetch('/api/kv', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(obj),
+      });
+      showToast();
+    }
+
+    // Auto-save any [data-key] field on blur
+    document.addEventListener('blur', async e => {
+      if (!isAdmin) return;
+      const el = e.target;
+      if (!el.hasAttribute('data-key')) return;
+      await saveKV({ [el.dataset.key]: el.innerHTML });
+    }, true);
+
+
+    // ──────────────────────────────────────────
+    //  EDITOR STARS  (Redaktions-Bewertung)
+    // ──────────────────────────────────────────
+
+    function setStar(n) {
+      if (!isAdmin) return;
+      currentStars = n;
+      renderStars();
+      saveKV({ stars: String(n) });
+    }
+
+    function renderStars() {
+      document.querySelectorAll('#stars-row .star-btn').forEach(btn => {
+        const v = parseInt(btn.dataset.v, 10);
+        btn.classList.toggle('lit', v <= currentStars);
+      });
+      document.getElementById('stars-label').textContent =
+        'Unsere Bewertung: ' + currentStars + ' / 5';
+    }
+
+
+    // ──────────────────────────────────────────
+    //  EMOJI PICKER
+    // ──────────────────────────────────────────
+
+    const ALL_EMOJIS = [
+      '😀','😎','🤔','🥸','😢','😡','🤩','😇','🧐','👤','👥','🧑','👨','👩',
+      '🧓','👶','🕵️','🧙','🧟','🧑‍💻','🧑‍🏫','🧑‍🔬','🧑‍🎨','🗺️','🏔️','🌋',
+      '🕳️','🌅','🌊','🌿','🌲','🌸','⚡','💥','🔥','❄️','💫','✨','🌈',
+      '🎭','🎨','🎬','🎤','🎵','📖','📚','📝','✏️','🔍','🔬','🔭','💡','🏠',
+      '🏛️','🏗️','⛏️','🔧','🔨','⚙️','🛠️','🚇','🚀','🤝','💪','🧠','👁️',
+      '❤️','💙','💚','💛','🧡','💜','🖤','💔','💯','✅','❌','⚠️','❓',
+      '🎯','🏆','🥇','⭐','🌟','💎','👑','🎁','🎊','🎉','🌍','🗽','🗼','🏯',
+      '⛩️','🕌','🕍','⛪','👦','👧','🧒','🙅','🙆','🤦','🤷','💀','👻',
+    ];
+
+    function buildEmojiGrid() {
+      renderEmojiGrid(ALL_EMOJIS);
+    }
+
+    function renderEmojiGrid(list) {
+      document.getElementById('ep-grid').innerHTML = list.map(e =>
+        `<button class="ep-btn" onclick="pickEmoji('${e}')">${e}</button>`
+      ).join('');
+    }
+
+    function filterEmoji(q) {
+      renderEmojiGrid(q ? ALL_EMOJIS.filter(e => e.includes(q)) : ALL_EMOJIS);
+    }
+
+    function openEmojiPicker(triggerEl, callback) {
+      epCallback = callback;
+      const picker = document.getElementById('emoji-picker');
+      picker.classList.add('visible');
+
+      const r = triggerEl.getBoundingClientRect();
+      picker.style.top  = (r.bottom + window.scrollY + 6) + 'px';
+      picker.style.left = Math.min(r.left, window.innerWidth - 316) + 'px';
+
+      picker.querySelector('.ep-search').value = '';
+      renderEmojiGrid(ALL_EMOJIS);
+    }
+
+    function pickEmoji(emoji) {
+      if (epCallback) epCallback(emoji);
+      document.getElementById('emoji-picker').classList.remove('visible');
+      epCallback = null;
+    }
+
+
+    // ──────────────────────────────────────────
+    //  COLOR PICKER
+    // ──────────────────────────────────────────
+
+    const SWATCHES = [
+      '#E8A020','#C0C0C0','#888888','#FFFFFF',
+      '#FF6B35','#C0392B','#E91E63','#9B59B6',
+      '#3498DB','#2D4A7A','#1ABC9C','#27AE60',
+      '#F39C12','#E67E22','#16A085','#2C3E50',
+    ];
+
+    function buildColorSwatches() {
+      document.getElementById('cp-swatches').innerHTML = SWATCHES.map(c =>
+        `<div
+          class="cp-swatch"
+          style="background:${c}"
+          data-color="${c}"
+          onclick="pickColor('${c}')"
+        ></div>`
+      ).join('');
+    }
+
+    function openColorPicker(triggerEl, currentColor, callback) {
+      cpCallback = callback;
+      const picker = document.getElementById('color-picker');
+      picker.classList.add('visible');
+
+      const r = triggerEl.getBoundingClientRect();
+      picker.style.top  = (r.bottom + window.scrollY + 6) + 'px';
+      picker.style.left = Math.min(r.left, window.innerWidth - 256) + 'px';
+
+      document.getElementById('cp-custom').value       = currentColor || '#E8A020';
+      document.getElementById('cp-preview').style.background = currentColor || '#E8A020';
+
+      document.querySelectorAll('.cp-swatch').forEach(s => {
+        s.classList.toggle('selected', s.dataset.color === currentColor);
+      });
+    }
+
+    function pickColor(color) {
+      document.getElementById('cp-preview').style.background = color;
+      document.getElementById('cp-custom').value = color;
+      document.querySelectorAll('.cp-swatch').forEach(s => {
+        s.classList.toggle('selected', s.dataset.color === color);
+      });
+      if (cpCallback) cpCallback(color);
+      setTimeout(() => {
+        document.getElementById('color-picker').classList.remove('visible');
+        cpCallback = null;
+      }, 150);
+    }
+
+    function cpCustomColor(color) {
+      document.getElementById('cp-preview').style.background = color;
+      if (cpCallback) cpCallback(color);
+    }
+
+    // Close pickers on outside click
+    document.addEventListener('click', e => {
+      const ePicker = document.getElementById('emoji-picker');
+      const cPicker = document.getElementById('color-picker');
+
+      if (
+        ePicker.classList.contains('visible') &&
+        !ePicker.contains(e.target) &&
+        !e.target.closest('[data-ep-trigger]')
+      ) {
+        ePicker.classList.remove('visible');
+      }
+
+      if (
+        cPicker.classList.contains('visible') &&
+        !cPicker.contains(e.target) &&
+        !e.target.closest('[data-cp-trigger]')
+      ) {
+        cPicker.classList.remove('visible');
+      }
+    });
+
+
+    // ──────────────────────────────────────────
+    //  IMAGE UPLOAD
+    // ──────────────────────────────────────────
+
+    function openImgModal(target) {
+      imgTarget = target;
+      imgFile   = null;
+      document.getElementById('img-preview').style.display = 'none';
+      document.getElementById('img-preview').src = '';
+      document.getElementById('img-modal').classList.add('visible');
+    }
+
+    function closeImgModal() {
+      document.getElementById('img-modal').classList.remove('visible');
+      imgTarget = null;
+      imgFile   = null;
+    }
+
+    function previewImage(input) {
+      const f = input.files[0];
+      if (!f) return;
+      imgFile = f;
+      const prev = document.getElementById('img-preview');
+      prev.src           = URL.createObjectURL(f);
+      prev.style.display = 'block';
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('dropzone').classList.remove('dragging');
+      const f = e.dataTransfer.files[0];
+      if (!f) return;
+      imgFile = f;
+      const prev = document.getElementById('img-preview');
+      prev.src           = URL.createObjectURL(f);
+      prev.style.display = 'block';
+    }
+
+    async function confirmUpload() {
+      if (!imgFile) { alert('Bitte zuerst eine Datei auswählen.'); return; }
+
+      const fd = new FormData();
+      fd.append('file', imgFile);
+
+      const res  = await fetch('/api/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (!data.ok) { alert('Upload fehlgeschlagen.'); return; }
+
+      const url = data.url;
+
+      if (imgTarget === 'book-cover') {
+        document.getElementById('book-cover-img').src   = url;
+        document.getElementById('header-thumb-img').src = url;
+        await saveKV({ 'book-cover-img': url });
+
+      } else if (imgTarget && imgTarget.type === 'avatar') {
+        const iid = imgTarget.id;
+        const av  = document.querySelector('#iv-' + iid + ' .avatar');
+        if (av) {
+          let img = av.querySelector('img');
+          if (!img) {
+            img = document.createElement('img');
+            av.insertBefore(img, av.firstChild);
+          }
+          img.src = url;
+          av.querySelector('.avatar-initials').style.display = 'none';
+        }
+        const iv = DATA.interviews.find(i => i.id === iid) || {};
+        await fetch('/api/interview/' + iid, {
+          method:  'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ ...iv, avatar_img: url }),
+        });
+      }
+
+      closeImgModal();
+      showToast();
+    }
+
+
+    // ──────────────────────────────────────────
+    //  RENDER ZITATE
+    // ──────────────────────────────────────────
+
+    function renderZitate() {
+      const container = document.getElementById('zitate-container');
+      container.innerHTML = '';
+      DATA.zitate.forEach(z => container.appendChild(makeZitatEl(z)));
+    }
+
+    function makeZitatEl(z) {
+      const div = document.createElement('div');
+      div.className  = 'zitat-card';
+      div.id         = 'zc-' + z.id;
+      div.style.borderLeftColor = z.border_color || '#E8A020';
+
+      const tc = z.tag_color || z.border_color || '#E8A020';
+
+      div.innerHTML = `
+        <div
+          class="zitat-tag"
+          style="background:${tc}20; color:${tc}"
+          contenteditable="false"
+          data-key="ztag-${z.id}"
+        >${z.tag || 'Thema'}</div>
+
+        <div
+          class="zitat-text"
+          contenteditable="false"
+          data-key="ztext-${z.id}"
+        >${z.text || ''}</div>
+
+        <div
+          class="zitat-source"
+          contenteditable="false"
+          data-key="zsrc-${z.id}"
+        >${z.source || ''}</div>
+
+        <div class="admin-actions">
+          <button
+            class="act-btn"
+            data-cp-trigger
+            onclick="openColorPicker(
+              this,
+              '${z.border_color || '#E8A020'}',
+              c => setZitatColor('${z.id}', c)
+            )"
+          >🎨 Farbe</button>
+          <button
+            class="act-btn del"
+            onclick="deleteZitat('${z.id}')"
+          >✕ Löschen</button>
+        </div>
+      `;
+
+      if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(
+          el => { el.contentEditable = 'true'; }
+        );
+      }
+
+      // Auto-save on blur
+      div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveZitatDOM(z.id));
+      });
+
+      return div;
+    }
+
+    async function saveZitatDOM(zid) {
+      const cur = DATA.zitate.find(z => z.id === zid) || {};
+      const upd = {
+        ...cur,
+        tag:    document.querySelector('[data-key="ztag-'   + zid + '"]')?.innerHTML || '',
+        text:   document.querySelector('[data-key="ztext-'  + zid + '"]')?.innerHTML || '',
+        source: document.querySelector('[data-key="zsrc-'   + zid + '"]')?.innerHTML || '',
+      };
+      await fetch('/api/zitat/' + zid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(upd),
+      });
+      showToast();
+    }
+
+    function setZitatColor(zid, color) {
+      const card = document.getElementById('zc-' + zid);
+      if (!card) return;
+      card.style.borderLeftColor = color;
+      const tag = card.querySelector('.zitat-tag');
+      if (tag) { tag.style.color = color; tag.style.background = color + '20'; }
+
+      const cur = DATA.zitate.find(z => z.id === zid) || {};
+      cur.border_color = color;
+      cur.tag_color    = color;
+      fetch('/api/zitat/' + zid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...cur }),
+      });
+      showToast();
+    }
+
+    async function addZitat() {
+      const palette = ['#E8A020','#C0C0C0','#3498DB','#27AE60','#E91E63'];
+      const color   = palette[DATA.zitate.length % palette.length];
+      const res     = await fetch('/api/zitat', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          tag:          'Thema',
+          text:         '„Neues Zitat eingeben…"',
+          source:       '— Kapitel X, S. XX',
+          border_color: color,
+          tag_color:    color,
+        }),
+      });
+      const data = await res.json();
+      const newZ = {
+        id: data.id, tag: 'Thema',
+        text: '„Neues Zitat eingeben…"',
+        source: '— Kapitel X, S. XX',
+        border_color: color, tag_color: color,
+      };
+      DATA.zitate.push(newZ);
+      const el = makeZitatEl(newZ);
+      document.getElementById('zitate-container').appendChild(el);
+      if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(
+          e => { e.contentEditable = 'true'; }
+        );
+      }
+    }
+
+    async function deleteZitat(zid) {
+      if (!confirm('Dieses Zitat löschen?')) return;
+      await fetch('/api/zitat/' + zid, { method: 'DELETE' });
+      DATA.zitate = DATA.zitate.filter(z => z.id !== zid);
+      document.getElementById('zc-' + zid)?.remove();
+      showToast();
+    }
+
+
+    // ──────────────────────────────────────────
+    //  RENDER THEMEN
+    // ──────────────────────────────────────────
+
+    function renderThemen() {
+      const container = document.getElementById('themen-container');
+      container.innerHTML = '';
+      DATA.themen.forEach(t => container.appendChild(makeThemaEl(t)));
+    }
+
+    function makeThemaEl(t) {
+      const div = document.createElement('div');
+      div.className = 'thema-card';
+      div.id        = 'tc-' + t.id;
+
+      const bg = t.icon_bg || '#E8A020';
+
+      div.innerHTML = `
+        <div class="thema-icon" style="background:${bg}20" id="ticon-wrap-${t.id}">
+          <span id="ticon-${t.id}">${t.icon || '💡'}</span>
+        </div>
+        <h3
+          contenteditable="false"
+          data-key="ttitle-${t.id}"
+        >${t.title || ''}</h3>
+        <p
+          contenteditable="false"
+          data-key="tbody-${t.id}"
+        >${t.body || ''}</p>
+
+        <div class="admin-actions">
+          <button
+            class="act-btn"
+            data-ep-trigger
+            onclick="openEmojiPicker(this, e => setThemaIcon('${t.id}', e))"
+          >😀 Emoji</button>
+          <button
+            class="act-btn"
+            data-cp-trigger
+            onclick="openColorPicker(
+              this,
+              '${bg}',
+              c => setThemaBg('${t.id}', c)
+            )"
+          >🎨 Farbe</button>
+          <button
+            class="act-btn del"
+            onclick="deleteThema('${t.id}')"
+          >✕ Löschen</button>
+        </div>
+      `;
+
+      if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(
+          el => { el.contentEditable = 'true'; }
+        );
+      }
+
+      div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveThemaDOM(t.id));
+      });
+
+      return div;
+    }
+
+    async function saveThemaDOM(tid) {
+      const cur = DATA.themen.find(t => t.id === tid) || {};
+      const upd = {
+        ...cur,
+        title: document.querySelector('[data-key="ttitle-' + tid + '"]')?.innerHTML || '',
+        body:  document.querySelector('[data-key="tbody-'  + tid + '"]')?.innerHTML || '',
+      };
+      await fetch('/api/thema/' + tid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(upd),
+      });
+      showToast();
+    }
+
+    function setThemaIcon(tid, emoji) {
+      const el = document.getElementById('ticon-' + tid);
+      if (el) el.textContent = emoji;
+      const cur  = DATA.themen.find(t => t.id === tid) || {};
+      cur.icon = emoji;
+      fetch('/api/thema/' + tid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...cur }),
+      });
+      showToast();
+    }
+
+    function setThemaBg(tid, color) {
+      const wrap = document.getElementById('ticon-wrap-' + tid);
+      if (wrap) wrap.style.background = color + '20';
+      const cur  = DATA.themen.find(t => t.id === tid) || {};
+      cur.icon_bg = color;
+      fetch('/api/thema/' + tid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...cur, icon_bg: color }),
+      });
+      showToast();
+    }
+
+    async function addThema() {
+      const palette = ['#E8A020','#C0C0C0','#3498DB','#27AE60','#E91E63'];
+      const icons   = ['💡','🔍','⚡','🌊','🏔️','🌿','🎭','🧠','🕳️','👦'];
+      const idx     = DATA.themen.length;
+      const color   = palette[idx % palette.length];
+      const icon    = icons  [idx % icons.length];
+
+      const res  = await fetch('/api/thema', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          icon:    icon,
+          icon_bg: color,
+          title:   'Neues Thema',
+          body:    'Beschreibung hier eingeben…',
+        }),
+      });
+      const data = await res.json();
+      const newT = {
+        id: data.id, icon, icon_bg: color,
+        title: 'Neues Thema', body: 'Beschreibung hier eingeben…',
+      };
+      DATA.themen.push(newT);
+      const el = makeThemaEl(newT);
+      document.getElementById('themen-container').appendChild(el);
+      if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(
+          e => { e.contentEditable = 'true'; }
+        );
+      }
+    }
+
+    async function deleteThema(tid) {
+      if (!confirm('Dieses Thema löschen?')) return;
+      await fetch('/api/thema/' + tid, { method: 'DELETE' });
+      DATA.themen = DATA.themen.filter(t => t.id !== tid);
+      document.getElementById('tc-' + tid)?.remove();
+      showToast();
+    }
+
+
+    // ──────────────────────────────────────────
+    //  RENDER INTERVIEWS
+    // ──────────────────────────────────────────
+
+    function renderInterviews() {
+      const container = document.getElementById('interview-container');
+      container.innerHTML = '';
+      DATA.interviews.forEach(iv => container.appendChild(makeInterviewEl(iv)));
+    }
+
+    function makeInterviewEl(iv) {
+      const div = document.createElement('div');
+      div.className = 'interview-card';
+      div.id        = 'iv-' + iv.id;
+
+      const avatarContent = iv.avatar_img
+        ? `<img src="${iv.avatar_img}" alt="">`
+        : `<span class="avatar-initials">${iv.initials || '??'}</span>`;
+
+      div.innerHTML = `
+        <div class="interview-header" style="border-left: 4px solid ${iv.accent_color || '#E8A020'}">
+          <div
+            class="avatar"
+            style="background:${iv.avatar_color || '#E8A020'}"
+            onclick="if(isAdmin) openImgModal({ type:'avatar', id:'${iv.id}' })"
+          >
+            ${avatarContent}
+            <div class="avatar-edit-overlay">📷</div>
+          </div>
+          <div class="interview-info">
+            <h3
+              contenteditable="false"
+              data-key="iname-${iv.id}"
+            >${iv.name || ''}</h3>
+            <p
+              contenteditable="false"
+              data-key="irole-${iv.id}"
+            >${iv.role || ''}</p>
+          </div>
+          <div class="admin-actions" style="margin-top:0; margin-left:auto">
+            <button
+              class="act-btn"
+              data-cp-trigger
+              onclick="openColorPicker(
+                this,
+                '${iv.accent_color || '#E8A020'}',
+                c => setInterviewColor('${iv.id}', c)
+              )"
+            >🎨 Farbe</button>
+            <button
+              class="act-btn del"
+              onclick="deleteInterview('${iv.id}')"
+            >✕</button>
+          </div>
+        </div>
+
+        <div class="interview-body">
+          <ul class="qa-list" id="qal-${iv.id}">
+            ${(iv.qa || []).map(q => makeQAHtml(q)).join('')}
+          </ul>
+          <button
+            class="add-btn"
+            style="margin-top:0.75rem"
+            onclick="addQA('${iv.id}')"
+          >+ Frage &amp; Antwort</button>
+        </div>
+      `;
+
+      if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(
+          el => { el.contentEditable = 'true'; }
+        );
+      }
+
+      div.querySelectorAll('[data-key="iname-' + iv.id + '"], [data-key="irole-' + iv.id + '"]')
+        .forEach(el => {
+          el.addEventListener('blur', () => saveInterviewDOM(iv.id));
+        });
+
+      // Attach QA blur listeners
+      (iv.qa || []).forEach(q => attachQAListeners(div, q.id));
+
+      return div;
+    }
+
+    function makeQAHtml(q) {
+      return `
+        <li class="qa-item" id="qi-${q.id}">
+          <div
+            class="qa-question"
+            contenteditable="false"
+            data-key="qq-${q.id}"
+          >${q.question || ''}</div>
+          <div
+            class="qa-answer"
+            contenteditable="false"
+            data-key="qa-${q.id}"
+          >${q.answer || ''}</div>
+          <div class="qa-actions">
+            <button
+              class="act-btn del"
+              onclick="deleteQA('${q.id}')"
+            >✕ Löschen</button>
+          </div>
+        </li>
+      `;
+    }
+
+    function attachQAListeners(container, qid) {
+      const qEl = container.querySelector('[data-key="qq-' + qid + '"]');
+      const aEl = container.querySelector('[data-key="qa-' + qid + '"]');
+      if (qEl) qEl.addEventListener('blur', () => saveQADOM(qid));
+      if (aEl) aEl.addEventListener('blur', () => saveQADOM(qid));
+    }
+
+    async function saveInterviewDOM(iid) {
+      const iv  = DATA.interviews.find(i => i.id === iid) || {};
+      const upd = {
+        ...iv,
+        name: document.querySelector('[data-key="iname-' + iid + '"]')?.innerHTML || '',
+        role: document.querySelector('[data-key="irole-' + iid + '"]')?.innerHTML || '',
+      };
+      await fetch('/api/interview/' + iid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(upd),
+      });
+      showToast();
+    }
+
+    async function saveQADOM(qid) {
+      const q = document.querySelector('[data-key="qq-' + qid + '"]')?.innerHTML || '';
+      const a = document.querySelector('[data-key="qa-' + qid + '"]')?.innerHTML || '';
+      await fetch('/api/qa/' + qid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ question: q, answer: a }),
+      });
+      showToast();
+    }
+
+    function setInterviewColor(iid, color) {
+      const card = document.getElementById('iv-' + iid);
+      if (!card) return;
+
+      const header = card.querySelector('.interview-header');
+      if (header) header.style.borderLeftColor = color;
+
+      const av = card.querySelector('.avatar');
+      if (av) av.style.background = color;
+
+      const iv = DATA.interviews.find(i => i.id === iid) || {};
+      iv.accent_color = color;
+      iv.avatar_color = color;
+
+      fetch('/api/interview/' + iid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...iv }),
+      });
+      showToast();
+    }
+
+    async function addInterview() {
+      const palette = ['#E8A020','#C0C0C0','#3498DB','#27AE60'];
+      const color   = palette[DATA.interviews.length % palette.length];
+      const res     = await fetch('/api/interview', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          name:         'Name der Figur',
+          role:         'Rolle im Buch',
+          initials:     '??',
+          avatar_color: color,
+          accent_color: color,
+        }),
+      });
+      const data = await res.json();
+      const newIV = {
+        id: data.id, name: 'Name der Figur', role: 'Rolle im Buch',
+        initials: '??', avatar_color: color, accent_color: color,
+        avatar_img: '', qa: [],
+      };
+      DATA.interviews.push(newIV);
+      const el = makeInterviewEl(newIV);
+      document.getElementById('interview-container').appendChild(el);
+      if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(
+          e => { e.contentEditable = 'true'; }
+        );
+      }
+    }
+
+    async function deleteInterview(iid) {
+      if (!confirm('Dieses Interview löschen?')) return;
+      await fetch('/api/interview/' + iid, { method: 'DELETE' });
+      DATA.interviews = DATA.interviews.filter(i => i.id !== iid);
+      document.getElementById('iv-' + iid)?.remove();
+      showToast();
+    }
+
+    async function addQA(iid) {
+      const res  = await fetch('/api/qa', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          interview_id: iid,
+          question:     'Neue Frage?',
+          answer:       '„Antwort hier eingeben…"',
+        }),
+      });
+      const data = await res.json();
+      const newQ = {
+        id: data.id, question: 'Neue Frage?', answer: '„Antwort hier eingeben…"',
+      };
+
+      const iv = DATA.interviews.find(i => i.id === iid);
+      if (iv) iv.qa.push(newQ);
+
+      const list = document.getElementById('qal-' + iid);
+      if (list) {
+        list.insertAdjacentHTML('beforeend', makeQAHtml(newQ));
+        const li = document.getElementById('qi-' + newQ.id);
+        if (isAdmin) {
+          li.querySelectorAll('[contenteditable]').forEach(
+            e => { e.contentEditable = 'true'; }
+          );
+        }
+        attachQAListeners(li, newQ.id);
+      }
+    }
+
+    async function deleteQA(qid) {
+      await fetch('/api/qa/' + qid, { method: 'DELETE' });
+      document.getElementById('qi-' + qid)?.remove();
+      showToast();
+    }
+
+
+    // ──────────────────────────────────────────
+    //  COMMENTS
+    // ──────────────────────────────────────────
+
+    function setCommentStar(n) {
+      commentStars = n;
+      document.querySelectorAll('.star-pick').forEach(btn => {
+        btn.classList.toggle('lit', parseInt(btn.dataset.sv, 10) <= n);
+      });
+    }
+
+    function starsHtml(n, cssClass) {
+      return [1,2,3,4,5].map(i =>
+        `<span class="${cssClass}${i <= n ? ' lit' : ''}">★</span>`
+      ).join('');
+    }
+
+    function renderComments() {
+      // Summary
+      const avg   = DATA.avg_rating || 0;
+      const count = DATA.comment_count || 0;
+
+      document.getElementById('avg-score').textContent =
+        avg > 0 ? avg.toFixed(1) : '—';
+
+      document.getElementById('avg-stars').innerHTML =
+        starsHtml(Math.round(avg), 'avg-star');
+
+      document.getElementById('avg-count').textContent =
+        count === 0
+          ? 'Noch keine Bewertungen'
+          : count + ' Bewertung' + (count !== 1 ? 'en' : '');
+
+      // List
+      const list = document.getElementById('comment-list');
+      list.innerHTML = '';
+      (DATA.comments || []).forEach(c => list.appendChild(makeCommentEl(c)));
+    }
+
+    function makeCommentEl(c) {
+      const div = document.createElement('div');
+      div.className = 'comment-card';
+      div.id        = 'cc-' + c.id;
+
+      const date = c.created_at
+        ? new Date(c.created_at).toLocaleDateString('de-DE')
+        : '';
+
+      div.innerHTML = `
+        <div class="comment-top">
+          <span class="comment-author">${c.author || 'Anonym'}</span>
+          <div class="comment-meta">
+            <div class="comment-stars">
+              ${starsHtml(c.rating || 5, 'comment-star')}
+            </div>
+            <span class="comment-date">${date}</span>
+            <button
+              class="comment-del"
+              onclick="deleteComment('${c.id}')"
+            >✕</button>
+          </div>
+        </div>
+        <div class="comment-body">${c.body || ''}</div>
+      `;
+
+      return div;
+    }
+
+    async function submitComment() {
+      const author = document.getElementById('c-author').value.trim();
+      const body   = document.getElementById('c-body').value.trim();
+
+      if (!body) {
+        document.getElementById('c-body').focus();
+        return;
+      }
+
+      const btn = document.querySelector('.btn-submit');
+      btn.disabled = true;
+
+      const res  = await fetch('/api/comments', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ author, body, rating: commentStars }),
+      });
+      const data = await res.json();
+
+      if (!data.ok) { btn.disabled = false; return; }
+
+      // Clear form
+      document.getElementById('c-author').value = '';
+      document.getElementById('c-body').value   = '';
+      btn.disabled = false;
+
+      // Reload comments from server (so average updates)
+      const fresh = await fetch('/api/comments');
+      const cd    = await fresh.json();
+      DATA.comments       = cd.comments;
+      DATA.avg_rating     = cd.avg_rating;
+      DATA.comment_count  = cd.comment_count;
+      renderComments();
+      showToast();
+    }
+
+    async function deleteComment(cid) {
+      if (!confirm('Kommentar löschen?')) return;
+      await fetch('/api/comments/' + cid, { method: 'DELETE' });
+
+      const fresh = await fetch('/api/comments');
+      const cd    = await fresh.json();
+      DATA.comments       = cd.comments;
+      DATA.avg_rating     = cd.avg_rating;
+      DATA.comment_count  = cd.comment_count;
+      renderComments();
+      showToast();
+    }
+
+
+    // ──────────────────────────────────────────
+    //  NAV ACTIVE STATE ON SCROLL
+    // ──────────────────────────────────────────
+
+    const NAV_SECTIONS = document.querySelectorAll('main section');
+    const NAV_LINKS    = document.querySelectorAll('nav a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      NAV_SECTIONS.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 150) {
+          current = s.id;
+        }
+      });
+      NAV_LINKS.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+  </script>
+
 </body>
 </html>
