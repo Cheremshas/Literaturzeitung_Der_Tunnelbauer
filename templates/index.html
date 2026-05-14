@@ -15,10 +15,6 @@
   >
 
   <style>
-    /* ══════════════════════════════════════════
-       DESIGN TOKENS  –  inspired by the book cover:
-       deep black background, gold accent, silver text
-       ══════════════════════════════════════════ */
     :root {
       --black:    #0D0D0D;
       --dark:     #141414;
@@ -52,9 +48,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       ADMIN BAR
-       ══════════════════════════════════════════ */
+
     #admin-bar {
       position: fixed;
       top: 0;
@@ -128,9 +122,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       LOGIN OVERLAY
-       ══════════════════════════════════════════ */
+
     #login-overlay {
       display: none;
       position: fixed;
@@ -222,9 +214,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       EDITABLE FIELDS
-       ══════════════════════════════════════════ */
+    /*  EDITABLE FIELDS*/
     body.admin-mode [contenteditable="true"] {
       outline: 1px dashed rgba(232, 160, 32, 0.5);
       outline-offset: 2px;
@@ -251,9 +241,7 @@
     body.admin-mode .edit-hint { display: block; }
 
 
-    /* ══════════════════════════════════════════
-       EMOJI PICKER
-       ══════════════════════════════════════════ */
+    /* EMOJI PICKER */
     #emoji-picker {
       display: none;
       position: fixed;
@@ -308,9 +296,7 @@
     .ep-btn:hover { background: var(--border); }
 
 
-    /* ══════════════════════════════════════════
-       COLOR PICKER
-       ══════════════════════════════════════════ */
+    /* COLOR PICKER */
     #color-picker {
       display: none;
       position: fixed;
@@ -372,9 +358,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       IMAGE UPLOAD MODAL
-       ══════════════════════════════════════════ */
+    /* IMAGE UPLOAD MODAL */
     #img-modal {
       display: none;
       position: fixed;
@@ -462,9 +446,7 @@
     #img-cancel  { background: var(--border); color: var(--text); }
 
 
-    /* ══════════════════════════════════════════
-       TOAST
-       ══════════════════════════════════════════ */
+    /*  TOAST */
     #toast {
       position: fixed;
       bottom: 1.5rem;
@@ -491,9 +473,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       ADMIN ACTION BUTTONS  (edit/delete/color)
-       ══════════════════════════════════════════ */
+    /* ADMIN ACTION BUTTONS */
     .admin-actions {
       display: none;
       gap: 6px;
@@ -550,9 +530,7 @@
     body.admin-mode .add-btn { display: block; }
 
 
-    /* ══════════════════════════════════════════
-       HEADER  –  dark with gold stripe (like the book)
-       ══════════════════════════════════════════ */
+    /* HEADER  –  dark with gold stripe (like the book) */
     header {
       background: var(--black);
       border-bottom: 3px solid var(--gold);
@@ -667,9 +645,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       NAV
-       ══════════════════════════════════════════ */
+    /* NAV */
     nav {
       background: var(--dark);
       border-bottom: 1px solid var(--border);
@@ -712,9 +688,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       MAIN LAYOUT
-       ══════════════════════════════════════════ */
+    /* MAIN LAYOUT */
     main {
       max-width: 960px;
       margin: 0 auto;
@@ -767,9 +741,7 @@
     .prose em         { color: var(--gold); font-style: italic; }
 
 
-    /* ══════════════════════════════════════════
-       REZENSION
-       ══════════════════════════════════════════ */
+    /* REZENSION*/
     .rez-grid {
       display: grid;
       grid-template-columns: 1fr 260px;
@@ -899,9 +871,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       ZITATE
-       ══════════════════════════════════════════ */
+    /*ZITATE */
     .zitate-list {
       display: flex;
       flex-direction: column;
@@ -965,9 +935,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       THEMEN
-       ══════════════════════════════════════════ */
+    /* THEMEN */
     .themen-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -1016,9 +984,7 @@
     }
 
 
-    /* ══════════════════════════════════════════
-       INTERVIEWS
-       ══════════════════════════════════════════ */
+    /* INTERVIEWS */
     .interview-list {
       display: flex;
       flex-direction: column;
@@ -1141,9 +1107,7 @@
     body.admin-mode .qa-actions { display: flex; }
 
 
-    /* ══════════════════════════════════════════
-       COMMENTS
-       ══════════════════════════════════════════ */
+    /* COMMENTS */
     .comments-summary {
       display: flex;
       align-items: center;
@@ -1364,9 +1328,7 @@
     body.admin-mode .comment-del { display: inline; }
 
 
-    /* ══════════════════════════════════════════
-       FOOTER
-       ══════════════════════════════════════════ */
+    /* FOOTER */
     footer {
       background: var(--dark);
       border-top: 1px solid var(--border);
@@ -1400,7 +1362,6 @@
   </div>
 
 
-  <!-- ── LOGIN ── -->
   <div id="login-overlay">
     <div id="login-box">
       <div style="display:flex; justify-content:space-between; align-items:flex-start">
@@ -1422,7 +1383,7 @@
   </div>
 
 
-  <!-- ── EMOJI PICKER ── -->
+ 
   <div id="emoji-picker">
     <input
       class="ep-search"
@@ -1434,7 +1395,7 @@
   </div>
 
 
-  <!-- ── COLOR PICKER ── -->
+
   <div id="color-picker">
     <h4>Farbe wählen</h4>
     <div class="cp-swatches" id="cp-swatches"></div>
@@ -1447,7 +1408,7 @@
   </div>
 
 
-  <!-- ── IMAGE UPLOAD MODAL ── -->
+
   <div id="img-modal">
     <div id="img-box">
       <h3>Bild hochladen</h3>
@@ -1473,9 +1434,7 @@
   </div>
 
 
-  <!-- ════════════════════════════════════════
-       HEADER
-       ════════════════════════════════════════ -->
+
   <header>
     <div class="header-stripe"></div>
     <div class="header-inner">
@@ -1506,9 +1465,7 @@
   </header>
 
 
-  <!-- ════════════════════════════════════════
-       NAV
-       ════════════════════════════════════════ -->
+
   <nav>
     <ul>
       <li><a href="#rezension"  class="active">Rezension</a></li>
@@ -1520,18 +1477,16 @@
   </nav>
 
 
-  <!-- ════════════════════════════════════════
-       MAIN
-       ════════════════════════════════════════ -->
+
   <main>
 
-    <!-- ─── REZENSION ─── -->
+
     <section id="rezension">
       <div class="section-label">Buchrezension</div>
 
       <div class="rez-grid">
 
-        <!-- Text column -->
+
         <div>
           <div class="edit-hint">✏ Titel bearbeiten</div>
           <h2
@@ -1568,7 +1523,7 @@
           </div>
         </div>
 
-        <!-- Book card column -->
+
         <div>
           <div class="book-card">
             <div class="book-cover-wrap" id="book-cover-wrap">
@@ -1624,7 +1579,7 @@
     </section>
 
 
-    <!-- ─── ZITATE ─── -->
+
     <section id="zitate">
       <div class="section-label">Zitate</div>
       <h2 class="section-title">Bedeutsame Stellen</h2>
@@ -1633,7 +1588,7 @@
     </section>
 
 
-    <!-- ─── THEMEN ─── -->
+  
     <section id="themen">
       <div class="section-label">Analyse</div>
       <h2 class="section-title">Themen &amp; Motive</h2>
@@ -1642,7 +1597,7 @@
     </section>
 
 
-    <!-- ─── INTERVIEWS ─── -->
+
     <section id="interviews">
       <div class="section-label">Fiktive Interviews</div>
       <h2 class="section-title">Im Gespräch mit den Figuren</h2>
@@ -1651,12 +1606,12 @@
     </section>
 
 
-    <!-- ─── KOMMENTARE ─── -->
+
     <section id="kommentare">
       <div class="section-label">Lesermeinungen</div>
       <h2 class="section-title">Kommentare &amp; Bewertungen</h2>
 
-      <!-- Summary bar -->
+
       <div class="comments-summary">
         <div class="avg-score" id="avg-score">—</div>
         <div class="avg-details">
@@ -1671,7 +1626,7 @@
         </div>
       </div>
 
-      <!-- Form -->
+
       <div class="comment-form">
         <h3>Kommentar schreiben</h3>
         <div class="form-row">
@@ -1703,14 +1658,14 @@
         </button>
       </div>
 
-      <!-- Comment list -->
+
       <div class="comment-list" id="comment-list"></div>
     </section>
 
   </main>
 
 
-  <!-- ── FOOTER ── -->
+
   <footer>
     <p>
       <strong>LiteraturZeitung – Der Tunnelbauer</strong>
@@ -1719,22 +1674,17 @@
   </footer>
 
 
-  <!-- ════════════════════════════════════════
-       JAVASCRIPT
-       ════════════════════════════════════════ -->
+
   <script>
 
-    // ──────────────────────────────────────────
-    //  STATE
-    // ──────────────────────────────────────────
 
     let isAdmin        = false;
     let currentStars   = 4;
     let commentStars   = 5;
     let DATA           = { kv: {}, zitate: [], themen: [], interviews: [], comments: [] };
 
-    // Image upload context
-    let imgTarget = null;  // 'book-cover' | { type:'avatar', id:'...' }
+
+    let imgTarget = null;  
     let imgFile   = null;
 
     // Color picker context
@@ -1744,9 +1694,7 @@
     let epCallback = null;
 
 
-    // ──────────────────────────────────────────
-    //  BOOT  –  load data from server
-    // ──────────────────────────────────────────
+
 
     async function boot() {
       const res  = await fetch('/api/data');
@@ -1764,9 +1712,6 @@
     boot();
 
 
-    // ──────────────────────────────────────────
-    //  APPLY KEY–VALUE DATA TO DOM
-    // ──────────────────────────────────────────
 
     function applyKV() {
       Object.entries(DATA.kv).forEach(([key, value]) => {
@@ -1783,10 +1728,6 @@
       }
     }
 
-
-    // ──────────────────────────────────────────
-    //  AUTH
-    // ──────────────────────────────────────────
 
     function openLogin() {
       document.getElementById('login-overlay').classList.add('visible');
@@ -1836,9 +1777,7 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  SAVE HELPERS
-    // ──────────────────────────────────────────
+
 
     function showToast() {
       const t = document.getElementById('toast');
@@ -1856,7 +1795,7 @@
       showToast();
     }
 
-    // Auto-save any [data-key] field on blur
+
     document.addEventListener('blur', async e => {
       if (!isAdmin) return;
       const el = e.target;
@@ -1865,9 +1804,6 @@
     }, true);
 
 
-    // ──────────────────────────────────────────
-    //  EDITOR STARS  (Redaktions-Bewertung)
-    // ──────────────────────────────────────────
 
     function setStar(n) {
       if (!isAdmin) return;
@@ -1886,9 +1822,6 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  EMOJI PICKER
-    // ──────────────────────────────────────────
 
     const ALL_EMOJIS = [
       '😀','😎','🤔','🥸','😢','😡','🤩','😇','🧐','👤','👥','🧑','👨','👩',
@@ -1935,9 +1868,7 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  COLOR PICKER
-    // ──────────────────────────────────────────
+
 
     const SWATCHES = [
       '#E8A020','#C0C0C0','#888888','#FFFFFF',
@@ -2015,9 +1946,6 @@
     });
 
 
-    // ──────────────────────────────────────────
-    //  IMAGE UPLOAD
-    // ──────────────────────────────────────────
 
     function openImgModal(target) {
       imgTarget = target;
@@ -2096,9 +2024,7 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  RENDER ZITATE
-    // ──────────────────────────────────────────
+
 
     function renderZitate() {
       const container = document.getElementById('zitate-container');
@@ -2239,9 +2165,7 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  RENDER THEMEN
-    // ──────────────────────────────────────────
+
 
     function renderThemen() {
       const container = document.getElementById('themen-container');
@@ -2386,9 +2310,7 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  RENDER INTERVIEWS
-    // ──────────────────────────────────────────
+
 
     function renderInterviews() {
       const container = document.getElementById('interview-container');
@@ -2625,9 +2547,7 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  COMMENTS
-    // ──────────────────────────────────────────
+
 
     function setCommentStar(n) {
       commentStars = n;
@@ -2658,7 +2578,7 @@
           ? 'Noch keine Bewertungen'
           : count + ' Bewertung' + (count !== 1 ? 'en' : '');
 
-      // List
+
       const list = document.getElementById('comment-list');
       list.innerHTML = '';
       (DATA.comments || []).forEach(c => list.appendChild(makeCommentEl(c)));
@@ -2714,12 +2634,12 @@
 
       if (!data.ok) { btn.disabled = false; return; }
 
-      // Clear form
+     
       document.getElementById('c-author').value = '';
       document.getElementById('c-body').value   = '';
       btn.disabled = false;
 
-      // Reload comments from server (so average updates)
+    
       const fresh = await fetch('/api/comments');
       const cd    = await fresh.json();
       DATA.comments       = cd.comments;
@@ -2743,9 +2663,7 @@
     }
 
 
-    // ──────────────────────────────────────────
-    //  NAV ACTIVE STATE ON SCROLL
-    // ──────────────────────────────────────────
+
 
     const NAV_SECTIONS = document.querySelectorAll('main section');
     const NAV_LINKS    = document.querySelectorAll('nav a');
