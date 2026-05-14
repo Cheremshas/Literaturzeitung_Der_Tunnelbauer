@@ -15,8 +15,8 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER  = os.environ.get('UPLOAD_FOLDER', 'static/uploads')
-DB_PATH        = os.environ.get('DB_PATH', 'data.db')
+UPLOAD_FOLDER  = '/app/data/uploads'
+DB_PATH        = DB_PATH = '/app/data/data.db'
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'tunnelbauer2025')
 MAX_FILE_MB    = 16
 ALLOWED_EXT    = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
