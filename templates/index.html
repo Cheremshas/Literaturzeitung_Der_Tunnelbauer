@@ -1,2686 +1,2846 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LiteraturZeitung – Der Tunnelbauer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiteraturZeitung – Der Tunnelbauer</title>
 
-  <link
-    href="https://fonts.googleapis.com/css2?
-          family=Oswald:wght@400;500;700&
-          family=Lora:ital,wght@0,400;0,600;1,400&
-          family=Inter:wght@300;400;500;600&
-          display=swap"
-    rel="stylesheet"
-  >
+    <link
+        href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
 
-  <style>
+    <style>
+    /* ═══════════════════════════════════════════
+       ROOT & RESET
+    ═══════════════════════════════════════════ */
     :root {
-      --black:    #0D0D0D;
-      --dark:     #141414;
-      --card:     #1A1A1A;
-      --border:   #2A2A2A;
-      --border2:  #333;
-      --gold:     #E8A020;
-      --gold-dim: #A06A10;
-      --silver:   #C0C0C0;
-      --white:    #F0EDE6;
-      --text:     #D8D4CC;
-      --muted:    #787060;
-      --red:      #C0392B;
-      --admin-h:  48px;
+        --black:    #0a0a0a;
+        --dark:     #111111;
+        --dark2:    #1a1a1a;
+        --dark3:    #222222;
+        --gold:     #E8A020;
+        --gold2:    #F5C842;
+        --silver:   #A8A8A8;
+        --white:    #F5F0E8;
+        --white2:   #EDE8DC;
+        --border:   #2a2a2a;
+        --border2:  #333333;
+        --text:     #C8C0B0;
+        --muted:    #777777;
+        --red:      #C0392B;
+        --abar-h:   50px;
     }
 
     *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--black);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
+        font-family: 'DM Sans', sans-serif;
+        background: var(--black);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
     }
 
 
-
+    /* ═══════════════════════════════════════════
+       ADMIN BAR
+    ═══════════════════════════════════════════ */
     #admin-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--admin-h);
-      background: #0A0A0A;
-      border-bottom: 1px solid var(--gold);
-      color: var(--white);
-      display: none;
-      align-items: center;
-      gap: 8px;
-      padding: 0 1.25rem;
-      z-index: 9000;
-      font-size: 12px;
-      overflow-x: auto;
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--abar-h);
+        background: #0d0d0d;
+        border-bottom: 1px solid var(--gold);
+        align-items: center;
+        gap: 8px;
+        padding: 0 1.25rem;
+        z-index: 9000;
+        font-size: 12px;
+        overflow-x: auto;
     }
 
     #admin-bar.visible { display: flex; }
 
-    body.admin-mode { padding-top: var(--admin-h); }
+    body.admin-mode         { padding-top: var(--abar-h); }
+    body.admin-mode nav     { top: var(--abar-h); }
 
     .ab-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--gold);
-      flex-shrink: 0;
-      animation: blink 1.6s infinite;
+        width: 8px;
+        height: 8px;
+        background: var(--gold);
+        border-radius: 50%;
+        flex-shrink: 0;
+        animation: blink 1.6s infinite;
     }
 
     @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.3; }
+    }
+
+    .ab-label {
+        color: var(--gold);
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+        margin-right: 4px;
     }
 
     .ab-sep {
-      width: 1px;
-      height: 18px;
-      background: var(--border2);
-      flex-shrink: 0;
+        width: 1px;
+        height: 18px;
+        background: var(--border2);
+        flex-shrink: 0;
     }
 
     .ab-btn {
-      background: rgba(232, 160, 32, 0.12);
-      border: 1px solid rgba(232, 160, 32, 0.3);
-      color: var(--gold);
-      padding: 4px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      white-space: nowrap;
-      transition: background 0.15s, border-color 0.15s;
-      font-family: inherit;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        padding: 4px 12px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+        font-family: inherit;
+        transition: border-color 0.15s, color 0.15s;
     }
 
-    .ab-btn:hover {
-      background: rgba(232, 160, 32, 0.25);
-      border-color: var(--gold);
-    }
-
-    .ab-btn.danger {
-      background: rgba(192, 57, 43, 0.15);
-      border-color: rgba(192, 57, 43, 0.4);
-      color: #e74c3c;
-    }
-
-    .ab-btn.danger:hover {
-      background: rgba(192, 57, 43, 0.3);
-    }
+    .ab-btn:hover          { border-color: var(--gold); color: var(--gold); }
+    .ab-btn.danger         { border-color: #5a1a1a; color: #cc6666; }
+    .ab-btn.danger:hover   { border-color: var(--red); color: var(--red); }
 
 
-
+    /* ═══════════════════════════════════════════
+       LOGIN OVERLAY
+    ═══════════════════════════════════════════ */
     #login-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.88);
-      z-index: 10000;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(6px);
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.88);
+        z-index: 9500;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(6px);
     }
 
     #login-overlay.visible { display: flex; }
 
     #login-box {
-      background: var(--dark);
-      border: 1px solid var(--gold);
-      border-radius: 4px;
-      padding: 2.5rem;
-      width: 360px;
-      box-shadow: 0 0 60px rgba(232, 160, 32, 0.15);
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        border-radius: 4px;
+        padding: 2.5rem;
+        width: 360px;
+        box-shadow: 0 0 60px rgba(232, 160, 32, 0.15);
     }
 
     #login-box h2 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 1.6rem;
-      color: var(--gold);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 0.25rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--gold);
+        margin-bottom: 0.25rem;
     }
 
     #login-box p {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 1.5rem;
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 1.5rem;
     }
 
     #login-box input {
-      width: 100%;
-      padding: 10px 14px;
-      background: var(--black);
-      border: 1px solid var(--border2);
-      border-radius: 3px;
-      color: var(--white);
-      font-size: 14px;
-      font-family: inherit;
-      margin-bottom: 12px;
-      outline: none;
-      transition: border-color 0.2s;
+        width: 100%;
+        padding: 10px 14px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--white);
+        font-size: 14px;
+        font-family: inherit;
+        margin-bottom: 12px;
+        outline: none;
+        transition: border-color 0.2s;
     }
 
     #login-box input:focus { border-color: var(--gold); }
 
-    #login-box .btn-login {
-      width: 100%;
-      padding: 11px;
-      background: var(--gold);
-      color: var(--black);
-      border: none;
-      border-radius: 3px;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.15s;
+    .btn-login {
+        width: 100%;
+        padding: 11px;
+        background: var(--gold);
+        color: var(--black);
+        border: none;
+        border-radius: 3px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        letter-spacing: 0.04em;
+        transition: background 0.15s;
     }
 
-    #login-box .btn-login:hover { background: #c88c18; }
+    .btn-login:hover { background: var(--gold2); }
 
     #login-error {
-      color: var(--red);
-      font-size: 13px;
-      margin-top: 8px;
-      display: none;
+        color: #cc6666;
+        font-size: 13px;
+        margin-top: 8px;
+        display: none;
     }
 
     #login-close {
-      float: right;
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      color: var(--muted);
-      line-height: 1;
-      margin-top: -0.5rem;
-      margin-right: -0.5rem;
+        float: right;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 22px;
+        cursor: pointer;
+        line-height: 1;
     }
 
-
-    /*  EDITABLE FIELDS*/
-    body.admin-mode [contenteditable="true"] {
-      outline: 1px dashed rgba(232, 160, 32, 0.5);
-      outline-offset: 2px;
-      border-radius: 2px;
-      cursor: text;
-      min-height: 1em;
-    }
-
-    body.admin-mode [contenteditable="true"]:focus {
-      outline: 1.5px solid var(--gold);
-      background: rgba(232, 160, 32, 0.04);
-    }
-
-    .edit-hint {
-      display: none;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold-dim);
-      margin-bottom: 4px;
-    }
-
-    body.admin-mode .edit-hint { display: block; }
+    #login-close:hover { color: var(--white); }
 
 
-    /* EMOJI PICKER */
+    /* ═══════════════════════════════════════════
+       EMOJI PICKER
+    ═══════════════════════════════════════════ */
     #emoji-picker {
-      display: none;
-      position: fixed;
-      background: var(--dark);
-      border: 1px solid var(--border2);
-      border-radius: 8px;
-      padding: 12px;
-      z-index: 10001;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
-      width: 300px;
+        display: none;
+        position: fixed;
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        border-radius: 6px;
+        padding: 12px;
+        z-index: 9800;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+        width: 300px;
     }
 
     #emoji-picker.visible { display: block; }
 
     .ep-search {
-      width: 100%;
-      padding: 7px 10px;
-      background: var(--black);
-      border: 1px solid var(--border2);
-      border-radius: 4px;
-      color: var(--white);
-      font-size: 13px;
-      margin-bottom: 8px;
-      outline: none;
-      font-family: inherit;
+        width: 100%;
+        padding: 7px 10px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--white);
+        font-size: 13px;
+        font-family: inherit;
+        margin-bottom: 8px;
+        outline: none;
     }
 
     .ep-search:focus { border-color: var(--gold); }
 
     .ep-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2px;
-      max-height: 200px;
-      overflow-y: auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        max-height: 200px;
+        overflow-y: auto;
     }
+
+    .ep-grid::-webkit-scrollbar          { width: 4px; }
+    .ep-grid::-webkit-scrollbar-track    { background: var(--dark3); }
+    .ep-grid::-webkit-scrollbar-thumb    { background: var(--border2); border-radius: 2px; }
 
     .ep-btn {
-      width: 34px;
-      height: 34px;
-      background: none;
-      border: none;
-      border-radius: 5px;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.1s;
+        width: 34px;
+        height: 34px;
+        border: none;
+        background: none;
+        border-radius: 4px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.1s;
     }
 
-    .ep-btn:hover { background: var(--border); }
+    .ep-btn:hover { background: var(--dark3); }
 
 
-    /* COLOR PICKER */
+    /* ═══════════════════════════════════════════
+       COLOR PICKER
+    ═══════════════════════════════════════════ */
     #color-picker {
-      display: none;
-      position: fixed;
-      background: var(--dark);
-      border: 1px solid var(--border2);
-      border-radius: 8px;
-      padding: 14px;
-      z-index: 10001;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
-      width: 240px;
+        display: none;
+        position: fixed;
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        border-radius: 6px;
+        padding: 14px;
+        z-index: 9800;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+        width: 230px;
     }
 
     #color-picker.visible { display: block; }
 
     #color-picker h4 {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
     }
 
     .cp-swatches {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
     }
 
     .cp-swatch {
-      width: 26px;
-      height: 26px;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform 0.1s, border-color 0.15s;
+        width: 26px;
+        height: 26px;
+        border-radius: 3px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: transform 0.1s, border-color 0.15s;
     }
 
-    .cp-swatch:hover     { transform: scale(1.15); }
-    .cp-swatch.selected  { border-color: var(--white); }
+    .cp-swatch:hover           { transform: scale(1.15); }
+    .cp-swatch.selected        { border-color: var(--white); }
 
-    #color-picker input[type="color"] {
-      width: 100%;
-      height: 32px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      padding: 0 4px;
-      background: var(--black);
+    .cp-custom-label {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+    #cp-custom-input {
+        width: 100%;
+        height: 34px;
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        cursor: pointer;
+        padding: 2px;
+        background: var(--dark3);
     }
 
     .cp-preview {
-      width: 100%;
-      height: 24px;
-      border-radius: 4px;
-      margin-top: 8px;
-      border: 1px solid var(--border2);
+        width: 100%;
+        height: 22px;
+        border-radius: 3px;
+        margin-top: 10px;
+        border: 1px solid var(--border2);
+        transition: background 0.15s;
     }
 
 
-    /* IMAGE UPLOAD MODAL */
+    /* ═══════════════════════════════════════════
+       IMAGE UPLOAD MODAL
+    ═══════════════════════════════════════════ */
     #img-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 10001;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(4px);
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.88);
+        z-index: 9500;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
     }
 
     #img-modal.visible { display: flex; }
 
     #img-box {
-      background: var(--dark);
-      border: 1px solid var(--border2);
-      border-radius: 6px;
-      padding: 2rem;
-      width: 400px;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-radius: 6px;
+        padding: 2rem;
+        width: 420px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
     }
 
     #img-box h3 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 1rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
     }
 
     .dropzone {
-      border: 2px dashed var(--border2);
-      border-radius: 6px;
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      margin-bottom: 1rem;
+        border: 2px dashed var(--border2);
+        border-radius: 4px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 1rem;
     }
 
     .dropzone:hover,
     .dropzone.dragging {
-      border-color: var(--gold);
-      background: rgba(232, 160, 32, 0.05);
+        border-color: var(--gold);
+        background: rgba(232, 160, 32, 0.05);
     }
 
     .dropzone .dz-icon { font-size: 2.5rem; }
 
     .dropzone p {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 0.5rem;
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 0.5rem;
     }
 
-    #img-file  { display: none; }
+    #img-file-input { display: none; }
 
     #img-preview {
-      display: none;
-      max-width: 100%;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+        display: none;
+        max-width: 100%;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        max-height: 200px;
+        object-fit: contain;
     }
 
-    .img-btns {
-      display: flex;
-      gap: 8px;
+    .img-actions { display: flex; gap: 8px; }
+
+    .img-actions button {
+        flex: 1;
+        padding: 9px;
+        border-radius: 3px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        transition: background 0.15s;
     }
 
-    .img-btns button {
-      flex: 1;
-      padding: 9px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+    #img-confirm { background: var(--gold); color: var(--black); }
+    #img-confirm:hover { background: var(--gold2); }
+
+    #img-cancel {
+        background: var(--dark3);
+        color: var(--text);
+        border: 1px solid var(--border2);
     }
 
-    #img-confirm { background: var(--gold);  color: var(--black); }
-    #img-cancel  { background: var(--border); color: var(--text); }
 
-
-    /*  TOAST */
+    /* ═══════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════ */
     #toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--gold);
-      color: var(--black);
-      padding: 10px 18px;
-      border-radius: 4px;
-      font-size: 13px;
-      font-weight: 600;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.3s, transform 0.3s;
-      z-index: 9999;
-      pointer-events: none;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        padding: 10px 20px;
+        border-radius: 3px;
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 9999;
+        pointer-events: none;
     }
 
     #toast.visible {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
 
 
-    /* ADMIN ACTION BUTTONS */
-    .admin-actions {
-      display: none;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 0.75rem;
+    /* ═══════════════════════════════════════════
+       ADMIN EDIT INDICATORS
+    ═══════════════════════════════════════════ */
+    body.admin-mode [contenteditable="true"] {
+        outline: 1px dashed rgba(232, 160, 32, 0.45);
+        outline-offset: 2px;
+        border-radius: 2px;
+        cursor: text;
     }
 
-    body.admin-mode .admin-actions { display: flex; }
-
-    .act-btn {
-      background: rgba(232, 160, 32, 0.1);
-      border: 1px solid rgba(232, 160, 32, 0.25);
-      color: var(--gold);
-      padding: 3px 10px;
-      border-radius: 3px;
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.15s;
+    body.admin-mode [contenteditable="true"]:focus {
+        outline: 1px solid var(--gold);
+        background: rgba(232, 160, 32, 0.04);
     }
 
-    .act-btn:hover { background: rgba(232, 160, 32, 0.22); }
-
-    .act-btn.del {
-      background: rgba(192, 57, 43, 0.08);
-      border-color: rgba(192, 57, 43, 0.25);
-      color: #e74c3c;
+    .edit-hint {
+        display: none;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gold);
+        opacity: 0.7;
+        margin-bottom: 5px;
     }
 
-    .act-btn.del:hover { background: rgba(192, 57, 43, 0.2); }
+    body.admin-mode .edit-hint { display: block; }
 
+    /* Reusable action button */
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        color: var(--muted);
+        padding: 4px 10px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+        transition: border-color 0.15s, color 0.15s;
+    }
+
+    .action-btn:hover      { border-color: var(--gold); color: var(--gold); }
+    .action-btn.del:hover  { border-color: var(--red);  color: var(--red);  }
+
+    /* Action row — hidden for readers, shown for admins */
+    .action-row {
+        display: none;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+        align-items: center;
+    }
+
+    body.admin-mode .action-row { display: flex; }
+
+    /* Dashed "add" button — hidden for readers */
     .add-btn {
-      display: none;
-      background: rgba(232, 160, 32, 0.12);
-      border: 1px dashed rgba(232, 160, 32, 0.4);
-      color: var(--gold);
-      padding: 9px 20px;
-      border-radius: 3px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 1.25rem;
-      font-family: inherit;
-      transition: background 0.15s, border-color 0.15s;
-      width: 100%;
+        display: none;
+        background: transparent;
+        border: 1px dashed rgba(232, 160, 32, 0.5);
+        color: var(--gold);
+        padding: 7px 18px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 1rem;
+        letter-spacing: 0.05em;
+        transition: background 0.15s, border-color 0.15s;
     }
 
     .add-btn:hover {
-      background: rgba(232, 160, 32, 0.2);
-      border-color: var(--gold);
+        background: rgba(232, 160, 32, 0.08);
+        border-color: var(--gold);
     }
 
-    body.admin-mode .add-btn { display: block; }
+    body.admin-mode .add-btn { display: inline-block; }
 
 
-    /* HEADER  –  dark with gold stripe (like the book) */
-    header {
-      background: var(--black);
-      border-bottom: 3px solid var(--gold);
-      position: relative;
+    /* ═══════════════════════════════════════════
+       NEWSPAPER HEADER
+    ═══════════════════════════════════════════ */
+    .paper-header {
+        background: var(--dark);
+        border-bottom: 2px solid var(--gold);
     }
 
-    .header-stripe {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 6px;
-      background: var(--gold);
+    /* Gold spine stripe — like on the book */
+    .gold-stripe { height: 6px; background: var(--gold); }
+
+    .paper-masthead {
+        padding: 2rem 2rem 1.25rem;
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.4rem;
+        position: relative;
     }
 
-    .header-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 3rem 2rem 2.5rem 2.5rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 2rem;
-      align-items: end;
+    .paper-kicker {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
-    .header-kicker {
-      font-family: 'Oswald', sans-serif;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .paper-kicker::before,
+    .paper-kicker::after {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 1px;
+        background: var(--border2);
     }
 
-    .header-kicker::after {
-      content: '';
-      display: block;
-      height: 1px;
-      width: 50px;
-      background: var(--gold);
-      opacity: 0.5;
+    /* Fraktur title — mirroring the book's font feel */
+    .paper-name {
+        font-family: 'UnifrakturMaguntia', cursive;
+        font-size: clamp(2.6rem, 8vw, 5.5rem);
+        color: var(--white);
+        line-height: 1;
+        letter-spacing: 0.02em;
     }
 
-    header h1 {
-      font-family: 'Oswald', sans-serif;
-      font-size: clamp(2.6rem, 6vw, 4.5rem);
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--white);
-      line-height: 1.0;
+    .paper-name span { color: var(--gold); }
+
+    /* Horizontal rule with diamond ornaments */
+    .paper-rule {
+        width: 100%;
+        height: 1px;
+        background: var(--border2);
+        margin: 0.25rem 0;
+        position: relative;
     }
 
-    header h1 em {
-      display: block;
-      font-style: normal;
-      font-size: 0.45em;
-      font-weight: 400;
-      letter-spacing: 0.12em;
-      color: var(--gold);
-      margin-bottom: 0.4rem;
+    .paper-rule::before,
+    .paper-rule::after {
+        content: '◆';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold);
+        font-size: 9px;
     }
 
-    .header-sub {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 1rem;
-      letter-spacing: 0.06em;
+    .paper-rule::before { left: 0; }
+    .paper-rule::after  { right: 0; }
+
+    .paper-tagline {
+        font-family: 'Lora', serif;
+        font-style: italic;
+        font-size: 13px;
+        color: var(--muted);
+        letter-spacing: 0.04em;
     }
 
-    .header-book-thumb {
-      width: 100px;
-      flex-shrink: 0;
-    }
-
-    .header-book-thumb img {
-      width: 100px;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 2px;
-      box-shadow:
-        4px 4px 0 var(--gold-dim),
-        8px 8px 20px rgba(0, 0, 0, 0.5);
+    .paper-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-size: 11px;
+        color: var(--muted);
+        border-top: 1px solid var(--border2);
+        padding-top: 0.7rem;
+        margin-top: 0.15rem;
     }
 
     .admin-trigger {
-      position: absolute;
-      bottom: 1.25rem;
-      right: 1.5rem;
-      background: none;
-      border: 1px solid var(--border2);
-      color: var(--muted);
-      padding: 4px 12px;
-      border-radius: 3px;
-      font-size: 11px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: color 0.15s, border-color 0.15s;
+        background: none;
+        border: 1px solid var(--border2);
+        color: var(--muted);
+        padding: 3px 12px;
+        border-radius: 3px;
+        font-size: 10px;
+        cursor: pointer;
+        font-family: inherit;
+        letter-spacing: 0.06em;
+        transition: border-color 0.15s, color 0.15s;
     }
 
-    .admin-trigger:hover {
-      color: var(--gold);
-      border-color: var(--gold);
-    }
-
-    @media (max-width: 500px) {
-      .header-book-thumb { display: none; }
-    }
+    .admin-trigger:hover { border-color: var(--gold); color: var(--gold); }
 
 
-    /* NAV */
+    /* ═══════════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════════ */
     nav {
-      background: var(--dark);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+        background: var(--dark);
+        border-bottom: 1px solid var(--border2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
     }
-
-    body.admin-mode nav { top: var(--admin-h); }
 
     nav ul {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      list-style: none;
-      overflow-x: auto;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        list-style: none;
+        overflow-x: auto;
     }
 
     nav a {
-      display: block;
-      padding: 0.9rem 1.1rem;
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 500;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color 0.15s, border-color 0.15s;
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: color 0.15s, border-color 0.15s;
     }
 
     nav a:hover,
     nav a.active {
-      color: var(--gold);
-      border-bottom-color: var(--gold);
+        color: var(--gold);
+        border-color: var(--gold);
     }
 
 
-    /* MAIN LAYOUT */
+    /* ═══════════════════════════════════════════
+       MAIN LAYOUT
+    ═══════════════════════════════════════════ */
     main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 3rem 2rem;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2.5rem 2rem;
     }
 
-    section { margin-bottom: 5rem; }
-    section:last-child { margin-bottom: 0; }
+    section { margin-bottom: 4rem; }
+
+    /* Newspaper-style section header */
+    .section-head {
+        border-top: 2px solid var(--gold);
+        padding-top: 0.65rem;
+        margin-bottom: 1.75rem;
+    }
 
     .section-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-      max-width: 80px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 3px;
     }
 
     .section-title {
-      font-family: 'Oswald', sans-serif;
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: 2rem;
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.4rem, 3.5vw, 2rem);
+        color: var(--white);
+        line-height: 1.2;
     }
 
-    .prose {
-      font-family: 'Lora', serif;
-      font-size: 15px;
-      line-height: 1.9;
-      color: var(--text);
-    }
 
-    .prose p          { margin-bottom: 1.1em; }
-    .prose p:last-child { margin-bottom: 0; }
-    .prose em         { color: var(--gold); font-style: italic; }
-
-
-    /* REZENSION*/
+    /* ═══════════════════════════════════════════
+       REZENSION
+    ═══════════════════════════════════════════ */
     .rez-grid {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-      gap: 3rem;
-      align-items: start;
+        display: grid;
+        grid-template-columns: 1fr 230px;
+        gap: 3rem;
+        align-items: start;
     }
 
     @media (max-width: 640px) {
-      .rez-grid { grid-template-columns: 1fr; }
+        .rez-grid { grid-template-columns: 1fr; }
     }
 
-    /* Book card – dark panel */
+    .rez-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.2rem, 2.8vw, 1.65rem);
+        color: var(--white2);
+        line-height: 1.25;
+        margin-bottom: 0.75rem;
+    }
+
+    .stars-row {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 1.25rem;
+        cursor: default;
+    }
+
+    body.admin-mode .stars-row { cursor: pointer; }
+
+    .star-glyph {
+        font-size: 20px;
+        color: var(--gold);
+        line-height: 1;
+        transition: transform 0.1s;
+        user-select: none;
+    }
+
+    .star-glyph.empty            { color: var(--border2); }
+    body.admin-mode .star-glyph:hover { transform: scale(1.2); }
+
+    .prose {
+        font-family: 'Lora', serif;
+        font-size: 14.5px;
+        line-height: 1.9;
+        color: var(--text);
+    }
+
+    .prose p              { margin-bottom: 1em; }
+    .prose p:last-child   { margin-bottom: 0; }
+
+    /* Book info card */
     .book-card {
-      background: var(--dark);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--gold);
-      border-radius: 2px;
-      overflow: hidden;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-top: 3px solid var(--gold);
     }
 
     .book-cover-wrap {
-      position: relative;
-      width: 100%;
-      height: 220px;
-      background: #0A0A0A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-      overflow: hidden;
+        position: relative;
+        aspect-ratio: 2 / 3;
+        background: var(--dark3);
+        overflow: hidden;
+        cursor: default;
     }
+
+    body.admin-mode .book-cover-wrap { cursor: pointer; }
 
     .book-cover-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
     }
 
-    .book-cover-edit-btn {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--gold);
-      font-size: 1.5rem;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-size: 12px;
-      gap: 6px;
+    .book-cover-overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
     }
 
-    body.admin-mode .book-cover-wrap:hover .book-cover-edit-btn {
-      display: flex;
+    body.admin-mode .book-cover-wrap:hover .book-cover-overlay {
+        display: flex;
     }
 
-    .book-info {
-      padding: 1.25rem 1.5rem;
-    }
+    .book-info { padding: 1.25rem; }
 
     .book-info h3 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: 0.2rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: var(--white);
+        margin-bottom: 2px;
     }
 
-    .book-author {
-      font-size: 12px;
-      color: var(--gold);
-      letter-spacing: 0.04em;
-      margin-bottom: 1rem;
+    .book-author-line {
+        font-size: 12px;
+        color: var(--gold);
+        margin-bottom: 1rem;
+        font-style: italic;
     }
 
-    .book-meta {
-      list-style: none;
-      font-size: 12px;
-      border-top: 1px solid var(--border);
-      padding-top: 0.75rem;
+    .book-meta-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
     }
 
-    .book-meta li {
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 0;
-      border-bottom: 1px solid var(--border);
+    .book-meta-table td {
+        padding: 5px 0;
+        border-bottom: 1px solid var(--border);
     }
 
-    .book-meta li:last-child { border-bottom: none; }
+    .book-meta-table tr:last-child td { border-bottom: none; }
+    .book-meta-table td:first-child    { color: var(--muted); }
 
-    .book-meta li span:first-child { color: var(--muted); }
-    .book-meta li span:last-child  { color: var(--silver); font-weight: 500; }
-
-    /* Stars */
-    .stars-row {
-      display: flex;
-      gap: 4px;
-      margin: 1.25rem 0 0.25rem;
-    }
-
-    .star-btn {
-      font-size: 22px;
-      color: var(--border2);
-      cursor: default;
-      transition: color 0.1s;
-      background: none;
-      border: none;
-      padding: 0;
-      line-height: 1;
-    }
-
-    .star-btn.lit  { color: var(--gold); }
-
-    body.admin-mode .star-btn { cursor: pointer; }
-    body.admin-mode .star-btn:hover { color: var(--gold); }
-
-    .stars-label {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 0.2rem;
+    .book-meta-table td:last-child {
+        color: var(--white2);
+        text-align: right;
+        font-weight: 500;
     }
 
 
-    /*ZITATE */
+    /* ═══════════════════════════════════════════
+       ZITATE
+    ═══════════════════════════════════════════ */
     .zitate-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
     }
 
     .zitat-card {
-      background: var(--dark);
-      border-left: 4px solid var(--gold);
-      border-radius: 0 3px 3px 0;
-      padding: 1.5rem 1.75rem;
-      position: relative;
-      overflow: hidden;
+        background: var(--dark2);
+        border-left: 3px solid var(--gold);
+        padding: 1.5rem 1.75rem;
+        position: relative;
     }
 
+    /* Large decorative opening quote */
     .zitat-card::before {
-      content: '\201C';
-      font-family: 'Oswald', sans-serif;
-      font-size: 7rem;
-      color: var(--gold);
-      opacity: 0.07;
-      position: absolute;
-      top: -20px;
-      left: 10px;
-      line-height: 1;
-      pointer-events: none;
+        content: '\201C';
+        font-family: 'Playfair Display', serif;
+        font-size: 6rem;
+        line-height: 1;
+        position: absolute;
+        top: -12px;
+        left: 14px;
+        opacity: 0.07;
+        pointer-events: none;
+        color: var(--gold);
     }
 
     .zitat-tag {
-      display: inline-block;
-      background: rgba(232, 160, 32, 0.12);
-      color: var(--gold);
-      font-size: 10px;
-      font-weight: 600;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 2px 10px;
-      border-radius: 2px;
-      margin-bottom: 0.75rem;
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 2px 10px;
+        border-radius: 2px;
+        margin-bottom: 0.75rem;
     }
 
     .zitat-text {
-      font-family: 'Lora', serif;
-      font-size: 1.05rem;
-      font-style: italic;
-      line-height: 1.65;
-      color: var(--silver);
-      position: relative;
-      z-index: 1;
-      margin-bottom: 0.75rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        font-style: italic;
+        line-height: 1.65;
+        color: var(--white2);
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
     }
 
     .zitat-source {
-      font-size: 11px;
-      font-weight: 600;
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
     }
 
 
-    /* THEMEN */
+    /* ═══════════════════════════════════════════
+       THEMEN
+    ═══════════════════════════════════════════ */
     .themen-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 1.25rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 1.25rem;
     }
 
     .thema-card {
-      background: var(--dark);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 1.5rem;
-      transition: border-color 0.2s, transform 0.2s;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-top: 2px solid var(--gold);
+        padding: 1.5rem;
+        transition: border-color 0.2s, transform 0.2s;
     }
 
     .thema-card:hover {
-      border-color: var(--gold-dim);
-      transform: translateY(-2px);
+        border-color: var(--gold);
+        transform: translateY(-2px);
     }
 
-    .thema-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 4px;
-      background: rgba(232, 160, 32, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+    .thema-icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .thema-card h3 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: 0.4rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: var(--white2);
+        margin-bottom: 0.4rem;
     }
 
     .thema-card p {
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--muted);
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
     }
 
 
-    /* INTERVIEWS */
-    .interview-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
+    /* ═══════════════════════════════════════════
+       INTERVIEWS
+    ═══════════════════════════════════════════ */
+    .interviews-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
     }
 
     .interview-card {
-      background: var(--dark);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      overflow: hidden;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        display: grid;
+        grid-template-columns: 4px 1fr;
     }
 
-    .interview-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
+    .interview-body { padding: 1.75rem 2rem; }
+
+    .interviewee {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
     }
+
+    .avatar-wrap { position: relative; flex-shrink: 0; }
 
     .avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Oswald', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--black);
-      flex-shrink: 0;
-      overflow: hidden;
-      position: relative;
-      cursor: default;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--black);
+        overflow: hidden;
     }
 
     .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
-
-    .avatar-initials { position: relative; z-index: 1; }
 
     .avatar-edit-overlay {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        cursor: pointer;
     }
 
-    body.admin-mode .avatar:hover .avatar-edit-overlay {
-      display: flex;
+    body.admin-mode .avatar-wrap:hover .avatar-edit-overlay {
+        display: flex;
     }
 
-    .interview-info h3 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: 2px;
+    .interviewee-info h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        color: var(--white);
+        margin-bottom: 2px;
     }
 
-    .interview-info p {
-      font-size: 12px;
-      color: var(--muted);
+    .interviewee-info p {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
     }
 
-    .interview-body { padding: 1.5rem; }
-
-    .qa-item { margin-bottom: 1.25rem; }
+    .qa-list       { list-style: none; }
+    .qa-item       { margin-bottom: 1.25rem; }
     .qa-item:last-child { margin-bottom: 0; }
 
-    .qa-question {
-      font-family: 'Oswald', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: var(--gold);
-      margin-bottom: 0.4rem;
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
+    .qa-q {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gold);
+        margin-bottom: 0.4rem;
+        display: flex;
+        gap: 8px;
     }
 
-    .qa-question::before {
-      content: 'F:';
-      flex-shrink: 0;
-      color: var(--gold-dim);
+    .qa-q::before  { content: 'F:'; flex-shrink: 0; opacity: 0.7; }
+
+    .qa-a {
+        font-family: 'Lora', serif;
+        font-size: 13.5px;
+        font-style: italic;
+        line-height: 1.75;
+        color: var(--text);
+        padding-left: 24px;
+        border-left: 2px solid var(--border2);
+        margin-left: 2px;
     }
 
-    .qa-answer {
-      font-family: 'Lora', serif;
-      font-size: 14px;
-      font-style: italic;
-      line-height: 1.75;
-      color: var(--silver);
-      padding-left: 24px;
-      border-left: 2px solid var(--border2);
-      margin-left: 2px;
+
+    /* ═══════════════════════════════════════════
+       COMMENTS
+    ═══════════════════════════════════════════ */
+    .avg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--gold);
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.75rem;
     }
 
-    .qa-actions {
-      display: none;
-      gap: 6px;
-      margin-top: 0.4rem;
-      padding-left: 24px;
+    .avg-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--gold);
+        font-weight: 700;
+        line-height: 1;
     }
 
-    body.admin-mode .qa-actions { display: flex; }
-
-
-    /* COMMENTS */
-    .comments-summary {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      background: var(--dark);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--gold);
-      border-radius: 2px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .avg-score {
-      font-family: 'Oswald', sans-serif;
-      font-size: 3.5rem;
-      font-weight: 700;
-      color: var(--gold);
-      line-height: 1;
-    }
-
-    .avg-details {
-      flex: 1;
-    }
-
-    .avg-stars { display: flex; gap: 3px; margin-bottom: 4px; }
-
-    .avg-star {
-      font-size: 18px;
-      color: var(--border2);
-    }
-
-    .avg-star.lit { color: var(--gold); }
+    .avg-stars { display: flex; gap: 3px; }
+    .avg-star  { font-size: 18px; color: var(--gold); }
+    .avg-star.empty { color: var(--border2); }
 
     .avg-count {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.04em;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        letter-spacing: 0.04em;
     }
 
-    /* Comment form */
+    /* Comment submission form */
     .comment-form {
-      background: var(--dark);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-top: 2px solid var(--gold);
+        padding: 1.5rem;
+        margin-bottom: 1.75rem;
     }
 
     .comment-form h3 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--silver);
-      margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: var(--white);
+        margin-bottom: 1rem;
     }
 
     .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-bottom: 0.75rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
     }
 
     @media (max-width: 500px) {
-      .form-row { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+
+    .field-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
     }
 
     .form-input {
-      width: 100%;
-      padding: 10px 12px;
-      background: var(--black);
-      border: 1px solid var(--border2);
-      border-radius: 3px;
-      color: var(--white);
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.2s;
+        width: 100%;
+        padding: 9px 12px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--white);
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s;
     }
 
-    .form-input:focus { border-color: var(--gold); }
+    .form-input:focus  { border-color: var(--gold); }
+    .form-textarea     { resize: vertical; min-height: 90px; }
 
-    textarea.form-input {
-      resize: vertical;
-      min-height: 90px;
-      margin-bottom: 0.75rem;
+    /* Interactive star rating in the form */
+    .rating-input {
+        display: flex;
+        gap: 4px;
+        margin-top: 2px;
     }
 
-    /* Star rating selector */
-    .star-select {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 0.75rem;
-      align-items: center;
+    .rating-star {
+        font-size: 26px;
+        cursor: pointer;
+        color: var(--border2);
+        transition: color 0.1s, transform 0.1s;
+        line-height: 1;
+        user-select: none;
     }
 
-    .star-select span {
-      font-size: 12px;
-      color: var(--muted);
-      margin-right: 4px;
-    }
-
-    .star-pick {
-      font-size: 22px;
-      color: var(--border2);
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      line-height: 1;
-      transition: color 0.1s, transform 0.1s;
-    }
-
-    .star-pick.lit   { color: var(--gold); }
-    .star-pick:hover { transform: scale(1.15); }
+    .rating-star.active    { color: var(--gold); }
+    .rating-star:hover     { transform: scale(1.15); }
 
     .btn-submit {
-      background: var(--gold);
-      color: var(--black);
-      border: none;
-      border-radius: 3px;
-      padding: 10px 24px;
-      font-family: 'Oswald', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.15s;
+        background: var(--gold);
+        border: none;
+        color: var(--black);
+        padding: 10px 24px;
+        border-radius: 3px;
+        font-size: 13px;
+        font-weight: 700;
+        font-family: inherit;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: background 0.15s;
     }
 
-    .btn-submit:hover { background: #c88c18; }
+    .btn-submit:hover { background: var(--gold2); }
 
-    .btn-submit:disabled {
-      background: var(--border2);
-      color: var(--muted);
-      cursor: not-allowed;
+    /* Divider ornament */
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.25rem;
+        color: var(--border2);
+        font-size: 11px;
     }
 
-    /* Comment list */
-    .comment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border2);
+    }
+
+    /* Comment cards */
+    .comments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
     }
 
     .comment-card {
-      background: var(--dark);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 1.25rem 1.5rem;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--border2);
+        padding: 1.25rem 1.5rem;
     }
 
+    /* 5-star comments get gold accent */
+    .comment-card.top-rated { border-left-color: var(--gold); }
+
     .comment-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.6rem;
-      flex-wrap: wrap;
-      gap: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 3px;
     }
 
     .comment-author {
-      font-family: 'Oswald', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--silver);
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--white2);
     }
 
-    .comment-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .comment-stars {
-      display: flex;
-      gap: 2px;
-    }
-
-    .comment-star {
-      font-size: 14px;
-      color: var(--border2);
-    }
-
-    .comment-star.lit { color: var(--gold); }
+    .comment-stars { display: flex; gap: 2px; }
+    .c-star        { font-size: 13px; color: var(--gold); }
+    .c-star.empty  { color: var(--border2); }
 
     .comment-date {
-      font-size: 11px;
-      color: var(--muted);
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
     }
 
     .comment-body {
-      font-family: 'Lora', serif;
-      font-size: 14px;
-      line-height: 1.7;
-      color: var(--text);
+        font-family: 'Lora', serif;
+        font-style: italic;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--text);
     }
 
     .comment-del {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 13px;
-      padding: 0;
-      transition: color 0.15s;
-      font-family: inherit;
+        display: none;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 11px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 0.5rem;
+        padding: 0;
+        transition: color 0.15s;
     }
 
-    .comment-del:hover { color: var(--red); }
+    .comment-del:hover          { color: var(--red); }
+    body.admin-mode .comment-del { display: inline-block; }
 
-    body.admin-mode .comment-del { display: inline; }
+    .no-comments {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+        font-style: italic;
+        border: 1px dashed var(--border2);
+    }
 
 
-    /* FOOTER */
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
     footer {
-      background: var(--dark);
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      text-align: center;
-      padding: 2rem;
-      font-size: 12px;
-      letter-spacing: 0.06em;
-      margin-top: 5rem;
+        background: var(--dark);
+        border-top: 2px solid var(--gold);
+        color: var(--muted);
+        text-align: center;
+        padding: 2rem;
+        font-size: 12px;
+        letter-spacing: 0.04em;
     }
 
-    footer strong { color: var(--gold); }
-  </style>
+    footer strong  { color: var(--gold); }
+
+    .footer-rule {
+        width: 60px;
+        height: 1px;
+        background: var(--border2);
+        margin: 0.6rem auto;
+    }
+    </style>
 </head>
 <body>
 
-  <!-- ── TOAST ── -->
-  <div id="toast">✓ Gespeichert</div>
+<!-- ════════════════════════════════════════
+     TOAST
+════════════════════════════════════════ -->
+<div id="toast">✓ Gespeichert</div>
 
 
-  <!-- ── ADMIN BAR ── -->
-  <div id="admin-bar">
+<!-- ════════════════════════════════════════
+     ADMIN BAR
+════════════════════════════════════════ -->
+<div id="admin-bar">
     <div class="ab-dot"></div>
-    <span style="font-weight:600; color:var(--gold)">Admin</span>
+    <span class="ab-label">Admin</span>
     <div class="ab-sep"></div>
+    <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
     <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
     <button class="ab-btn" onclick="addThema()">+ Thema</button>
     <button class="ab-btn" onclick="addInterview()">+ Interview</button>
     <div class="ab-sep"></div>
     <button class="ab-btn danger" onclick="logout()">Abmelden</button>
-  </div>
+</div>
 
 
-  <div id="login-overlay">
+<!-- ════════════════════════════════════════
+     LOGIN OVERLAY
+════════════════════════════════════════ -->
+<div id="login-overlay">
     <div id="login-box">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start">
-        <div>
-          <h2>Admin-Login</h2>
-          <p>Passwort eingeben, um die Seite zu bearbeiten.</p>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <h2>Admin‑Login</h2>
+                <p>Passwort eingeben, um Inhalte zu bearbeiten.</p>
+            </div>
+            <button id="login-close" onclick="closeLogin()">×</button>
         </div>
-        <button id="login-close" onclick="closeLogin()">×</button>
-      </div>
-      <input
-        type="password"
-        id="pw-input"
-        placeholder="Passwort"
-        onkeydown="if(event.key==='Enter') doLogin()"
-      >
-      <button class="btn-login" onclick="doLogin()">Anmelden</button>
-      <div id="login-error">Falsches Passwort. Versuche es erneut.</div>
+        <input
+            type="password"
+            id="pw-input"
+            placeholder="Passwort"
+            onkeydown="if (event.key === 'Enter') doLogin()"
+        >
+        <button class="btn-login" onclick="doLogin()">Anmelden</button>
+        <div id="login-error">Falsches Passwort. Bitte erneut versuchen.</div>
     </div>
-  </div>
+</div>
 
 
- 
-  <div id="emoji-picker">
+<!-- ════════════════════════════════════════
+     EMOJI PICKER (portal, positioned by JS)
+════════════════════════════════════════ -->
+<div id="emoji-picker">
     <input
-      class="ep-search"
-      type="text"
-      placeholder="Suchen…"
-      oninput="filterEmoji(this.value)"
+        class="ep-search"
+        type="text"
+        placeholder="Emoji suchen…"
+        oninput="filterEmoji(this.value)"
     >
     <div class="ep-grid" id="ep-grid"></div>
-  </div>
+</div>
 
 
-
-  <div id="color-picker">
+<!-- ════════════════════════════════════════
+     COLOR PICKER (portal, positioned by JS)
+════════════════════════════════════════ -->
+<div id="color-picker">
     <h4>Farbe wählen</h4>
     <div class="cp-swatches" id="cp-swatches"></div>
-    <input
-      type="color"
-      id="cp-custom"
-      oninput="cpCustomColor(this.value)"
-    >
+    <span class="cp-custom-label">Eigene Farbe</span>
+    <input type="color" id="cp-custom-input" oninput="onCustomColor(this.value)">
     <div class="cp-preview" id="cp-preview"></div>
-  </div>
+</div>
 
 
-
-  <div id="img-modal">
+<!-- ════════════════════════════════════════
+     IMAGE UPLOAD MODAL
+════════════════════════════════════════ -->
+<div id="img-modal">
     <div id="img-box">
-      <h3>Bild hochladen</h3>
-      <div
-        class="dropzone"
-        id="dropzone"
-        onclick="document.getElementById('img-file').click()"
-        ondragover="event.preventDefault(); this.classList.add('dragging')"
-        ondragleave="this.classList.remove('dragging')"
-        ondrop="handleDrop(event)"
-      >
-        <div class="dz-icon">📁</div>
-        <p>Klicken oder Datei hierher ziehen<br>
-        <small>PNG, JPG, GIF, WebP – max 16 MB</small></p>
-      </div>
-      <input type="file" id="img-file" accept="image/*" onchange="previewImage(this)">
-      <img id="img-preview" src="" alt="">
-      <div class="img-btns">
-        <button id="img-confirm" onclick="confirmUpload()">Hochladen</button>
-        <button id="img-cancel"  onclick="closeImgModal()">Abbrechen</button>
-      </div>
-    </div>
-  </div>
+        <h3>📷 Bild hochladen</h3>
 
-
-
-  <header>
-    <div class="header-stripe"></div>
-    <div class="header-inner">
-      <div>
-        <div class="header-kicker">-----------------</div>
-        <h1>
-          <em>Maja Nielsen</em>
-          DER TUNNELBAUER
-        </h1>
         <div
-          class="header-sub"
-          contenteditable="false"
-          data-key="header-sub"
-          id="header-sub"
+            class="dropzone"
+            id="dropzone"
+            onclick="document.getElementById('img-file-input').click()"
+            ondragover="event.preventDefault(); this.classList.add('dragging')"
+            ondragleave="this.classList.remove('dragging')"
+            ondrop="handleDrop(event)"
         >
-          Buchanalyse · Charaktere &amp; Motive · Zitate &amp; Interviews
-        </div>
-      </div>
-      <div class="header-book-thumb" id="header-thumb-wrap">
-        <img
-          src="/static/book_cover.png"
-          alt="Der Tunnelbauer"
-          id="header-thumb-img"
-        >
-      </div>
-    </div>
-    <button class="admin-trigger" onclick="openLogin()">⚙ Admin</button>
-  </header>
-
-
-
-  <nav>
-    <ul>
-      <li><a href="#rezension"  class="active">Rezension</a></li>
-      <li><a href="#zitate">Zitate</a></li>
-      <li><a href="#themen">Themen &amp; Motive</a></li>
-      <li><a href="#interviews">Interviews</a></li>
-      <li><a href="#kommentare">Kommentare</a></li>
-    </ul>
-  </nav>
-
-
-
-  <main>
-
-
-    <section id="rezension">
-      <div class="section-label">Buchrezension</div>
-
-      <div class="rez-grid">
-
-
-        <div>
-          <div class="edit-hint">✏ Titel bearbeiten</div>
-          <h2
-            class="section-title"
-            contenteditable="false"
-            data-key="rez-title"
-            id="rez-title"
-          >
-            Der Tunnelbauer – eine Reise in die Tiefe
-          </h2>
-
-          <div class="stars-row" id="stars-row">
-            <button class="star-btn lit" data-v="1" onclick="setStar(1)">★</button>
-            <button class="star-btn lit" data-v="2" onclick="setStar(2)">★</button>
-            <button class="star-btn lit" data-v="3" onclick="setStar(3)">★</button>
-            <button class="star-btn lit" data-v="4" onclick="setStar(4)">★</button>
-            <button class="star-btn"     data-v="5" onclick="setStar(5)">★</button>
-          </div>
-          <div class="stars-label" id="stars-label">Unsere Bewertung: 4 / 5</div>
-
-          <br>
-
-          <div class="edit-hint">✏ Text bearbeiten</div>
-          <div
-            class="prose"
-            contenteditable="false"
-            data-key="rez-text"
-            id="rez-text"
-          >
+            <div class="dz-icon">📁</div>
             <p>
-              Maja Nielsens Roman <em>„Der Tunnelbauer"</em> ist ein
-              eindrucksvolles Werk.
+                Klicken oder Datei hierher ziehen<br>
+                <small>PNG, JPG, GIF, WebP – max. 16 MB</small>
             </p>
-          </div>
         </div>
 
+        <input
+            type="file"
+            id="img-file-input"
+            accept="image/*"
+            onchange="previewFile(this)"
+        >
+        <img id="img-preview" src="" alt="Vorschau">
 
-        <div>
-          <div class="book-card">
-            <div class="book-cover-wrap" id="book-cover-wrap">
-              <img
-                src="/static/book_cover.png"
-                alt="Buchcover"
-                id="book-cover-img"
-              >
-              <div
-                class="book-cover-edit-btn"
-                onclick="openImgModal('book-cover')"
-              >
-                📷 Bild ändern
-              </div>
-            </div>
-            <div class="book-info">
-              <h3
-                contenteditable="false"
-                data-key="book-title"
-              >
-                Der Tunnelbauer
-              </h3>
-              <div
-                class="book-author"
-                contenteditable="false"
-                data-key="book-author"
-              >
-                Maja Nielsen
-              </div>
-              <ul class="book-meta">
-                <li>
-                  <span>Verlag</span>
-                  <span contenteditable="false" data-key="book-verlag">Gerstenberg</span>
-                </li>
-                <li>
-                  <span>Erschienen</span>
-                  <span contenteditable="false" data-key="book-year">2022</span>
-                </li>
-                <li>
-                  <span>Seiten</span>
-                  <span contenteditable="false" data-key="book-pages">224</span>
-                </li>
-                <li>
-                  <span>Genre</span>
-                  <span contenteditable="false" data-key="book-genre">Jugendroman</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+        <div class="img-actions">
+            <button id="img-confirm" onclick="confirmUpload()">Hochladen &amp; Einfügen</button>
+            <button id="img-cancel"  onclick="closeImgModal()">Abbrechen</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     NEWSPAPER HEADER
+════════════════════════════════════════ -->
+<header class="paper-header">
+    <div class="gold-stripe"></div>
+
+    <div class="paper-masthead">
+        <div class="paper-kicker">Schulprojekt · Literaturanalyse</div>
+
+        <div class="paper-name">Literatur<span>Zeitung</span></div>
+
+        <div class="paper-rule"></div>
+
+        <div
+            class="paper-tagline"
+            contenteditable="false"
+            data-key="header-sub"
+        >Buchanalyse · Charaktere &amp; Motive · Zitate &amp; Interviews</div>
+
+        <div class="paper-meta-row">
+            <span>Maja Nielsen · Der Tunnelbauer · Gerstenberg Verlag</span>
+            <button class="admin-trigger" onclick="openLogin()">⚙ Admin</button>
+        </div>
+    </div>
+</header>
+
+
+<!-- ════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════ -->
+<nav>
+    <ul>
+        <li><a href="#rezension"  class="active">Rezension</a></li>
+        <li><a href="#zitate">Zitate</a></li>
+        <li><a href="#themen">Themen &amp; Motive</a></li>
+        <li><a href="#interviews">Interviews</a></li>
+        <li><a href="#kommentare">Kommentare</a></li>
+    </ul>
+</nav>
+
+
+<!-- ════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════ -->
+<main>
+
+    <!-- ── REZENSION ──────────────────────── -->
+    <section id="rezension">
+        <div class="section-head">
+            <div class="section-label">Buchrezension</div>
+            <div class="section-title">Analyse &amp; Bewertung</div>
         </div>
 
-      </div>
+        <div class="rez-grid">
+
+            <div>
+                <div class="edit-hint">✏ Titel bearbeiten</div>
+                <h2
+                    class="rez-title"
+                    contenteditable="false"
+                    data-key="rez-title"
+                >Der Tunnelbauer – eine Reise in die Tiefe</h2>
+
+                <div class="stars-row" id="stars-row" title="Im Admin-Modus: Bewertung ändern">
+                    <span class="star-glyph"       data-v="1">★</span>
+                    <span class="star-glyph"       data-v="2">★</span>
+                    <span class="star-glyph"       data-v="3">★</span>
+                    <span class="star-glyph"       data-v="4">★</span>
+                    <span class="star-glyph empty" data-v="5">★</span>
+                </div>
+
+                <div class="edit-hint">✏ Text bearbeiten</div>
+                <div
+                    class="prose"
+                    contenteditable="false"
+                    data-key="rez-text"
+                >
+                    <p>Maja Nielsens Roman <em>„Der Tunnelbauer"</em> ist ein
+                    eindrucksvolles Werk, das auf mehreren Ebenen funktioniert.</p>
+                    <p>Im Mittelpunkt steht ein Junge, der sich buchstäblich
+                    aus seiner Situation herausgräbt.</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="book-card">
+                    <div
+                        class="book-cover-wrap"
+                        id="book-cover-wrap"
+                        onclick="adminAction(() => openImgModal('book-cover'))"
+                        title="Im Admin-Modus: Bild ändern"
+                    >
+                        <img
+                            id="book-cover-img"
+                            src="/static/book_cover.png"
+                            alt="Der Tunnelbauer – Buchcover"
+                        >
+                        <div class="book-cover-overlay">📷</div>
+                    </div>
+
+                    <div class="book-info">
+                        <h3 contenteditable="false" data-key="book-title">Der Tunnelbauer</h3>
+                        <div
+                            class="book-author-line"
+                            contenteditable="false"
+                            data-key="book-author"
+                        >Maja Nielsen</div>
+
+                        <table class="book-meta-table">
+                            <tr>
+                                <td>Verlag</td>
+                                <td contenteditable="false" data-key="book-verlag">Gerstenberg Verlag</td>
+                            </tr>
+                            <tr>
+                                <td>Erschienen</td>
+                                <td contenteditable="false" data-key="book-year">2022</td>
+                            </tr>
+                            <tr>
+                                <td>Seiten</td>
+                                <td contenteditable="false" data-key="book-pages">224</td>
+                            </tr>
+                            <tr>
+                                <td>Genre</td>
+                                <td contenteditable="false" data-key="book-genre">Jugendroman</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </section>
 
 
-
+    <!-- ── ZITATE ──────────────────────────── -->
     <section id="zitate">
-      <div class="section-label">Zitate</div>
-      <h2 class="section-title">Bedeutsame Stellen</h2>
-      <div class="zitate-list" id="zitate-container"></div>
-      <button class="add-btn" onclick="addZitat()">+ Neues Zitat hinzufügen</button>
+        <div class="section-head">
+            <div class="section-label">Zitate</div>
+            <div class="section-title">Bedeutsame Stellen aus dem Buch</div>
+        </div>
+
+        <div class="zitate-list" id="zitate-container"></div>
+
+        <button class="add-btn" onclick="addZitat()">+ Neues Zitat hinzufügen</button>
     </section>
 
 
-  
+    <!-- ── THEMEN ──────────────────────────── -->
     <section id="themen">
-      <div class="section-label">Analyse</div>
-      <h2 class="section-title">Themen &amp; Motive</h2>
-      <div class="themen-grid" id="themen-container"></div>
-      <button class="add-btn" onclick="addThema()">+ Neues Thema hinzufügen</button>
+        <div class="section-head">
+            <div class="section-label">Analyse</div>
+            <div class="section-title">Themen &amp; Motive</div>
+        </div>
+
+        <div class="themen-grid" id="themen-container"></div>
+
+        <button class="add-btn" onclick="addThema()">+ Neues Thema hinzufügen</button>
     </section>
 
 
-
+    <!-- ── INTERVIEWS ──────────────────────── -->
     <section id="interviews">
-      <div class="section-label">Fiktive Interviews</div>
-      <h2 class="section-title">Im Gespräch mit den Figuren</h2>
-      <div class="interview-list" id="interview-container"></div>
-      <button class="add-btn" onclick="addInterview()">+ Neues Interview hinzufügen</button>
+        <div class="section-head">
+            <div class="section-label">Fiktive Interviews</div>
+            <div class="section-title">Im Gespräch mit den Figuren</div>
+        </div>
+
+        <div class="interviews-list" id="interviews-container"></div>
+
+        <button class="add-btn" onclick="addInterview()">+ Neues Interview hinzufügen</button>
     </section>
 
 
-
+    <!-- ── KOMMENTARE ──────────────────────── -->
     <section id="kommentare">
-      <div class="section-label">Lesermeinungen</div>
-      <h2 class="section-title">Kommentare &amp; Bewertungen</h2>
-
-
-      <div class="comments-summary">
-        <div class="avg-score" id="avg-score">—</div>
-        <div class="avg-details">
-          <div class="avg-stars" id="avg-stars">
-            <span class="avg-star">★</span>
-            <span class="avg-star">★</span>
-            <span class="avg-star">★</span>
-            <span class="avg-star">★</span>
-            <span class="avg-star">★</span>
-          </div>
-          <div class="avg-count" id="avg-count">Noch keine Bewertungen</div>
+        <div class="section-head">
+            <div class="section-label">Leserstimmen</div>
+            <div class="section-title">Kommentare &amp; Bewertungen</div>
         </div>
-      </div>
 
-
-      <div class="comment-form">
-        <h3>Kommentar schreiben</h3>
-        <div class="form-row">
-          <input
-            class="form-input"
-            type="text"
-            id="c-author"
-            placeholder="Dein Name (optional)"
-            maxlength="80"
-          >
-          <div></div>
+        <!-- Average rating display -->
+        <div class="avg-badge">
+            <div class="avg-number" id="avg-number">–</div>
+            <div>
+                <div class="avg-stars" id="avg-stars"></div>
+                <div class="avg-count" id="avg-count">0 Bewertungen</div>
+            </div>
         </div>
-        <textarea
-          class="form-input"
-          id="c-body"
-          placeholder="Dein Kommentar zum Buch…"
-          maxlength="1000"
-        ></textarea>
-        <div class="star-select">
-          <span>Deine Bewertung:</span>
-          <button class="star-pick lit" data-sv="1" onclick="setCommentStar(1)">★</button>
-          <button class="star-pick lit" data-sv="2" onclick="setCommentStar(2)">★</button>
-          <button class="star-pick lit" data-sv="3" onclick="setCommentStar(3)">★</button>
-          <button class="star-pick lit" data-sv="4" onclick="setCommentStar(4)">★</button>
-          <button class="star-pick lit" data-sv="5" onclick="setCommentStar(5)">★</button>
+
+        <!-- Submission form -->
+        <div class="comment-form">
+            <h3>Kommentar hinterlassen</h3>
+
+            <div class="form-row">
+                <div>
+                    <label class="field-label" for="c-author">Dein Name</label>
+                    <input
+                        class="form-input"
+                        type="text"
+                        id="c-author"
+                        placeholder="optional"
+                        maxlength="80"
+                    >
+                </div>
+                <div>
+                    <label class="field-label">Bewertung</label>
+                    <div class="rating-input" id="rating-input">
+                        <span class="rating-star" data-v="1">★</span>
+                        <span class="rating-star" data-v="2">★</span>
+                        <span class="rating-star" data-v="3">★</span>
+                        <span class="rating-star" data-v="4">★</span>
+                        <span class="rating-star" data-v="5">★</span>
+                    </div>
+                </div>
+            </div>
+
+            <label class="field-label" for="c-body">Kommentar</label>
+            <textarea
+                class="form-input form-textarea"
+                id="c-body"
+                placeholder="Dein Kommentar zum Buch…"
+                maxlength="1000"
+            ></textarea>
+
+            <button class="btn-submit" onclick="submitComment()">
+                Kommentar abschicken
+            </button>
         </div>
-        <button class="btn-submit" onclick="submitComment()">
-          Kommentar senden
-        </button>
-      </div>
 
+        <div class="divider">◆</div>
 
-      <div class="comment-list" id="comment-list"></div>
+        <div class="comments-list" id="comments-list">
+            <div class="no-comments">Noch keine Kommentare. Sei der Erste!</div>
+        </div>
     </section>
 
-  </main>
+</main>
 
 
-
-  <footer>
-    <p>
-      <strong>LiteraturZeitung – Der Tunnelbauer</strong>
-      &nbsp;·&nbsp; Schulprojekt &nbsp;·&nbsp; Maja Nielsen &nbsp;·&nbsp; © 2025
-    </p>
-  </footer>
+<footer>
+    <strong>LiteraturZeitung – Der Tunnelbauer</strong>
+    <div class="footer-rule"></div>
+    <p>Schulprojekt · Maja Nielsen · Gerstenberg Verlag · © 2025</p>
+</footer>
 
 
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
 
-  <script>
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
 
+let isAdmin       = false;
+let myStars       = 4;    // admin's book rating
+let selectedRating = 5;  // rating picked in comment form
 
-    let isAdmin        = false;
-    let currentStars   = 4;
-    let commentStars   = 5;
-    let DATA           = { kv: {}, zitate: [], themen: [], interviews: [], comments: [] };
+let imgTarget = null;    // 'book-cover' | { type:'avatar', id:'...' }
+let imgFile   = null;    // pending File for upload
 
+let cpCallback = null;   // called with chosen color
+let epCallback = null;   // called with chosen emoji
 
-    let imgTarget = null;  
-    let imgFile   = null;
-
-    // Color picker context
-    let cpCallback = null;
-
-    // Emoji picker context
-    let epCallback = null;
-
-
-
-
-    async function boot() {
-      const res  = await fetch('/api/data');
-      DATA       = await res.json();
-      applyKV();
-      renderStars();
-      renderZitate();
-      renderThemen();
-      renderInterviews();
-      renderComments();
-      buildEmojiGrid();
-      buildColorSwatches();
-    }
-
-    boot();
+let DATA = { kv: {}, zitate: [], themen: [], interviews: [] };
 
 
+// ════════════════════════════════════════════
+// BOOTSTRAP
+// ════════════════════════════════════════════
 
-    function applyKV() {
-      Object.entries(DATA.kv).forEach(([key, value]) => {
+async function init() {
+    await loadData();
+    renderAll();
+    await loadComments();
+    buildEmojiGrid(ALL_EMOJIS);
+    buildSwatches();
+}
+
+async function loadData() {
+    const res = await fetch('/api/data');
+    DATA = await res.json();
+}
+
+function renderAll() {
+    // Fill all key-value fields
+    Object.entries(DATA.kv).forEach(([key, val]) => {
         const el = document.querySelector('[data-key="' + key + '"]');
-        if (el) el.innerHTML = value;
-      });
+        if (el) el.innerHTML = val;
+    });
 
-      currentStars = parseInt(DATA.kv['stars'] || 4, 10);
+    // Book rating
+    myStars = parseInt(DATA.kv['stars'] || '4', 10);
+    renderBookStars();
 
-      const coverImg = DATA.kv['book-cover-img'];
-      if (coverImg) {
-        document.getElementById('book-cover-img').src     = coverImg;
-        document.getElementById('header-thumb-img').src   = coverImg;
-      }
+    // Book cover
+    const coverUrl = DATA.kv['book-cover-img'];
+    if (coverUrl) {
+        document.getElementById('book-cover-img').src = coverUrl;
     }
 
+    renderZitate();
+    renderThemen();
+    renderInterviews();
+}
 
-    function openLogin() {
-      document.getElementById('login-overlay').classList.add('visible');
-      setTimeout(() => document.getElementById('pw-input').focus(), 80);
-    }
+init();
 
-    function closeLogin() {
-      document.getElementById('login-overlay').classList.remove('visible');
-      document.getElementById('pw-input').value          = '';
-      document.getElementById('login-error').style.display = 'none';
-    }
 
-    async function doLogin() {
-      const pw  = document.getElementById('pw-input').value;
-      const res = await fetch('/api/auth', {
+// ════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════
+
+function openLogin() {
+    document.getElementById('login-overlay').classList.add('visible');
+    setTimeout(() => document.getElementById('pw-input').focus(), 80);
+}
+
+function closeLogin() {
+    document.getElementById('login-overlay').classList.remove('visible');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('login-error').style.display = 'none';
+}
+
+async function doLogin() {
+    const pw = document.getElementById('pw-input').value;
+
+    const res = await fetch('/api/auth', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ password: pw }),
-      });
+    });
 
-      if (res.ok) {
+    if (res.ok) {
         isAdmin = true;
         closeLogin();
-        enableAdmin();
-      } else {
+        activateAdmin();
+    } else {
         document.getElementById('login-error').style.display = 'block';
         document.getElementById('pw-input').value = '';
         document.getElementById('pw-input').focus();
-      }
     }
+}
 
-    function logout() {
-      isAdmin = false;
-      document.body.classList.remove('admin-mode');
-      document.getElementById('admin-bar').classList.remove('visible');
-      document.querySelectorAll('[contenteditable]').forEach(
-        el => { el.contentEditable = 'false'; }
-      );
-    }
+function logout() {
+    isAdmin = false;
+    deactivateAdmin();
+}
 
-    function enableAdmin() {
-      document.body.classList.add('admin-mode');
-      document.getElementById('admin-bar').classList.add('visible');
-      document.querySelectorAll('[contenteditable]').forEach(
-        el => { el.contentEditable = 'true'; }
-      );
-    }
+function activateAdmin() {
+    document.body.classList.add('admin-mode');
+    document.getElementById('admin-bar').classList.add('visible');
+
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+
+function deactivateAdmin() {
+    document.body.classList.remove('admin-mode');
+    document.getElementById('admin-bar').classList.remove('visible');
+
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+        el.contentEditable = 'false';
+    });
+
+    closeAllPickers();
+}
+
+/** Only runs fn if admin is logged in */
+function adminAction(fn) {
+    if (isAdmin) fn();
+}
 
 
+// ════════════════════════════════════════════
+// SAVING
+// ════════════════════════════════════════════
 
-
-    function showToast() {
-      const t = document.getElementById('toast');
-      t.classList.add('visible');
-      clearTimeout(t._timer);
-      t._timer = setTimeout(() => t.classList.remove('visible'), 2200);
-    }
-
-    async function saveKV(obj) {
-      await fetch('/api/kv', {
+async function saveKV(obj) {
+    await fetch('/api/kv', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(obj),
-      });
-      showToast();
-    }
+    });
+    showToast();
+}
 
+async function saveAll() {
+    const kv = { stars: String(myStars) };
 
-    document.addEventListener('blur', async e => {
-      if (!isAdmin) return;
-      const el = e.target;
-      if (!el.hasAttribute('data-key')) return;
-      await saveKV({ [el.dataset.key]: el.innerHTML });
-    }, true);
-
-
-
-    function setStar(n) {
-      if (!isAdmin) return;
-      currentStars = n;
-      renderStars();
-      saveKV({ stars: String(n) });
-    }
-
-    function renderStars() {
-      document.querySelectorAll('#stars-row .star-btn').forEach(btn => {
-        const v = parseInt(btn.dataset.v, 10);
-        btn.classList.toggle('lit', v <= currentStars);
-      });
-      document.getElementById('stars-label').textContent =
-        'Unsere Bewertung: ' + currentStars + ' / 5';
-    }
-
-
-
-    const ALL_EMOJIS = [
-      '😀','😎','🤔','🥸','😢','😡','🤩','😇','🧐','👤','👥','🧑','👨','👩',
-      '🧓','👶','🕵️','🧙','🧟','🧑‍💻','🧑‍🏫','🧑‍🔬','🧑‍🎨','🗺️','🏔️','🌋',
-      '🕳️','🌅','🌊','🌿','🌲','🌸','⚡','💥','🔥','❄️','💫','✨','🌈',
-      '🎭','🎨','🎬','🎤','🎵','📖','📚','📝','✏️','🔍','🔬','🔭','💡','🏠',
-      '🏛️','🏗️','⛏️','🔧','🔨','⚙️','🛠️','🚇','🚀','🤝','💪','🧠','👁️',
-      '❤️','💙','💚','💛','🧡','💜','🖤','💔','💯','✅','❌','⚠️','❓',
-      '🎯','🏆','🥇','⭐','🌟','💎','👑','🎁','🎊','🎉','🌍','🗽','🗼','🏯',
-      '⛩️','🕌','🕍','⛪','👦','👧','🧒','🙅','🙆','🤦','🤷','💀','👻',
-    ];
-
-    function buildEmojiGrid() {
-      renderEmojiGrid(ALL_EMOJIS);
-    }
-
-    function renderEmojiGrid(list) {
-      document.getElementById('ep-grid').innerHTML = list.map(e =>
-        `<button class="ep-btn" onclick="pickEmoji('${e}')">${e}</button>`
-      ).join('');
-    }
-
-    function filterEmoji(q) {
-      renderEmojiGrid(q ? ALL_EMOJIS.filter(e => e.includes(q)) : ALL_EMOJIS);
-    }
-
-    function openEmojiPicker(triggerEl, callback) {
-      epCallback = callback;
-      const picker = document.getElementById('emoji-picker');
-      picker.classList.add('visible');
-
-      const r = triggerEl.getBoundingClientRect();
-      picker.style.top  = (r.bottom + window.scrollY + 6) + 'px';
-      picker.style.left = Math.min(r.left, window.innerWidth - 316) + 'px';
-
-      picker.querySelector('.ep-search').value = '';
-      renderEmojiGrid(ALL_EMOJIS);
-    }
-
-    function pickEmoji(emoji) {
-      if (epCallback) epCallback(emoji);
-      document.getElementById('emoji-picker').classList.remove('visible');
-      epCallback = null;
-    }
-
-
-
-
-    const SWATCHES = [
-      '#E8A020','#C0C0C0','#888888','#FFFFFF',
-      '#FF6B35','#C0392B','#E91E63','#9B59B6',
-      '#3498DB','#2D4A7A','#1ABC9C','#27AE60',
-      '#F39C12','#E67E22','#16A085','#2C3E50',
-    ];
-
-    function buildColorSwatches() {
-      document.getElementById('cp-swatches').innerHTML = SWATCHES.map(c =>
-        `<div
-          class="cp-swatch"
-          style="background:${c}"
-          data-color="${c}"
-          onclick="pickColor('${c}')"
-        ></div>`
-      ).join('');
-    }
-
-    function openColorPicker(triggerEl, currentColor, callback) {
-      cpCallback = callback;
-      const picker = document.getElementById('color-picker');
-      picker.classList.add('visible');
-
-      const r = triggerEl.getBoundingClientRect();
-      picker.style.top  = (r.bottom + window.scrollY + 6) + 'px';
-      picker.style.left = Math.min(r.left, window.innerWidth - 256) + 'px';
-
-      document.getElementById('cp-custom').value       = currentColor || '#E8A020';
-      document.getElementById('cp-preview').style.background = currentColor || '#E8A020';
-
-      document.querySelectorAll('.cp-swatch').forEach(s => {
-        s.classList.toggle('selected', s.dataset.color === currentColor);
-      });
-    }
-
-    function pickColor(color) {
-      document.getElementById('cp-preview').style.background = color;
-      document.getElementById('cp-custom').value = color;
-      document.querySelectorAll('.cp-swatch').forEach(s => {
-        s.classList.toggle('selected', s.dataset.color === color);
-      });
-      if (cpCallback) cpCallback(color);
-      setTimeout(() => {
-        document.getElementById('color-picker').classList.remove('visible');
-        cpCallback = null;
-      }, 150);
-    }
-
-    function cpCustomColor(color) {
-      document.getElementById('cp-preview').style.background = color;
-      if (cpCallback) cpCallback(color);
-    }
-
-    // Close pickers on outside click
-    document.addEventListener('click', e => {
-      const ePicker = document.getElementById('emoji-picker');
-      const cPicker = document.getElementById('color-picker');
-
-      if (
-        ePicker.classList.contains('visible') &&
-        !ePicker.contains(e.target) &&
-        !e.target.closest('[data-ep-trigger]')
-      ) {
-        ePicker.classList.remove('visible');
-      }
-
-      if (
-        cPicker.classList.contains('visible') &&
-        !cPicker.contains(e.target) &&
-        !e.target.closest('[data-cp-trigger]')
-      ) {
-        cPicker.classList.remove('visible');
-      }
+    document.querySelectorAll('[data-key]').forEach(el => {
+        kv[el.dataset.key] = el.innerHTML;
     });
 
+    await saveKV(kv);
+}
+
+// Auto-save each field when the user leaves it
+document.addEventListener('blur', async (e) => {
+    if (!isAdmin) return;
+    const el = e.target;
+    if (!el.dataset.key) return;
+    await saveKV({ [el.dataset.key]: el.innerHTML });
+}, true);
+
+function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('visible');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('visible'), 2200);
+}
 
 
-    function openImgModal(target) {
-      imgTarget = target;
-      imgFile   = null;
-      document.getElementById('img-preview').style.display = 'none';
-      document.getElementById('img-preview').src = '';
-      document.getElementById('img-modal').classList.add('visible');
+// ════════════════════════════════════════════
+// BOOK RATING STARS (admin only)
+// ════════════════════════════════════════════
+
+function renderBookStars() {
+    document.querySelectorAll('#stars-row .star-glyph').forEach(s => {
+        const active = parseInt(s.dataset.v, 10) <= myStars;
+        s.className = 'star-glyph' + (active ? '' : ' empty');
+    });
+}
+
+document.getElementById('stars-row').addEventListener('click', (e) => {
+    if (!isAdmin) return;
+    const s = e.target.closest('.star-glyph');
+    if (!s) return;
+    myStars = parseInt(s.dataset.v, 10);
+    renderBookStars();
+    saveKV({ stars: String(myStars) });
+});
+
+
+// ════════════════════════════════════════════
+// EMOJI PICKER
+// ════════════════════════════════════════════
+
+const ALL_EMOJIS = [
+    '😀','😎','🤔','🥸','😤','😢','😡','🤩','😇','🧐',
+    '👤','👥','🧑','👨','👩','🧓','👶','🕵️','🧙','🧟',
+    '🧑‍💻','🧑‍🏫','🧑‍🔬','🧑‍🎨','🗺️','🏔️','🌋','🕳️','🌅','🌊',
+    '🌿','🌲','🌸','⚡','💥','🔥','❄️','💫','✨','🌈',
+    '🎭','🎨','🎬','🎤','🎵','🎶','📖','📚','📝','✏️',
+    '🖊️','🔍','🔬','🔭','💡','🏠','🏛️','🏗️','⛏️','🔧',
+    '🔨','⚙️','🛠️','🚇','🚂','🚀','✈️','🤝','💪','🧠',
+    '👁️','💬','❤️','💙','💚','💛','🧡','💜','🖤','🤍',
+    '💯','✅','❌','⚠️','❓','❗','🎯','🏆','🥇','⭐',
+    '🌟','💎','👑','🎁','🎊','🎉','🌍','🌏','🌐','👦',
+    '👧','🧒','🕶️','🌙','☀️','⛅','🌧️','🏕️','🗻','⛏️',
+];
+
+function buildEmojiGrid(list) {
+    document.getElementById('ep-grid').innerHTML =
+        list.map(e => `<button class="ep-btn" onclick="pickEmoji('${e}')">${e}</button>`)
+            .join('');
+}
+
+function filterEmoji(query) {
+    if (!query.trim()) {
+        buildEmojiGrid(ALL_EMOJIS);
+        return;
+    }
+    // Show emojis that include the typed character(s)
+    buildEmojiGrid(ALL_EMOJIS.filter(e => e.includes(query.trim())));
+}
+
+function openEmojiPicker(triggerEl, callback) {
+    epCallback = callback;
+
+    const picker = document.getElementById('emoji-picker');
+
+    // Close color picker if open
+    document.getElementById('color-picker').classList.remove('visible');
+
+    // Position the picker below the trigger button, keep it on screen
+    const rect = triggerEl.getBoundingClientRect();
+    picker.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
+    picker.style.left = Math.min(rect.left, window.innerWidth - 310) + 'px';
+
+    picker.querySelector('.ep-search').value = '';
+    buildEmojiGrid(ALL_EMOJIS);
+
+    // Show AFTER positioning, and stop this open-click from
+    // immediately re-triggering the outside-click handler
+    picker.classList.add('visible');
+    picker.querySelector('.ep-search').focus();
+}
+
+function pickEmoji(emoji) {
+    if (epCallback) epCallback(emoji);
+    document.getElementById('emoji-picker').classList.remove('visible');
+    epCallback = null;
+}
+
+
+// ════════════════════════════════════════════
+// COLOR PICKER
+// ════════════════════════════════════════════
+
+const SWATCHES = [
+    '#E8A020','#F5C842','#FFFFFF','#A8A8A8','#666666',
+    '#FF6B35','#C0392B','#E91E63','#9B59B6','#3498DB',
+    '#2D4A7A','#2ECC71','#3D9970','#16A085','#1ABC9C',
+    '#27AE60','#F39C12','#D35400','#E67E22','#34495E',
+];
+
+function buildSwatches(currentColor) {
+    document.getElementById('cp-swatches').innerHTML =
+        SWATCHES.map(c => `
+            <div
+                class="cp-swatch ${c === currentColor ? 'selected' : ''}"
+                style="background: ${c}"
+                onclick="pickColor('${c}')"
+                title="${c}"
+            ></div>
+        `).join('');
+}
+
+function openColorPicker(triggerEl, currentColor, callback) {
+    cpCallback = callback;
+
+    const picker = document.getElementById('color-picker');
+
+    // Close emoji picker if it is open
+    document.getElementById('emoji-picker').classList.remove('visible');
+
+    // Position below the trigger, keep it on screen
+    const rect = triggerEl.getBoundingClientRect();
+    picker.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
+    picker.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
+
+    buildSwatches(currentColor || '#E8A020');
+    document.getElementById('cp-custom-input').value       = currentColor || '#E8A020';
+    document.getElementById('cp-preview').style.background = currentColor || '#E8A020';
+
+    // Show AFTER positioning
+    picker.classList.add('visible');
+}
+
+function pickColor(color) {
+    document.getElementById('cp-preview').style.background = color;
+    document.getElementById('cp-custom-input').value       = color;
+
+    document.querySelectorAll('.cp-swatch').forEach(s => {
+        s.classList.toggle('selected', s.title === color);
+    });
+
+    if (cpCallback) cpCallback(color);
+    cpCallback = null;
+
+    document.getElementById('color-picker').classList.remove('visible');
+}
+
+function onCustomColor(color) {
+    document.getElementById('cp-preview').style.background = color;
+    document.querySelectorAll('.cp-swatch').forEach(s => s.classList.remove('selected'));
+    if (cpCallback) cpCallback(color);
+}
+
+function closeAllPickers() {
+    document.getElementById('emoji-picker').classList.remove('visible');
+    document.getElementById('color-picker').classList.remove('visible');
+}
+
+// Close pickers when clicking outside them AND outside their trigger buttons
+document.addEventListener('click', (e) => {
+    const ep = document.getElementById('emoji-picker');
+    const cp = document.getElementById('color-picker');
+
+    // A click that opened the picker will also bubble here immediately.
+    // We ignore it by checking if the target is a trigger button
+    // (action-btn) — those are handled by openXxxPicker directly.
+    const isActionBtn = e.target.closest('.action-btn');
+
+    if (!isActionBtn) {
+        if (ep.classList.contains('visible') && !ep.contains(e.target)) {
+            ep.classList.remove('visible');
+        }
+        if (cp.classList.contains('visible') && !cp.contains(e.target)) {
+            cp.classList.remove('visible');
+        }
+    }
+});
+
+
+// ════════════════════════════════════════════
+// IMAGE UPLOAD
+// ════════════════════════════════════════════
+
+function openImgModal(target) {
+    imgTarget = target;
+    imgFile   = null;
+    document.getElementById('img-preview').style.display = 'none';
+    document.getElementById('img-preview').src = '';
+    document.getElementById('img-modal').classList.add('visible');
+}
+
+function closeImgModal() {
+    document.getElementById('img-modal').classList.remove('visible');
+    imgTarget = null;
+    imgFile   = null;
+}
+
+function previewFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    imgFile = file;
+    const prev = document.getElementById('img-preview');
+    prev.src = URL.createObjectURL(file);
+    prev.style.display = 'block';
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropzone').classList.remove('dragging');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    imgFile = file;
+    const prev = document.getElementById('img-preview');
+    prev.src = URL.createObjectURL(file);
+    prev.style.display = 'block';
+}
+
+async function confirmUpload() {
+    if (!imgFile) {
+        alert('Bitte zuerst eine Datei auswählen.');
+        return;
     }
 
-    function closeImgModal() {
-      document.getElementById('img-modal').classList.remove('visible');
-      imgTarget = null;
-      imgFile   = null;
+    const fd = new FormData();
+    fd.append('file', imgFile);
+
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const d   = await res.json();
+
+    if (!d.ok) {
+        alert('Upload fehlgeschlagen: ' + (d.error || 'Unbekannter Fehler'));
+        return;
     }
 
-    function previewImage(input) {
-      const f = input.files[0];
-      if (!f) return;
-      imgFile = f;
-      const prev = document.getElementById('img-preview');
-      prev.src           = URL.createObjectURL(f);
-      prev.style.display = 'block';
-    }
+    const url = d.url;
 
-    function handleDrop(e) {
-      e.preventDefault();
-      document.getElementById('dropzone').classList.remove('dragging');
-      const f = e.dataTransfer.files[0];
-      if (!f) return;
-      imgFile = f;
-      const prev = document.getElementById('img-preview');
-      prev.src           = URL.createObjectURL(f);
-      prev.style.display = 'block';
-    }
-
-    async function confirmUpload() {
-      if (!imgFile) { alert('Bitte zuerst eine Datei auswählen.'); return; }
-
-      const fd = new FormData();
-      fd.append('file', imgFile);
-
-      const res  = await fetch('/api/upload', { method: 'POST', body: fd });
-      const data = await res.json();
-
-      if (!data.ok) { alert('Upload fehlgeschlagen.'); return; }
-
-      const url = data.url;
-
-      if (imgTarget === 'book-cover') {
-        document.getElementById('book-cover-img').src   = url;
-        document.getElementById('header-thumb-img').src = url;
+    if (imgTarget === 'book-cover') {
+        document.getElementById('book-cover-img').src = url;
         await saveKV({ 'book-cover-img': url });
 
-      } else if (imgTarget && imgTarget.type === 'avatar') {
-        const iid = imgTarget.id;
-        const av  = document.querySelector('#iv-' + iid + ' .avatar');
-        if (av) {
-          let img = av.querySelector('img');
-          if (!img) {
-            img = document.createElement('img');
-            av.insertBefore(img, av.firstChild);
-          }
-          img.src = url;
-          av.querySelector('.avatar-initials').style.display = 'none';
-        }
-        const iv = DATA.interviews.find(i => i.id === iid) || {};
-        await fetch('/api/interview/' + iid, {
-          method:  'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ ...iv, avatar_img: url }),
+    } else if (imgTarget && imgTarget.type === 'avatar') {
+        applyAvatarImage(imgTarget.id, url);
+
+        const iv = DATA.interviews.find(i => i.id === imgTarget.id) || {};
+        await fetch('/api/interview/' + imgTarget.id, {
+            method:  'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ ...iv, avatar_img: url }),
         });
-      }
-
-      closeImgModal();
-      showToast();
     }
 
+    closeImgModal();
+    showToast();
+}
 
+function applyAvatarImage(iid, url) {
+    const av = document.querySelector('#iv-' + iid + ' .avatar');
+    if (!av) return;
 
-
-    function renderZitate() {
-      const container = document.getElementById('zitate-container');
-      container.innerHTML = '';
-      DATA.zitate.forEach(z => container.appendChild(makeZitatEl(z)));
+    let img = av.querySelector('img');
+    if (!img) {
+        img = document.createElement('img');
+        av.insertBefore(img, av.firstChild);
     }
+    img.src = url;
 
-    function makeZitatEl(z) {
-      const div = document.createElement('div');
-      div.className  = 'zitat-card';
-      div.id         = 'zc-' + z.id;
-      div.style.borderLeftColor = z.border_color || '#E8A020';
+    // Hide text initials
+    const initSpan = av.querySelector('.av-initials');
+    if (initSpan) initSpan.style.display = 'none';
+}
 
-      const tc = z.tag_color || z.border_color || '#E8A020';
 
-      div.innerHTML = `
+// ════════════════════════════════════════════
+// ZITATE
+// ════════════════════════════════════════════
+
+function renderZitate() {
+    const container = document.getElementById('zitate-container');
+    container.innerHTML = '';
+    DATA.zitate.forEach(z => container.appendChild(buildZitatEl(z)));
+}
+
+function buildZitatEl(z) {
+    const color    = z.border_color || '#E8A020';
+    const tagColor = z.tag_color    || color;
+
+    const div = document.createElement('div');
+    div.className = 'zitat-card';
+    div.id        = 'zc-' + z.id;
+    div.style.borderLeftColor = color;
+
+    div.innerHTML = `
         <div
-          class="zitat-tag"
-          style="background:${tc}20; color:${tc}"
-          contenteditable="false"
-          data-key="ztag-${z.id}"
+            class="zitat-tag"
+            contenteditable="false"
+            data-key="ztag-${z.id}"
+            style="color:${tagColor}; background:${tagColor}20;"
         >${z.tag || 'Thema'}</div>
 
         <div
-          class="zitat-text"
-          contenteditable="false"
-          data-key="ztext-${z.id}"
+            class="zitat-text"
+            contenteditable="false"
+            data-key="ztext-${z.id}"
         >${z.text || ''}</div>
 
         <div
-          class="zitat-source"
-          contenteditable="false"
-          data-key="zsrc-${z.id}"
+            class="zitat-source"
+            contenteditable="false"
+            data-key="zsrc-${z.id}"
         >${z.source || ''}</div>
 
-        <div class="admin-actions">
-          <button
-            class="act-btn"
-            data-cp-trigger
-            onclick="openColorPicker(
-              this,
-              '${z.border_color || '#E8A020'}',
-              c => setZitatColor('${z.id}', c)
-            )"
-          >🎨 Farbe</button>
-          <button
-            class="act-btn del"
-            onclick="deleteZitat('${z.id}')"
-          >✕ Löschen</button>
+        <div class="action-row">
+            <button class="action-btn" data-picker="color">🎨 Farbe</button>
+            <button class="action-btn del" data-action="delete">✕ Löschen</button>
         </div>
-      `;
+    `;
 
-      if (isAdmin) {
-        div.querySelectorAll('[contenteditable]').forEach(
-          el => { el.contentEditable = 'true'; }
-        );
-      }
-
-      // Auto-save on blur
-      div.querySelectorAll('[data-key]').forEach(el => {
-        el.addEventListener('blur', () => saveZitatDOM(z.id));
-      });
-
-      return div;
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
     }
 
-    async function saveZitatDOM(zid) {
-      const cur = DATA.zitate.find(z => z.id === zid) || {};
-      const upd = {
-        ...cur,
-        tag:    document.querySelector('[data-key="ztag-'   + zid + '"]')?.innerHTML || '',
-        text:   document.querySelector('[data-key="ztext-'  + zid + '"]')?.innerHTML || '',
-        source: document.querySelector('[data-key="zsrc-'   + zid + '"]')?.innerHTML || '',
-      };
-      await fetch('/api/zitat/' + zid, {
+    // Auto-save when user leaves any editable field
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveZitatFromDOM(z.id));
+    });
+
+    // Wire buttons via addEventListener — avoids stale color in inline onclick
+    div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cur = div.style.borderLeftColor || color;
+        openColorPicker(e.currentTarget, cur, (c) => setZitatColor(z.id, c));
+    });
+    div.querySelector('[data-action="delete"]').addEventListener('click', () => {
+        deleteZitat(z.id);
+    });
+
+    return div;
+}
+
+function saveZitatFromDOM(zid) {
+    const tag    = document.querySelector('[data-key="ztag-'  + zid + '"]');
+    const text   = document.querySelector('[data-key="ztext-' + zid + '"]');
+    const source = document.querySelector('[data-key="zsrc-'  + zid + '"]');
+    const cur    = DATA.zitate.find(z => z.id === zid) || {};
+
+    fetch('/api/zitat/' + zid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(upd),
-      });
-      showToast();
+        body:    JSON.stringify({
+            ...cur,
+            tag:    tag    ? tag.innerHTML    : cur.tag,
+            text:   text   ? text.innerHTML   : cur.text,
+            source: source ? source.innerHTML : cur.source,
+        }),
+    });
+}
+
+function setZitatColor(zid, color) {
+    const card = document.getElementById('zc-' + zid);
+    if (!card) return;
+
+    card.style.borderLeftColor = color;
+
+    const tagEl = card.querySelector('.zitat-tag');
+    if (tagEl) {
+        tagEl.style.color      = color;
+        tagEl.style.background = color + '20';
     }
 
-    function setZitatColor(zid, color) {
-      const card = document.getElementById('zc-' + zid);
-      if (!card) return;
-      card.style.borderLeftColor = color;
-      const tag = card.querySelector('.zitat-tag');
-      if (tag) { tag.style.color = color; tag.style.background = color + '20'; }
+    const cur = DATA.zitate.find(z => z.id === zid) || {};
+    cur.border_color = color;
+    cur.tag_color    = color;
 
-      const cur = DATA.zitate.find(z => z.id === zid) || {};
-      cur.border_color = color;
-      cur.tag_color    = color;
-      fetch('/api/zitat/' + zid, {
+    fetch('/api/zitat/' + zid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ ...cur }),
-      });
-      showToast();
-    }
+    });
 
-    async function addZitat() {
-      const palette = ['#E8A020','#C0C0C0','#3498DB','#27AE60','#E91E63'];
-      const color   = palette[DATA.zitate.length % palette.length];
-      const res     = await fetch('/api/zitat', {
+    showToast();
+}
+
+async function addZitat() {
+    const palette = ['#E8A020','#C0C0C0','#A8A8A8','#FFFFFF','#F5C842'];
+    const color   = palette[DATA.zitate.length % palette.length];
+
+    const res = await fetch('/api/zitat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          tag:          'Thema',
-          text:         '„Neues Zitat eingeben…"',
-          source:       '— Kapitel X, S. XX',
-          border_color: color,
-          tag_color:    color,
+            tag:          'Thema',
+            text:         '„Neues Zitat eingeben…"',
+            source:       '— Kapitel X, S. XX',
+            border_color: color,
+            tag_color:    color,
         }),
-      });
-      const data = await res.json();
-      const newZ = {
-        id: data.id, tag: 'Thema',
-        text: '„Neues Zitat eingeben…"',
-        source: '— Kapitel X, S. XX',
+    });
+
+    const d   = await res.json();
+    const newZ = {
+        id: d.id, tag: 'Thema',
+        text: '„Neues Zitat eingeben…"', source: '— Kapitel X, S. XX',
         border_color: color, tag_color: color,
-      };
-      DATA.zitate.push(newZ);
-      const el = makeZitatEl(newZ);
-      document.getElementById('zitate-container').appendChild(el);
-      if (isAdmin) {
-        el.querySelectorAll('[contenteditable]').forEach(
-          e => { e.contentEditable = 'true'; }
-        );
-      }
+    };
+
+    DATA.zitate.push(newZ);
+
+    const el = buildZitatEl(newZ);
+    document.getElementById('zitate-container').appendChild(el);
+
+    if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
     }
+}
 
-    async function deleteZitat(zid) {
-      if (!confirm('Dieses Zitat löschen?')) return;
-      await fetch('/api/zitat/' + zid, { method: 'DELETE' });
-      DATA.zitate = DATA.zitate.filter(z => z.id !== zid);
-      document.getElementById('zc-' + zid)?.remove();
-      showToast();
-    }
+async function deleteZitat(zid) {
+    if (!confirm('Dieses Zitat wirklich löschen?')) return;
+    await fetch('/api/zitat/' + zid, { method: 'DELETE' });
+    DATA.zitate = DATA.zitate.filter(z => z.id !== zid);
+    document.getElementById('zc-' + zid)?.remove();
+    showToast();
+}
 
 
+// ════════════════════════════════════════════
+// THEMEN
+// ════════════════════════════════════════════
 
+function renderThemen() {
+    const container = document.getElementById('themen-container');
+    container.innerHTML = '';
+    DATA.themen.forEach(t => container.appendChild(buildThemaEl(t)));
+}
 
-    function renderThemen() {
-      const container = document.getElementById('themen-container');
-      container.innerHTML = '';
-      DATA.themen.forEach(t => container.appendChild(makeThemaEl(t)));
-    }
+function buildThemaEl(t) {
+    const iconBg = t.icon_bg || '#E8A02020';
 
-    function makeThemaEl(t) {
-      const div = document.createElement('div');
-      div.className = 'thema-card';
-      div.id        = 'tc-' + t.id;
+    const div = document.createElement('div');
+    div.className = 'thema-card';
+    div.id        = 'tc-' + t.id;
 
-      const bg = t.icon_bg || '#E8A020';
+    div.innerHTML = `
+        <div
+            class="thema-icon-wrap"
+            id="ticon-wrap-${t.id}"
+            style="background:${iconBg}"
+        ><span id="ticon-${t.id}">${t.icon || '💡'}</span></div>
 
-      div.innerHTML = `
-        <div class="thema-icon" style="background:${bg}20" id="ticon-wrap-${t.id}">
-          <span id="ticon-${t.id}">${t.icon || '💡'}</span>
+        <h3 contenteditable="false" data-key="ttitle-${t.id}">${t.title || ''}</h3>
+        <p  contenteditable="false" data-key="tbody-${t.id}">${t.body  || ''}</p>
+
+        <div class="action-row">
+            <button class="action-btn" data-picker="emoji">😀 Emoji</button>
+            <button class="action-btn" data-picker="color">🎨 Hintergrund</button>
+            <button class="action-btn del" data-action="delete">✕ Löschen</button>
         </div>
-        <h3
-          contenteditable="false"
-          data-key="ttitle-${t.id}"
-        >${t.title || ''}</h3>
-        <p
-          contenteditable="false"
-          data-key="tbody-${t.id}"
-        >${t.body || ''}</p>
+    `;
 
-        <div class="admin-actions">
-          <button
-            class="act-btn"
-            data-ep-trigger
-            onclick="openEmojiPicker(this, e => setThemaIcon('${t.id}', e))"
-          >😀 Emoji</button>
-          <button
-            class="act-btn"
-            data-cp-trigger
-            onclick="openColorPicker(
-              this,
-              '${bg}',
-              c => setThemaBg('${t.id}', c)
-            )"
-          >🎨 Farbe</button>
-          <button
-            class="act-btn del"
-            onclick="deleteThema('${t.id}')"
-          >✕ Löschen</button>
-        </div>
-      `;
-
-      if (isAdmin) {
-        div.querySelectorAll('[contenteditable]').forEach(
-          el => { el.contentEditable = 'true'; }
-        );
-      }
-
-      div.querySelectorAll('[data-key]').forEach(el => {
-        el.addEventListener('blur', () => saveThemaDOM(t.id));
-      });
-
-      return div;
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
     }
 
-    async function saveThemaDOM(tid) {
-      const cur = DATA.themen.find(t => t.id === tid) || {};
-      const upd = {
-        ...cur,
-        title: document.querySelector('[data-key="ttitle-' + tid + '"]')?.innerHTML || '',
-        body:  document.querySelector('[data-key="tbody-'  + tid + '"]')?.innerHTML || '',
-      };
-      await fetch('/api/thema/' + tid, {
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveThemaFromDOM(t.id));
+    });
+
+    // Wire buttons — closures capture t.id reliably
+    div.querySelector('[data-picker="emoji"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEmojiPicker(e.currentTarget, (emoji) => setThemaIcon(t.id, emoji));
+    });
+    div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cur = div.querySelector('.thema-icon-wrap').style.background || iconBg;
+        openColorPicker(e.currentTarget, cur, (c) => setThemaBg(t.id, c));
+    });
+    div.querySelector('[data-action="delete"]').addEventListener('click', () => {
+        deleteThema(t.id);
+    });
+
+    return div;
+}
+
+function saveThemaFromDOM(tid) {
+    const titleEl = document.querySelector('[data-key="ttitle-' + tid + '"]');
+    const bodyEl  = document.querySelector('[data-key="tbody-'  + tid + '"]');
+    const cur     = DATA.themen.find(t => t.id === tid) || {};
+
+    fetch('/api/thema/' + tid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(upd),
-      });
-      showToast();
-    }
+        body:    JSON.stringify({
+            ...cur,
+            title: titleEl ? titleEl.innerHTML : cur.title,
+            body:  bodyEl  ? bodyEl.innerHTML  : cur.body,
+        }),
+    });
+}
 
-    function setThemaIcon(tid, emoji) {
-      const el = document.getElementById('ticon-' + tid);
-      if (el) el.textContent = emoji;
-      const cur  = DATA.themen.find(t => t.id === tid) || {};
-      cur.icon = emoji;
-      fetch('/api/thema/' + tid, {
+function setThemaIcon(tid, emoji) {
+    const iconEl = document.getElementById('ticon-' + tid);
+    if (iconEl) iconEl.textContent = emoji;
+
+    const cur = DATA.themen.find(t => t.id === tid) || {};
+    cur.icon  = emoji;
+
+    fetch('/api/thema/' + tid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ ...cur }),
-      });
-      showToast();
-    }
+    });
 
-    function setThemaBg(tid, color) {
-      const wrap = document.getElementById('ticon-wrap-' + tid);
-      if (wrap) wrap.style.background = color + '20';
-      const cur  = DATA.themen.find(t => t.id === tid) || {};
-      cur.icon_bg = color;
-      fetch('/api/thema/' + tid, {
+    showToast();
+}
+
+function setThemaBg(tid, color) {
+    const wrap = document.getElementById('ticon-wrap-' + tid);
+    if (wrap) wrap.style.background = color + '30';
+
+    const cur   = DATA.themen.find(t => t.id === tid) || {};
+    cur.icon_bg = color + '30';
+
+    fetch('/api/thema/' + tid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ ...cur, icon_bg: color }),
-      });
-      showToast();
-    }
+        body:    JSON.stringify({ ...cur }),
+    });
 
-    async function addThema() {
-      const palette = ['#E8A020','#C0C0C0','#3498DB','#27AE60','#E91E63'];
-      const icons   = ['💡','🔍','⚡','🌊','🏔️','🌿','🎭','🧠','🕳️','👦'];
-      const idx     = DATA.themen.length;
-      const color   = palette[idx % palette.length];
-      const icon    = icons  [idx % icons.length];
+    showToast();
+}
 
-      const res  = await fetch('/api/thema', {
+async function addThema() {
+    const icons   = ['💡','🔍','⚡','🌊','🏔️','🌿','🎭','🧠','👦','🌙'];
+    const palette = ['#E8A020','#C0C0C0','#888888','#FFFFFF'];
+    const icon    = icons  [DATA.themen.length % icons.length];
+    const color   = palette[DATA.themen.length % palette.length];
+
+    const res = await fetch('/api/thema', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          icon:    icon,
-          icon_bg: color,
-          title:   'Neues Thema',
-          body:    'Beschreibung hier eingeben…',
+            icon:    icon,
+            icon_bg: color + '20',
+            title:   'Neues Thema',
+            body:    'Beschreibung hier eingeben…',
         }),
-      });
-      const data = await res.json();
-      const newT = {
-        id: data.id, icon, icon_bg: color,
+    });
+
+    const d   = await res.json();
+    const newT = {
+        id: d.id, icon, icon_bg: color + '20',
         title: 'Neues Thema', body: 'Beschreibung hier eingeben…',
-      };
-      DATA.themen.push(newT);
-      const el = makeThemaEl(newT);
-      document.getElementById('themen-container').appendChild(el);
-      if (isAdmin) {
-        el.querySelectorAll('[contenteditable]').forEach(
-          e => { e.contentEditable = 'true'; }
-        );
-      }
+    };
+
+    DATA.themen.push(newT);
+
+    const el = buildThemaEl(newT);
+    document.getElementById('themen-container').appendChild(el);
+
+    if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
     }
+}
 
-    async function deleteThema(tid) {
-      if (!confirm('Dieses Thema löschen?')) return;
-      await fetch('/api/thema/' + tid, { method: 'DELETE' });
-      DATA.themen = DATA.themen.filter(t => t.id !== tid);
-      document.getElementById('tc-' + tid)?.remove();
-      showToast();
-    }
+async function deleteThema(tid) {
+    if (!confirm('Dieses Thema wirklich löschen?')) return;
+    await fetch('/api/thema/' + tid, { method: 'DELETE' });
+    DATA.themen = DATA.themen.filter(t => t.id !== tid);
+    document.getElementById('tc-' + tid)?.remove();
+    showToast();
+}
 
 
+// ════════════════════════════════════════════
+// INTERVIEWS
+// ════════════════════════════════════════════
 
+function renderInterviews() {
+    const container = document.getElementById('interviews-container');
+    container.innerHTML = '';
+    DATA.interviews.forEach(iv => container.appendChild(buildInterviewEl(iv)));
+}
 
-    function renderInterviews() {
-      const container = document.getElementById('interview-container');
-      container.innerHTML = '';
-      DATA.interviews.forEach(iv => container.appendChild(makeInterviewEl(iv)));
-    }
+function buildInterviewEl(iv) {
+    const accentColor = iv.accent_color || '#E8A020';
+    const avatarColor = iv.avatar_color || accentColor;
 
-    function makeInterviewEl(iv) {
-      const div = document.createElement('div');
-      div.className = 'interview-card';
-      div.id        = 'iv-' + iv.id;
+    const avatarContent = iv.avatar_img
+        ? `<img src="${iv.avatar_img}" alt="${iv.initials || '??'}">`
+        : `<span class="av-initials">${iv.initials || '??'}</span>`;
 
-      const avatarContent = iv.avatar_img
-        ? `<img src="${iv.avatar_img}" alt="">`
-        : `<span class="avatar-initials">${iv.initials || '??'}</span>`;
+    const div = document.createElement('div');
+    div.className = 'interview-card';
+    div.id        = 'iv-' + iv.id;
 
-      div.innerHTML = `
-        <div class="interview-header" style="border-left: 4px solid ${iv.accent_color || '#E8A020'}">
-          <div
-            class="avatar"
-            style="background:${iv.avatar_color || '#E8A020'}"
-            onclick="if(isAdmin) openImgModal({ type:'avatar', id:'${iv.id}' })"
-          >
-            ${avatarContent}
-            <div class="avatar-edit-overlay">📷</div>
-          </div>
-          <div class="interview-info">
-            <h3
-              contenteditable="false"
-              data-key="iname-${iv.id}"
-            >${iv.name || ''}</h3>
-            <p
-              contenteditable="false"
-              data-key="irole-${iv.id}"
-            >${iv.role || ''}</p>
-          </div>
-          <div class="admin-actions" style="margin-top:0; margin-left:auto">
-            <button
-              class="act-btn"
-              data-cp-trigger
-              onclick="openColorPicker(
-                this,
-                '${iv.accent_color || '#E8A020'}',
-                c => setInterviewColor('${iv.id}', c)
-              )"
-            >🎨 Farbe</button>
-            <button
-              class="act-btn del"
-              onclick="deleteInterview('${iv.id}')"
-            >✕</button>
-          </div>
-        </div>
+    div.innerHTML = `
+        <div style="background:${accentColor}"></div>
 
         <div class="interview-body">
-          <ul class="qa-list" id="qal-${iv.id}">
-            ${(iv.qa || []).map(q => makeQAHtml(q)).join('')}
-          </ul>
-          <button
-            class="add-btn"
-            style="margin-top:0.75rem"
-            onclick="addQA('${iv.id}')"
-          >+ Frage &amp; Antwort</button>
-        </div>
-      `;
 
-      if (isAdmin) {
-        div.querySelectorAll('[contenteditable]').forEach(
-          el => { el.contentEditable = 'true'; }
-        );
-      }
+            <div class="action-row" style="margin-top:0; margin-bottom:1rem;">
+                <button class="action-btn" data-picker="color">🎨 Akzentfarbe</button>
+                <button class="action-btn" data-picker="img">📷 Profilbild</button>
+                <button class="action-btn del" data-action="delete">✕ Löschen</button>
+            </div>
 
-      div.querySelectorAll('[data-key="iname-' + iv.id + '"], [data-key="irole-' + iv.id + '"]')
-        .forEach(el => {
-          el.addEventListener('blur', () => saveInterviewDOM(iv.id));
-        });
+            <div class="interviewee">
+                <div class="avatar-wrap">
+                    <div
+                        class="avatar"
+                        id="av-${iv.id}"
+                        style="background:${avatarColor}"
+                    >${avatarContent}</div>
+                    <div
+                        class="avatar-edit-overlay"
+                        onclick="adminAction(() => openImgModal({ type:'avatar', id:'${iv.id}' }))"
+                    >📷</div>
+                </div>
+                <div class="interviewee-info">
+                    <h3 contenteditable="false" data-key="iname-${iv.id}">${iv.name || ''}</h3>
+                    <p  contenteditable="false" data-key="irole-${iv.id}">${iv.role || ''}</p>
+                </div>
+            </div>
 
-      // Attach QA blur listeners
-      (iv.qa || []).forEach(q => attachQAListeners(div, q.id));
+            <ul class="qa-list" id="qal-${iv.id}">
+                ${(iv.qa || []).map(q => buildQAHtml(q)).join('')}
+            </ul>
 
-      return div;
-    }
-
-    function makeQAHtml(q) {
-      return `
-        <li class="qa-item" id="qi-${q.id}">
-          <div
-            class="qa-question"
-            contenteditable="false"
-            data-key="qq-${q.id}"
-          >${q.question || ''}</div>
-          <div
-            class="qa-answer"
-            contenteditable="false"
-            data-key="qa-${q.id}"
-          >${q.answer || ''}</div>
-          <div class="qa-actions">
             <button
-              class="act-btn del"
-              onclick="deleteQA('${q.id}')"
-            >✕ Löschen</button>
-          </div>
+                class="add-btn"
+                style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
+                onclick="addQA('${iv.id}')"
+            >+ Frage &amp; Antwort</button>
+
+        </div>
+    `;
+
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
+    }
+
+    // Auto-save name and role
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveInterviewFromDOM(iv.id));
+    });
+
+    // Wire up Q&A auto-save
+    (iv.qa || []).forEach(q => setTimeout(() => attachQABlur(q.id), 0));
+
+    // Wire action buttons — closures capture iv.id reliably
+    div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cur = div.querySelector('.interview-body').previousElementSibling.style.background || accentColor;
+        openColorPicker(e.currentTarget, cur, (c) => setInterviewColor(iv.id, c));
+    });
+    div.querySelector('[data-picker="img"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        adminAction(() => openImgModal({ type: 'avatar', id: iv.id }));
+    });
+    div.querySelector('[data-action="delete"]').addEventListener('click', () => {
+        deleteInterview(iv.id);
+    });
+
+    return div;
+}
+
+function buildQAHtml(q) {
+    return `
+        <li class="qa-item" id="qi-${q.id}">
+            <div class="qa-q" contenteditable="false" data-key="qq-${q.id}">
+                ${q.question || ''}
+            </div>
+            <div class="qa-a" contenteditable="false" data-key="qa-${q.id}">
+                ${q.answer || ''}
+            </div>
+            <div class="action-row" style="margin-top:0.4rem;">
+                <button class="action-btn del" onclick="deleteQA('${q.id}')">✕ Löschen</button>
+            </div>
         </li>
-      `;
-    }
+    `;
+}
 
-    function attachQAListeners(container, qid) {
-      const qEl = container.querySelector('[data-key="qq-' + qid + '"]');
-      const aEl = container.querySelector('[data-key="qa-' + qid + '"]');
-      if (qEl) qEl.addEventListener('blur', () => saveQADOM(qid));
-      if (aEl) aEl.addEventListener('blur', () => saveQADOM(qid));
-    }
+function attachQABlur(qid) {
+    const qEl = document.querySelector('[data-key="qq-' + qid + '"]');
+    const aEl = document.querySelector('[data-key="qa-' + qid + '"]');
+    if (qEl) qEl.addEventListener('blur', () => saveQAFromDOM(qid));
+    if (aEl) aEl.addEventListener('blur', () => saveQAFromDOM(qid));
+}
 
-    async function saveInterviewDOM(iid) {
-      const iv  = DATA.interviews.find(i => i.id === iid) || {};
-      const upd = {
-        ...iv,
-        name: document.querySelector('[data-key="iname-' + iid + '"]')?.innerHTML || '',
-        role: document.querySelector('[data-key="irole-' + iid + '"]')?.innerHTML || '',
-      };
-      await fetch('/api/interview/' + iid, {
+function saveInterviewFromDOM(iid) {
+    const nameEl = document.querySelector('[data-key="iname-' + iid + '"]');
+    const roleEl = document.querySelector('[data-key="irole-' + iid + '"]');
+    const iv     = DATA.interviews.find(i => i.id === iid) || {};
+
+    fetch('/api/interview/' + iid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(upd),
-      });
-      showToast();
-    }
+        body:    JSON.stringify({
+            ...iv,
+            name: nameEl ? nameEl.innerHTML : iv.name,
+            role: roleEl ? roleEl.innerHTML : iv.role,
+        }),
+    });
+}
 
-    async function saveQADOM(qid) {
-      const q = document.querySelector('[data-key="qq-' + qid + '"]')?.innerHTML || '';
-      const a = document.querySelector('[data-key="qa-' + qid + '"]')?.innerHTML || '';
-      await fetch('/api/qa/' + qid, {
+function saveQAFromDOM(qid) {
+    const qEl = document.querySelector('[data-key="qq-' + qid + '"]');
+    const aEl = document.querySelector('[data-key="qa-' + qid + '"]');
+
+    fetch('/api/qa/' + qid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ question: q, answer: a }),
-      });
-      showToast();
-    }
+        body:    JSON.stringify({
+            question: qEl ? qEl.innerHTML : '',
+            answer:   aEl ? aEl.innerHTML : '',
+        }),
+    });
+}
 
-    function setInterviewColor(iid, color) {
-      const card = document.getElementById('iv-' + iid);
-      if (!card) return;
+function setInterviewColor(iid, color) {
+    const card = document.getElementById('iv-' + iid);
+    if (!card) return;
 
-      const header = card.querySelector('.interview-header');
-      if (header) header.style.borderLeftColor = color;
+    // The first div inside the card is the accent stripe
+    card.firstElementChild.style.background = color;
 
-      const av = card.querySelector('.avatar');
-      if (av) av.style.background = color;
+    const av = document.getElementById('av-' + iid);
+    if (av) av.style.background = color;
 
-      const iv = DATA.interviews.find(i => i.id === iid) || {};
-      iv.accent_color = color;
-      iv.avatar_color = color;
+    const iv = DATA.interviews.find(i => i.id === iid) || {};
+    iv.accent_color = color;
+    iv.avatar_color = color;
 
-      fetch('/api/interview/' + iid, {
+    fetch('/api/interview/' + iid, {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ ...iv }),
-      });
-      showToast();
-    }
-
-    async function addInterview() {
-      const palette = ['#E8A020','#C0C0C0','#3498DB','#27AE60'];
-      const color   = palette[DATA.interviews.length % palette.length];
-      const res     = await fetch('/api/interview', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          name:         'Name der Figur',
-          role:         'Rolle im Buch',
-          initials:     '??',
-          avatar_color: color,
-          accent_color: color,
-        }),
-      });
-      const data = await res.json();
-      const newIV = {
-        id: data.id, name: 'Name der Figur', role: 'Rolle im Buch',
-        initials: '??', avatar_color: color, accent_color: color,
-        avatar_img: '', qa: [],
-      };
-      DATA.interviews.push(newIV);
-      const el = makeInterviewEl(newIV);
-      document.getElementById('interview-container').appendChild(el);
-      if (isAdmin) {
-        el.querySelectorAll('[contenteditable]').forEach(
-          e => { e.contentEditable = 'true'; }
-        );
-      }
-    }
-
-    async function deleteInterview(iid) {
-      if (!confirm('Dieses Interview löschen?')) return;
-      await fetch('/api/interview/' + iid, { method: 'DELETE' });
-      DATA.interviews = DATA.interviews.filter(i => i.id !== iid);
-      document.getElementById('iv-' + iid)?.remove();
-      showToast();
-    }
-
-    async function addQA(iid) {
-      const res  = await fetch('/api/qa', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          interview_id: iid,
-          question:     'Neue Frage?',
-          answer:       '„Antwort hier eingeben…"',
-        }),
-      });
-      const data = await res.json();
-      const newQ = {
-        id: data.id, question: 'Neue Frage?', answer: '„Antwort hier eingeben…"',
-      };
-
-      const iv = DATA.interviews.find(i => i.id === iid);
-      if (iv) iv.qa.push(newQ);
-
-      const list = document.getElementById('qal-' + iid);
-      if (list) {
-        list.insertAdjacentHTML('beforeend', makeQAHtml(newQ));
-        const li = document.getElementById('qi-' + newQ.id);
-        if (isAdmin) {
-          li.querySelectorAll('[contenteditable]').forEach(
-            e => { e.contentEditable = 'true'; }
-          );
-        }
-        attachQAListeners(li, newQ.id);
-      }
-    }
-
-    async function deleteQA(qid) {
-      await fetch('/api/qa/' + qid, { method: 'DELETE' });
-      document.getElementById('qi-' + qid)?.remove();
-      showToast();
-    }
-
-
-
-
-    function setCommentStar(n) {
-      commentStars = n;
-      document.querySelectorAll('.star-pick').forEach(btn => {
-        btn.classList.toggle('lit', parseInt(btn.dataset.sv, 10) <= n);
-      });
-    }
-
-    function starsHtml(n, cssClass) {
-      return [1,2,3,4,5].map(i =>
-        `<span class="${cssClass}${i <= n ? ' lit' : ''}">★</span>`
-      ).join('');
-    }
-
-    function renderComments() {
-      // Summary
-      const avg   = DATA.avg_rating || 0;
-      const count = DATA.comment_count || 0;
-
-      document.getElementById('avg-score').textContent =
-        avg > 0 ? avg.toFixed(1) : '—';
-
-      document.getElementById('avg-stars').innerHTML =
-        starsHtml(Math.round(avg), 'avg-star');
-
-      document.getElementById('avg-count').textContent =
-        count === 0
-          ? 'Noch keine Bewertungen'
-          : count + ' Bewertung' + (count !== 1 ? 'en' : '');
-
-
-      const list = document.getElementById('comment-list');
-      list.innerHTML = '';
-      (DATA.comments || []).forEach(c => list.appendChild(makeCommentEl(c)));
-    }
-
-    function makeCommentEl(c) {
-      const div = document.createElement('div');
-      div.className = 'comment-card';
-      div.id        = 'cc-' + c.id;
-
-      const date = c.created_at
-        ? new Date(c.created_at).toLocaleDateString('de-DE')
-        : '';
-
-      div.innerHTML = `
-        <div class="comment-top">
-          <span class="comment-author">${c.author || 'Anonym'}</span>
-          <div class="comment-meta">
-            <div class="comment-stars">
-              ${starsHtml(c.rating || 5, 'comment-star')}
-            </div>
-            <span class="comment-date">${date}</span>
-            <button
-              class="comment-del"
-              onclick="deleteComment('${c.id}')"
-            >✕</button>
-          </div>
-        </div>
-        <div class="comment-body">${c.body || ''}</div>
-      `;
-
-      return div;
-    }
-
-    async function submitComment() {
-      const author = document.getElementById('c-author').value.trim();
-      const body   = document.getElementById('c-body').value.trim();
-
-      if (!body) {
-        document.getElementById('c-body').focus();
-        return;
-      }
-
-      const btn = document.querySelector('.btn-submit');
-      btn.disabled = true;
-
-      const res  = await fetch('/api/comments', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ author, body, rating: commentStars }),
-      });
-      const data = await res.json();
-
-      if (!data.ok) { btn.disabled = false; return; }
-
-     
-      document.getElementById('c-author').value = '';
-      document.getElementById('c-body').value   = '';
-      btn.disabled = false;
-
-    
-      const fresh = await fetch('/api/comments');
-      const cd    = await fresh.json();
-      DATA.comments       = cd.comments;
-      DATA.avg_rating     = cd.avg_rating;
-      DATA.comment_count  = cd.comment_count;
-      renderComments();
-      showToast();
-    }
-
-    async function deleteComment(cid) {
-      if (!confirm('Kommentar löschen?')) return;
-      await fetch('/api/comments/' + cid, { method: 'DELETE' });
-
-      const fresh = await fetch('/api/comments');
-      const cd    = await fresh.json();
-      DATA.comments       = cd.comments;
-      DATA.avg_rating     = cd.avg_rating;
-      DATA.comment_count  = cd.comment_count;
-      renderComments();
-      showToast();
-    }
-
-
-
-
-    const NAV_SECTIONS = document.querySelectorAll('main section');
-    const NAV_LINKS    = document.querySelectorAll('nav a');
-
-    window.addEventListener('scroll', () => {
-      let current = '';
-      NAV_SECTIONS.forEach(s => {
-        if (window.scrollY >= s.offsetTop - 150) {
-          current = s.id;
-        }
-      });
-      NAV_LINKS.forEach(a => {
-        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-      });
     });
 
-  </script>
+    showToast();
+}
 
+async function addInterview() {
+    const palette = ['#E8A020','#A8A8A8','#888888','#FFFFFF'];
+    const color   = palette[DATA.interviews.length % palette.length];
+
+    const res = await fetch('/api/interview', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            name:         'Name der Figur',
+            role:         'Rolle im Buch',
+            initials:     '??',
+            avatar_color: color,
+            accent_color: color,
+        }),
+    });
+
+    const d   = await res.json();
+    const newIV = {
+        id:           d.id,
+        name:         'Name der Figur',
+        role:         'Rolle im Buch',
+        initials:     '??',
+        avatar_color: color,
+        accent_color: color,
+        avatar_img:   '',
+        qa:           [],
+    };
+
+    DATA.interviews.push(newIV);
+
+    const el = buildInterviewEl(newIV);
+    document.getElementById('interviews-container').appendChild(el);
+
+    if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+    }
+}
+
+async function deleteInterview(iid) {
+    if (!confirm('Dieses Interview wirklich löschen?')) return;
+    await fetch('/api/interview/' + iid, { method: 'DELETE' });
+    DATA.interviews = DATA.interviews.filter(i => i.id !== iid);
+    document.getElementById('iv-' + iid)?.remove();
+    showToast();
+}
+
+async function addQA(iid) {
+    const res = await fetch('/api/qa', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            interview_id: iid,
+            question:     'Neue Frage?',
+            answer:       '„Antwort hier eingeben…"',
+        }),
+    });
+
+    const d    = await res.json();
+    const newQ  = { id: d.id, question: 'Neue Frage?', answer: '„Antwort hier eingeben…"' };
+
+    const iv = DATA.interviews.find(i => i.id === iid);
+    if (iv) iv.qa.push(newQ);
+
+    const list = document.getElementById('qal-' + iid);
+    if (list) {
+        list.insertAdjacentHTML('beforeend', buildQAHtml(newQ));
+
+        const li = document.getElementById('qi-' + newQ.id);
+        if (isAdmin && li) {
+            li.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+        }
+
+        attachQABlur(newQ.id);
+    }
+}
+
+async function deleteQA(qid) {
+    await fetch('/api/qa/' + qid, { method: 'DELETE' });
+    document.getElementById('qi-' + qid)?.remove();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// COMMENTS
+// ════════════════════════════════════════════
+
+async function loadComments() {
+    const res  = await fetch('/api/comments');
+    const data = await res.json();
+
+    renderAvgRating(data.avg_rating, data.comment_count);
+    renderCommentsList(data.comments);
+}
+
+function renderAvgRating(avg, count) {
+    document.getElementById('avg-number').textContent =
+        avg ? avg.toFixed(1) : '–';
+
+    document.getElementById('avg-count').textContent =
+        count + (count === 1 ? ' Bewertung' : ' Bewertungen');
+
+    const starsEl = document.getElementById('avg-stars');
+    starsEl.innerHTML = '';
+
+    for (let i = 1; i <= 5; i++) {
+        const span = document.createElement('span');
+        span.className   = 'avg-star' + (i <= Math.round(avg) ? '' : ' empty');
+        span.textContent = '★';
+        starsEl.appendChild(span);
+    }
+}
+
+function renderCommentsList(comments) {
+    const list = document.getElementById('comments-list');
+
+    if (!comments || comments.length === 0) {
+        list.innerHTML = '<div class="no-comments">Noch keine Kommentare. Sei der Erste!</div>';
+        return;
+    }
+
+    list.innerHTML = comments.map(c => {
+        const starsHtml = [1,2,3,4,5]
+            .map(i => `<span class="c-star${i <= c.rating ? '' : ' empty'}">★</span>`)
+            .join('');
+
+        // Top-rated comments (5 stars) get a gold accent
+        const extra = c.rating === 5 ? ' top-rated' : '';
+
+        return `
+            <div class="comment-card${extra}" id="cc-${c.id}">
+                <div class="comment-top">
+                    <span class="comment-author">${escapeHtml(c.author || 'Anonym')}</span>
+                    <div class="comment-stars">${starsHtml}</div>
+                </div>
+                <div class="comment-date">${formatDate(c.created_at)}</div>
+                <div class="comment-body">${escapeHtml(c.body)}</div>
+                <button class="comment-del" onclick="deleteComment('${c.id}')">
+                    ✕ Löschen (Admin)
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+// ── Comment rating stars (interactive) ──
+
+document.querySelectorAll('.rating-star').forEach(star => {
+    star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.v, 10);
+        highlightRatingStars(selectedRating);
+    });
+
+    star.addEventListener('mouseenter', () => {
+        highlightRatingStars(parseInt(star.dataset.v, 10));
+    });
+});
+
+document.getElementById('rating-input').addEventListener('mouseleave', () => {
+    highlightRatingStars(selectedRating);
+});
+
+function highlightRatingStars(upTo) {
+    document.querySelectorAll('.rating-star').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.v, 10) <= upTo);
+    });
+}
+
+// Initialise to 5 stars
+highlightRatingStars(selectedRating);
+
+async function submitComment() {
+    const author = document.getElementById('c-author').value.trim();
+    const body   = document.getElementById('c-body').value.trim();
+
+    if (!body) {
+        alert('Bitte einen Kommentar eingeben.');
+        document.getElementById('c-body').focus();
+        return;
+    }
+
+    const res = await fetch('/api/comments', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ author, body, rating: selectedRating }),
+    });
+
+    if (!res.ok) {
+        alert('Fehler beim Absenden. Bitte erneut versuchen.');
+        return;
+    }
+
+    // Clear form
+    document.getElementById('c-author').value = '';
+    document.getElementById('c-body').value   = '';
+    selectedRating = 5;
+    highlightRatingStars(selectedRating);
+
+    await loadComments();
+}
+
+async function deleteComment(cid) {
+    if (!confirm('Kommentar löschen?')) return;
+    await fetch('/api/comments/' + cid, { method: 'DELETE' });
+    await loadComments();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g,  '&amp;')
+        .replace(/</g,  '&lt;')
+        .replace(/>/g,  '&gt;')
+        .replace(/"/g,  '&quot;')
+        .replace(/'/g,  '&#39;');
+}
+
+function formatDate(iso) {
+    if (!iso) return '';
+    try {
+        return new Date(iso).toLocaleDateString('de-DE', {
+            day:    '2-digit',
+            month:  '2-digit',
+            year:   'numeric',
+            hour:   '2-digit',
+            minute: '2-digit',
+        });
+    } catch {
+        return iso;
+    }
+}
+
+
+// ════════════════════════════════════════════
+// NAV ACTIVE HIGHLIGHT ON SCROLL
+// ════════════════════════════════════════════
+
+const sections = document.querySelectorAll('main section');
+const navLinks = document.querySelectorAll('nav a');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+
+    sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 150) {
+            current = s.id;
+        }
+    });
+
+    navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+});
+
+</script>
 </body>
 </html>
