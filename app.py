@@ -15,8 +15,13 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER  = '/app/data/uploads'
-DB_PATH        = '/app/data/data.db'
+BASE_DIR       = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR       = os.environ.get(
+    'DATA_DIR',
+    os.path.join(BASE_DIR, 'data') if os.name == 'nt' else '/app/data'
+)
+UPLOAD_FOLDER  = os.environ.get('UPLOAD_FOLDER', os.path.join(DATA_DIR, 'uploads'))
+DB_PATH        = os.environ.get('DB_PATH', os.path.join(DATA_DIR, 'data.db'))
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'tunnelbauer2025')
 MAX_FILE_MB    = 16
 ALLOWED_EXT    = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
@@ -24,6 +29,7 @@ ALLOWED_EXT    = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
 app.config['UPLOAD_FOLDER']      = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_MB * 1024 * 1024
 
+os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
