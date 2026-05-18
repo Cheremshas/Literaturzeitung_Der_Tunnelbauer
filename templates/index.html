@@ -943,7 +943,7 @@
     }
 
     .thema-card:hover {
-        border-color: var(--gold);
+        border-color: var(--card-accent, var(--gold));
         transform: translateY(-2px);
     }
 
@@ -1880,9 +1880,17 @@ const ALL_EMOJIS = [
 ];
 
 function buildEmojiGrid(list) {
-    document.getElementById('ep-grid').innerHTML =
-        list.map(e => `<button class="ep-btn" onclick="pickEmoji('${e}')">${e}</button>`)
-            .join('');
+    const grid = document.getElementById('ep-grid');
+    grid.innerHTML = '';
+
+    list.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ep-btn';
+        btn.textContent = emoji;
+        btn.addEventListener('click', () => pickEmoji(emoji));
+        grid.appendChild(btn);
+    });
 }
 
 function filterEmoji(query) {
@@ -1934,11 +1942,43 @@ const SWATCHES = [
     '#27AE60','#F39C12','#D35400','#E67E22','#34495E',
 ];
 
+function normalizeColor(value, fallback = '#E8A020') {
+    if (!value) return fallback;
+
+    const raw = String(value).trim();
+    const hex = raw.match(/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i);
+
+    if (hex) {
+        let h = hex[1];
+        if (h.length === 3) {
+            h = h.split('').map(ch => ch + ch).join('');
+        }
+        return '#' + h.slice(0, 6).toUpperCase();
+    }
+
+    const rgb = raw.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (rgb) {
+        return '#' + [rgb[1], rgb[2], rgb[3]]
+            .map(n => Math.max(0, Math.min(255, parseInt(n, 10)))
+                .toString(16)
+                .padStart(2, '0'))
+            .join('')
+            .toUpperCase();
+    }
+
+    return fallback;
+}
+
+function colorWithAlpha(color, alphaHex = '30') {
+    return normalizeColor(color) + alphaHex;
+}
+
 function buildSwatches(currentColor) {
+    const normalized = normalizeColor(currentColor);
     document.getElementById('cp-swatches').innerHTML =
         SWATCHES.map(c => `
             <div
-                class="cp-swatch ${c === currentColor ? 'selected' : ''}"
+                class="cp-swatch ${c.toUpperCase() === normalized ? 'selected' : ''}"
                 style="background: ${c}"
                 onclick="pickColor('${c}')"
                 title="${c}"
@@ -1950,6 +1990,7 @@ function openColorPicker(triggerEl, currentColor, callback) {
     cpCallback = callback;
 
     const picker = document.getElementById('color-picker');
+    const normalized = normalizeColor(currentColor);
 
     // Close emoji picker if it is open
     document.getElementById('emoji-picker').classList.remove('visible');
@@ -1959,32 +2000,36 @@ function openColorPicker(triggerEl, currentColor, callback) {
     picker.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
     picker.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
 
-    buildSwatches(currentColor || '#E8A020');
-    document.getElementById('cp-custom-input').value       = currentColor || '#E8A020';
-    document.getElementById('cp-preview').style.background = currentColor || '#E8A020';
+    buildSwatches(normalized);
+    document.getElementById('cp-custom-input').value       = normalized;
+    document.getElementById('cp-preview').style.background = normalized;
 
     // Show AFTER positioning
     picker.classList.add('visible');
 }
 
 function pickColor(color) {
-    document.getElementById('cp-preview').style.background = color;
-    document.getElementById('cp-custom-input').value       = color;
+    const normalized = normalizeColor(color);
+
+    document.getElementById('cp-preview').style.background = normalized;
+    document.getElementById('cp-custom-input').value       = normalized;
 
     document.querySelectorAll('.cp-swatch').forEach(s => {
-        s.classList.toggle('selected', s.title === color);
+        s.classList.toggle('selected', normalizeColor(s.title) === normalized);
     });
 
-    if (cpCallback) cpCallback(color);
+    if (cpCallback) cpCallback(normalized);
     cpCallback = null;
 
     document.getElementById('color-picker').classList.remove('visible');
 }
 
 function onCustomColor(color) {
-    document.getElementById('cp-preview').style.background = color;
+    const normalized = normalizeColor(color);
+
+    document.getElementById('cp-preview').style.background = normalized;
     document.querySelectorAll('.cp-swatch').forEach(s => s.classList.remove('selected'));
-    if (cpCallback) cpCallback(color);
+    if (cpCallback) cpCallback(normalized);
 }
 
 function closeAllPickers() {
@@ -2271,11 +2316,13 @@ function renderThemen() {
 }
 
 function buildThemaEl(t) {
-    const iconBg = t.icon_bg || '#E8A02020';
+    const accent = normalizeColor(t.icon_bg, '#E8A020');
+    const iconBg = colorWithAlpha(accent, '30');
 
     const div = document.createElement('div');
     div.className = 'thema-card';
     div.id        = 'tc-' + t.id;
+    applyThemaCardColor(div, accent);
 
     div.innerHTML = `
         <div
@@ -2311,7 +2358,7 @@ function buildThemaEl(t) {
     });
     div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
         e.stopPropagation();
-        const cur = div.querySelector('.thema-icon-wrap').style.background || iconBg;
+        const cur = div.dataset.accentColor || accent;
         openColorPicker(e.currentTarget, cur, (c) => setThemaBg(t.id, c));
     });
     div.querySelector('[data-action="delete"]').addEventListener('click', () => {
@@ -2319,6 +2366,17 @@ function buildThemaEl(t) {
     });
 
     return div;
+}
+
+function applyThemaCardColor(card, color) {
+    const accent = normalizeColor(color);
+
+    card.dataset.accentColor = accent;
+    card.style.setProperty('--card-accent', accent);
+    card.style.borderColor = colorWithAlpha(accent, '66');
+    card.style.borderTopColor = accent;
+    card.style.background =
+        `linear-gradient(135deg, ${colorWithAlpha(accent, '18')}, var(--dark2) 42%)`;
 }
 
 function saveThemaFromDOM(tid) {
@@ -2354,11 +2412,15 @@ function setThemaIcon(tid, emoji) {
 }
 
 function setThemaBg(tid, color) {
+    const accent = normalizeColor(color);
+    const card = document.getElementById('tc-' + tid);
+    if (card) applyThemaCardColor(card, accent);
+
     const wrap = document.getElementById('ticon-wrap-' + tid);
-    if (wrap) wrap.style.background = color + '30';
+    if (wrap) wrap.style.background = colorWithAlpha(accent, '30');
 
     const cur   = DATA.themen.find(t => t.id === tid) || {};
-    cur.icon_bg = color + '30';
+    cur.icon_bg = colorWithAlpha(accent, '30');
 
     fetch('/api/thema/' + tid, {
         method:  'PUT',
