@@ -603,9 +603,26 @@
     }
 
     /* Header mark */
+    .paper-logo-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        font-family: inherit;
+    }
+
+    .paper-logo-button:focus-visible {
+        outline: 1px solid var(--gold);
+        outline-offset: 8px;
+        border-radius: 3px;
+    }
+
     .paper-name {
         display: block;
-        width: min(200, 72vw);
+        width: min(620px, 84vw);
         height: auto;
         filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.55));
     }
@@ -642,7 +659,7 @@
 
     .paper-meta-row {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         width: 100%;
         font-size: 11px;
@@ -651,22 +668,6 @@
         padding-top: 0.7rem;
         margin-top: 0.15rem;
     }
-
-    .admin-trigger {
-        background: none;
-        border: 1px solid var(--border2);
-        color: var(--muted);
-        padding: 3px 12px;
-        border-radius: 3px;
-        font-size: 10px;
-        cursor: pointer;
-        font-family: inherit;
-        letter-spacing: 0.06em;
-        transition: border-color 0.15s, color 0.15s;
-    }
-
-    .admin-trigger:hover { border-color: var(--gold); color: var(--gold); }
-
 
     /* ═══════════════════════════════════════════
        NAVIGATION
@@ -1515,11 +1516,18 @@
     <div class="paper-masthead">
         <div class="paper-kicker">Schulprojekt · Literaturanalyse</div>
 
-        <img
-            class="paper-name"
-            src="/static/site-icon.png"
-            alt="LiteraturZeitung"
+        <button
+            class="paper-logo-button"
+            type="button"
+            onclick="openLogin()"
+            title="Admin-Login"
         >
+            <img
+                class="paper-name"
+                src="/static/page-logo.png"
+                alt="Der Tunnelbauer"
+            >
+        </button>
 
         <div class="paper-rule"></div>
 
@@ -1531,7 +1539,6 @@
 
         <div class="paper-meta-row">
             <span>Maja Nielsen · Der Tunnelbauer · Gerstenberg Verlag</span>
-            <button class="admin-trigger" onclick="openLogin()">⚙ Admin</button>
         </div>
     </div>
 </header>
