@@ -1902,6 +1902,24 @@ function filterEmoji(query) {
     buildEmojiGrid(ALL_EMOJIS.filter(e => e.includes(query.trim())));
 }
 
+function positionPicker(picker, triggerEl, width, height) {
+    const rect = triggerEl.getBoundingClientRect();
+    const gap = 6;
+    const margin = 10;
+    const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+    const maxTop = Math.max(margin, window.innerHeight - height - margin);
+
+    let left = Math.min(Math.max(rect.left, margin), maxLeft);
+    let top = rect.bottom + gap;
+
+    if (top > maxTop) {
+        top = rect.top - height - gap;
+    }
+
+    picker.style.left = left + 'px';
+    picker.style.top = Math.min(Math.max(top, margin), maxTop) + 'px';
+}
+
 function openEmojiPicker(triggerEl, callback) {
     epCallback = callback;
 
@@ -1910,13 +1928,9 @@ function openEmojiPicker(triggerEl, callback) {
     // Close color picker if open
     document.getElementById('color-picker').classList.remove('visible');
 
-    // Position the picker below the trigger button, keep it on screen
-    const rect = triggerEl.getBoundingClientRect();
-    picker.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
-    picker.style.left = Math.min(rect.left, window.innerWidth - 310) + 'px';
-
     picker.querySelector('.ep-search').value = '';
     buildEmojiGrid(ALL_EMOJIS);
+    positionPicker(picker, triggerEl, 300, 270);
 
     // Show AFTER positioning, and stop this open-click from
     // immediately re-triggering the outside-click handler
@@ -1995,14 +2009,10 @@ function openColorPicker(triggerEl, currentColor, callback) {
     // Close emoji picker if it is open
     document.getElementById('emoji-picker').classList.remove('visible');
 
-    // Position below the trigger, keep it on screen
-    const rect = triggerEl.getBoundingClientRect();
-    picker.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
-    picker.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
-
     buildSwatches(normalized);
     document.getElementById('cp-custom-input').value       = normalized;
     document.getElementById('cp-preview').style.background = normalized;
+    positionPicker(picker, triggerEl, 230, 235);
 
     // Show AFTER positioning
     picker.classList.add('visible');
