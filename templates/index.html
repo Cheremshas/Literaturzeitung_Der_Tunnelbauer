@@ -750,6 +750,17 @@
         cursor: pointer;
     }
 
+    .section-manage-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 1rem;
+    }
+
+    .custom-section {
+        border-top: 2px solid var(--gold);
+        padding-top: 0.65rem;
+    }
+
 
     /* ═══════════════════════════════════════════
        MAIN LAYOUT
@@ -1400,7 +1411,10 @@
             <button id="sections-close" onclick="closeSectionsModal()">×</button>
         </div>
         <div class="section-manage-list" id="section-manage-list"></div>
-        <button class="btn-login" onclick="closeSectionsModal()">Fertig</button>
+        <div class="section-manage-actions">
+            <button class="ab-btn" onclick="addCustomSection()">+ Neuer Abschnitt</button>
+            <button class="btn-login" onclick="closeSectionsModal()">Fertig</button>
+        </div>
     </div>
 </div>
 
@@ -1821,6 +1835,7 @@ let epCallback = null;   // called with chosen emoji
 
 let DATA = { kv: {}, zitate: [], themen: [], interviews: [] };
 let navLinks = [];
+let customSections = [];
 
 const DEFAULT_SECTIONS = [
     { id: 'zusammenfassung', label: 'Zusammenfassung' },
@@ -1870,6 +1885,7 @@ function renderAll() {
     renderZitate();
     renderThemen();
     renderInterviews();
+    renderCustomSections();
     renderSectionVisibility();
 }
 
@@ -1880,8 +1896,28 @@ init();
 // SECTION VISIBILITY
 // ════════════════════════════════════════════
 
+function getCustomSections() {
+    try {
+        return JSON.parse(DATA.kv['custom-sections'] || '[]');
+    } catch {
+        return [];
+    }
+}
+
+function getAllSections() {
+    customSections = getCustomSections();
+    return [
+        ...DEFAULT_SECTIONS,
+        ...customSections.map(s => ({
+            id: s.id,
+            label: DATA.kv[`${s.id}-label`] || s.label || 'Neuer Abschnitt',
+            custom: true,
+        })),
+    ];
+}
+
 function getSectionSettings() {
-    const defaults = Object.fromEntries(DEFAULT_SECTIONS.map(s => [s.id, true]));
+    const defaults = Object.fromEntries(getAllSections().map(s => [s.id, true]));
 
     try {
         return { ...defaults, ...JSON.parse(DATA.kv['sections-enabled'] || '{}') };
@@ -1898,7 +1934,7 @@ function saveSectionSettings(settings) {
 function renderSectionVisibility() {
     const settings = getSectionSettings();
 
-    DEFAULT_SECTIONS.forEach(section => {
+    getAllSections().forEach(section => {
         const el = document.querySelector('[data-section-id="' + section.id + '"]');
         if (el) el.hidden = !settings[section.id];
     });
@@ -1909,7 +1945,7 @@ function renderSectionVisibility() {
 
 function renderNav(settings = getSectionSettings()) {
     const list = document.getElementById('nav-list');
-    const visibleSections = DEFAULT_SECTIONS.filter(section => settings[section.id]);
+    const visibleSections = getAllSections().filter(section => settings[section.id]);
 
     list.innerHTML = visibleSections.map((section, index) => `
         <li>
@@ -1926,14 +1962,17 @@ function renderSectionManager(settings = getSectionSettings()) {
     const list = document.getElementById('section-manage-list');
     if (!list) return;
 
-    list.innerHTML = DEFAULT_SECTIONS.map(section => `
+    list.innerHTML = getAllSections().map(section => `
         <label class="section-manage-item">
             <span>${section.label}</span>
-            <input
-                type="checkbox"
-                ${settings[section.id] ? 'checked' : ''}
-                onchange="toggleSection('${section.id}', this.checked)"
-            >
+            <span style="display:flex; gap:8px; align-items:center;">
+                ${section.custom ? `<button class="action-btn del" onclick="event.preventDefault(); deleteCustomSection('${section.id}')">Löschen</button>` : ''}
+                <input
+                    type="checkbox"
+                    ${settings[section.id] ? 'checked' : ''}
+                    onchange="toggleSection('${section.id}', this.checked)"
+                >
+            </span>
         </label>
     `).join('');
 }
@@ -1958,6 +1997,144 @@ async function toggleSection(sectionId, enabled) {
 
     await saveSectionSettings(settings);
     renderSectionVisibility();
+}
+
+function renderCustomSections() {
+    document.querySelectorAll('.custom-section').forEach(section => section.remove());
+
+    customSections = getCustomSections();
+    const main = document.querySelector('main');
+    const comments = document.getElementById('kommentare');
+
+    customSections.forEach(section => {
+        const label = DATA.kv[`${section.id}-label`] || section.label || 'Neuer Abschnitt';
+        const title = DATA.kv[`${section.id}-title`] || section.title || 'Neuer Abschnitt';
+        const body = DATA.kv[`${section.id}-body`] || section.body || '<p>Text hier eingeben…</p>';
+
+        const el = document.createElement('section');
+        el.id = section.id;
+        el.className = 'custom-section';
+        el.dataset.sectionId = section.id;
+        el.innerHTML = `
+            <div class="section-head">
+                <div class="section-label" contenteditable="false" data-key="${section.id}-label">${label}</div>
+                <div class="section-title" contenteditable="false" data-key="${section.id}-title">${title}</div>
+            </div>
+            <div class="section-admin-actions">
+                <button class="action-btn del" onclick="toggleSection('${section.id}', false)">Abschnitt ausblenden</button>
+                <button class="action-btn del" onclick="deleteCustomSection('${section.id}')">Abschnitt löschen</button>
+            </div>
+            <div class="edit-hint">✏ Abschnitt bearbeiten</div>
+            <div class="prose" contenteditable="false" data-key="${section.id}-body">${body}</div>
+        `;
+
+        if (comments) {
+            main.insertBefore(el, comments);
+        } else {
+            main.appendChild(el);
+        }
+    });
+
+    if (isAdmin) {
+        document.querySelectorAll('.custom-section [contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
+    }
+}
+
+async function saveCustomSections() {
+    DATA.kv['custom-sections'] = JSON.stringify(customSections);
+    await saveKV({ 'custom-sections': DATA.kv['custom-sections'] });
+}
+
+async function addCustomSection() {
+    const id = 'custom-' + Date.now().toString(36);
+    const section = {
+        id,
+        label: 'Neuer Abschnitt',
+        title: 'Neuer Abschnitt',
+        body: '<p>Text hier eingeben…</p>',
+    };
+
+    customSections.push(section);
+    DATA.kv[`${id}-label`] = section.label;
+    DATA.kv[`${id}-title`] = section.title;
+    DATA.kv[`${id}-body`] = section.body;
+
+    const settings = getSectionSettings();
+    settings[id] = true;
+
+    await saveKV({
+        'custom-sections': JSON.stringify(customSections),
+        'sections-enabled': JSON.stringify(settings),
+        [`${id}-label`]: section.label,
+        [`${id}-title`]: section.title,
+        [`${id}-body`]: section.body,
+    });
+
+    renderCustomSections();
+    renderSectionVisibility();
+    setTimeout(() => document.querySelector(`[data-key="${id}-title"]`)?.focus(), 50);
+}
+
+async function syncCustomSectionsFromDOM() {
+    let changed = false;
+
+    customSections = getCustomSections().map(section => {
+        const label = document.querySelector(`[data-key="${section.id}-label"]`)?.innerHTML;
+        const title = document.querySelector(`[data-key="${section.id}-title"]`)?.innerHTML;
+        const body = document.querySelector(`[data-key="${section.id}-body"]`)?.innerHTML;
+        const next = {
+            ...section,
+            label: label || section.label,
+            title: title || section.title,
+            body: body || section.body,
+        };
+
+        changed = changed
+            || next.label !== section.label
+            || next.title !== section.title
+            || next.body !== section.body;
+
+        return next;
+    });
+
+    if (changed) {
+        DATA.kv['custom-sections'] = JSON.stringify(customSections);
+        await fetch('/api/kv', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'custom-sections': DATA.kv['custom-sections'] }),
+        });
+        renderSectionVisibility();
+    }
+}
+
+async function deleteCustomSection(sectionId) {
+    if (!confirm('Diesen Abschnitt wirklich löschen?')) return;
+
+    customSections = customSections.filter(section => section.id !== sectionId);
+    const settings = getSectionSettings();
+    delete settings[sectionId];
+
+    delete DATA.kv[`${sectionId}-label`];
+    delete DATA.kv[`${sectionId}-title`];
+    delete DATA.kv[`${sectionId}-body`];
+
+    await fetch('/api/kv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            'custom-sections': JSON.stringify(customSections),
+            'sections-enabled': JSON.stringify(settings),
+        }),
+    });
+
+    DATA.kv['custom-sections'] = JSON.stringify(customSections);
+    DATA.kv['sections-enabled'] = JSON.stringify(settings);
+    renderCustomSections();
+    renderSectionVisibility();
+    showToast();
 }
 
 
@@ -2057,6 +2234,10 @@ document.addEventListener('blur', async (e) => {
     const el = e.target;
     if (!el.dataset.key) return;
     await saveKV({ [el.dataset.key]: el.innerHTML });
+
+    if (el.closest('.custom-section')) {
+        await syncCustomSectionsFromDOM();
+    }
 }, true);
 
 function showToast() {
