@@ -132,6 +132,16 @@ def _seed_defaults(db):
             'book-genre':     'Jugendroman',
             'book-cover-img': '/static/book_cover.png',
             'header-sub':     'Buchanalyse · Charaktere & Motive · Zitate & Interviews',
+            'summary-title':   'Worum es in „Der Tunnelbauer" geht',
+            'summary-text':    (
+                '<p>Hier kannst du die Handlung des Buches knapp '
+                'zusammenfassen.</p>'
+            ),
+            'author-interview-title': 'Fragen an Maja Nielsen',
+            'author-q1':       'Warum haben Sie „Der Tunnelbauer" geschrieben?',
+            'author-a1':       'Hier kann deine Antwort oder recherchierte Information stehen.',
+            'author-q2':       'Welche Themen waren Ihnen beim Schreiben besonders wichtig?',
+            'author-a2':       'Hier kannst du weitere Fragen und Antworten bearbeiten.',
         }
         for k, v in defaults.items():
             db.execute(
