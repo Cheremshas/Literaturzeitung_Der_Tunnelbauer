@@ -125,7 +125,8 @@
     /* ═══════════════════════════════════════════
        LOGIN OVERLAY
     ═══════════════════════════════════════════ */
-    #login-overlay {
+    #login-overlay,
+    #sections-modal {
         display: none;
         position: fixed;
         inset: 0;
@@ -137,8 +138,10 @@
     }
 
     #login-overlay.visible { display: flex; }
+    #sections-modal.visible { display: flex; }
 
-    #login-box {
+    #login-box,
+    #sections-box {
         background: var(--dark2);
         border: 1px solid var(--gold);
         border-radius: 4px;
@@ -147,14 +150,18 @@
         box-shadow: 0 0 60px rgba(232, 160, 32, 0.15);
     }
 
-    #login-box h2 {
+    #sections-box { width: 420px; max-width: calc(100vw - 32px); }
+
+    #login-box h2,
+    #sections-box h2 {
         font-family: 'Playfair Display', serif;
         font-size: 1.5rem;
         color: var(--gold);
         margin-bottom: 0.25rem;
     }
 
-    #login-box p {
+    #login-box p,
+    #sections-box p {
         color: var(--muted);
         font-size: 13px;
         margin-bottom: 1.5rem;
@@ -200,7 +207,8 @@
         display: none;
     }
 
-    #login-close {
+    #login-close,
+    #sections-close {
         float: right;
         background: none;
         border: none;
@@ -210,7 +218,8 @@
         line-height: 1;
     }
 
-    #login-close:hover { color: var(--white); }
+    #login-close:hover,
+    #sections-close:hover { color: var(--white); }
 
 
     /* ═══════════════════════════════════════════
@@ -678,7 +687,11 @@
         display: flex;
         list-style: none;
         overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
     }
+
+    nav ul::-webkit-scrollbar { display: none; }
 
     nav a {
         display: block;
@@ -699,6 +712,42 @@
     nav a.active {
         color: var(--gold);
         border-color: var(--gold);
+    }
+
+    .section-admin-actions {
+        display: none;
+        justify-content: flex-end;
+        margin-top: -1rem;
+        margin-bottom: 1rem;
+    }
+
+    body.admin-mode .section-admin-actions { display: flex; }
+
+    .section-manage-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 1rem 0;
+    }
+
+    .section-manage-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--border2);
+        color: var(--text);
+        font-size: 13px;
+    }
+
+    .section-manage-item:last-child { border-bottom: none; }
+
+    .section-manage-item input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--gold);
+        cursor: pointer;
     }
 
 
@@ -1329,11 +1378,30 @@
     <span class="ab-label">Admin</span>
     <div class="ab-sep"></div>
     <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
+    <button class="ab-btn" onclick="openSectionsModal()">☰ Abschnitte</button>
     <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
     <button class="ab-btn" onclick="addThema()">+ Thema</button>
     <button class="ab-btn" onclick="addInterview()">+ Interview</button>
     <div class="ab-sep"></div>
     <button class="ab-btn danger" onclick="logout()">Abmelden</button>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SECTION MANAGER
+════════════════════════════════════════ -->
+<div id="sections-modal">
+    <div id="sections-box">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <h2>Abschnitte</h2>
+                <p>Bereiche ein- oder ausblenden.</p>
+            </div>
+            <button id="sections-close" onclick="closeSectionsModal()">×</button>
+        </div>
+        <div class="section-manage-list" id="section-manage-list"></div>
+        <button class="btn-login" onclick="closeSectionsModal()">Fertig</button>
+    </div>
 </div>
 
 
@@ -1456,13 +1524,7 @@
      NAVIGATION
 ════════════════════════════════════════ -->
 <nav>
-    <ul>
-        <li><a href="#rezension"  class="active">Rezension</a></li>
-        <li><a href="#zitate">Zitate</a></li>
-        <li><a href="#themen">Themen &amp; Motive</a></li>
-        <li><a href="#interviews">Interviews</a></li>
-        <li><a href="#kommentare">Kommentare</a></li>
-    </ul>
+    <ul id="nav-list"></ul>
 </nav>
 
 
@@ -1471,11 +1533,33 @@
 ════════════════════════════════════════ -->
 <main>
 
+    <!-- ── ZUSAMMENFASSUNG ───────────────── -->
+    <section id="zusammenfassung" data-section-id="zusammenfassung">
+        <div class="section-head">
+            <div class="section-label">Zusammenfassung des Buches</div>
+            <div class="section-title" contenteditable="false" data-key="summary-title">
+                Worum es in „Der Tunnelbauer" geht
+            </div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('zusammenfassung', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="edit-hint">✏ Zusammenfassung bearbeiten</div>
+        <div class="prose" contenteditable="false" data-key="summary-text">
+            <p>Hier kannst du die Handlung des Buches knapp zusammenfassen.</p>
+        </div>
+    </section>
+
+
     <!-- ── REZENSION ──────────────────────── -->
-    <section id="rezension">
+    <section id="rezension" data-section-id="rezension">
         <div class="section-head">
             <div class="section-label">Buchrezension</div>
             <div class="section-title">Analyse &amp; Bewertung</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('rezension', false)">Abschnitt ausblenden</button>
         </div>
 
         <div class="rez-grid">
@@ -1559,11 +1643,63 @@
     </section>
 
 
-    <!-- ── ZITATE ──────────────────────────── -->
-    <section id="zitate">
+    <!-- ── INTERVIEWS ──────────────────────── -->
+    <section id="autor-interview" data-section-id="autor-interview">
         <div class="section-head">
-            <div class="section-label">Zitate</div>
-            <div class="section-title">Bedeutsame Stellen aus dem Buch</div>
+            <div class="section-label">Interview mit der Autorin</div>
+            <div class="section-title" contenteditable="false" data-key="author-interview-title">
+                Fragen an Maja Nielsen
+            </div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('autor-interview', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <ul class="qa-list">
+            <li class="qa-item">
+                <div class="qa-q" contenteditable="false" data-key="author-q1">
+                    Warum haben Sie „Der Tunnelbauer" geschrieben?
+                </div>
+                <div class="qa-a" contenteditable="false" data-key="author-a1">
+                    Hier kann deine Antwort oder recherchierte Information stehen.
+                </div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q" contenteditable="false" data-key="author-q2">
+                    Welche Themen waren Ihnen beim Schreiben besonders wichtig?
+                </div>
+                <div class="qa-a" contenteditable="false" data-key="author-a2">
+                    Hier kannst du weitere Fragen und Antworten bearbeiten.
+                </div>
+            </li>
+        </ul>
+    </section>
+
+
+    <!-- ── INTERVIEWS MIT CHARAKTEREN ─────── -->
+    <section id="interviews" data-section-id="interviews">
+        <div class="section-head">
+            <div class="section-label">Interviews mit Charakteren aus dem Buch</div>
+            <div class="section-title">Im Gespräch mit den Figuren</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('interviews', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="interviews-list" id="interviews-container"></div>
+
+        <button class="add-btn" onclick="addInterview()">+ Neues Interview hinzufügen</button>
+    </section>
+
+
+    <!-- ── ZITATE ──────────────────────────── -->
+    <section id="zitate" data-section-id="zitate">
+        <div class="section-head">
+            <div class="section-label">Zitate / bedeutsame Stellen</div>
+            <div class="section-title">Wichtige Stellen aus dem Buch</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('zitate', false)">Abschnitt ausblenden</button>
         </div>
 
         <div class="zitate-list" id="zitate-container"></div>
@@ -1573,10 +1709,13 @@
 
 
     <!-- ── THEMEN ──────────────────────────── -->
-    <section id="themen">
+    <section id="themen" data-section-id="themen">
         <div class="section-head">
             <div class="section-label">Analyse</div>
             <div class="section-title">Themen &amp; Motive</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('themen', false)">Abschnitt ausblenden</button>
         </div>
 
         <div class="themen-grid" id="themen-container"></div>
@@ -1585,24 +1724,14 @@
     </section>
 
 
-    <!-- ── INTERVIEWS ──────────────────────── -->
-    <section id="interviews">
-        <div class="section-head">
-            <div class="section-label">Fiktive Interviews</div>
-            <div class="section-title">Im Gespräch mit den Figuren</div>
-        </div>
-
-        <div class="interviews-list" id="interviews-container"></div>
-
-        <button class="add-btn" onclick="addInterview()">+ Neues Interview hinzufügen</button>
-    </section>
-
-
     <!-- ── KOMMENTARE ──────────────────────── -->
-    <section id="kommentare">
+    <section id="kommentare" data-section-id="kommentare">
         <div class="section-head">
             <div class="section-label">Leserstimmen</div>
             <div class="section-title">Kommentare &amp; Bewertungen</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('kommentare', false)">Abschnitt ausblenden</button>
         </div>
 
         <!-- Average rating display -->
@@ -1691,6 +1820,17 @@ let cpCallback = null;   // called with chosen color
 let epCallback = null;   // called with chosen emoji
 
 let DATA = { kv: {}, zitate: [], themen: [], interviews: [] };
+let navLinks = [];
+
+const DEFAULT_SECTIONS = [
+    { id: 'zusammenfassung', label: 'Zusammenfassung' },
+    { id: 'rezension', label: 'Rezension' },
+    { id: 'autor-interview', label: 'Interview mit der Autorin' },
+    { id: 'interviews', label: 'Interviews mit Charakteren' },
+    { id: 'zitate', label: 'Zitate / bedeutsame Stellen' },
+    { id: 'themen', label: 'Themen & Motive' },
+    { id: 'kommentare', label: 'Kommentare' },
+];
 
 
 // ════════════════════════════════════════════
@@ -1730,9 +1870,95 @@ function renderAll() {
     renderZitate();
     renderThemen();
     renderInterviews();
+    renderSectionVisibility();
 }
 
 init();
+
+
+// ════════════════════════════════════════════
+// SECTION VISIBILITY
+// ════════════════════════════════════════════
+
+function getSectionSettings() {
+    const defaults = Object.fromEntries(DEFAULT_SECTIONS.map(s => [s.id, true]));
+
+    try {
+        return { ...defaults, ...JSON.parse(DATA.kv['sections-enabled'] || '{}') };
+    } catch {
+        return defaults;
+    }
+}
+
+function saveSectionSettings(settings) {
+    DATA.kv['sections-enabled'] = JSON.stringify(settings);
+    return saveKV({ 'sections-enabled': DATA.kv['sections-enabled'] });
+}
+
+function renderSectionVisibility() {
+    const settings = getSectionSettings();
+
+    DEFAULT_SECTIONS.forEach(section => {
+        const el = document.querySelector('[data-section-id="' + section.id + '"]');
+        if (el) el.hidden = !settings[section.id];
+    });
+
+    renderNav(settings);
+    renderSectionManager(settings);
+}
+
+function renderNav(settings = getSectionSettings()) {
+    const list = document.getElementById('nav-list');
+    const visibleSections = DEFAULT_SECTIONS.filter(section => settings[section.id]);
+
+    list.innerHTML = visibleSections.map((section, index) => `
+        <li>
+            <a href="#${section.id}" class="${index === 0 ? 'active' : ''}">
+                ${section.label}
+            </a>
+        </li>
+    `).join('');
+
+    navLinks = document.querySelectorAll('nav a');
+}
+
+function renderSectionManager(settings = getSectionSettings()) {
+    const list = document.getElementById('section-manage-list');
+    if (!list) return;
+
+    list.innerHTML = DEFAULT_SECTIONS.map(section => `
+        <label class="section-manage-item">
+            <span>${section.label}</span>
+            <input
+                type="checkbox"
+                ${settings[section.id] ? 'checked' : ''}
+                onchange="toggleSection('${section.id}', this.checked)"
+            >
+        </label>
+    `).join('');
+}
+
+function openSectionsModal() {
+    renderSectionManager();
+    document.getElementById('sections-modal').classList.add('visible');
+}
+
+function closeSectionsModal() {
+    document.getElementById('sections-modal').classList.remove('visible');
+}
+
+async function toggleSection(sectionId, enabled) {
+    const settings = getSectionSettings();
+
+    settings[sectionId] = enabled;
+
+    if (!Object.values(settings).some(Boolean)) {
+        settings[sectionId] = true;
+    }
+
+    await saveSectionSettings(settings);
+    renderSectionVisibility();
+}
 
 
 // ════════════════════════════════════════════
@@ -1793,6 +2019,7 @@ function deactivateAdmin() {
     });
 
     closeAllPickers();
+    closeSectionsModal();
 }
 
 /** Only runs fn if admin is logged in */
@@ -2896,11 +3123,9 @@ function formatDate(iso) {
 // NAV ACTIVE HIGHLIGHT ON SCROLL
 // ════════════════════════════════════════════
 
-const sections = document.querySelectorAll('main section');
-const navLinks = document.querySelectorAll('nav a');
-
 window.addEventListener('scroll', () => {
     let current = '';
+    const sections = document.querySelectorAll('main section:not([hidden])');
 
     sections.forEach(s => {
         if (window.scrollY >= s.offsetTop - 150) {
