@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiteraturZeitung – Der Tunnelbauer</title>
+    <link rel="icon" type="image/png" href="/static/site-icon.png">
+    <link rel="apple-touch-icon" href="/static/site-icon.png">
 
     <link
         href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
@@ -600,16 +602,13 @@
         background: var(--border2);
     }
 
-    /* Fraktur title — mirroring the book's font feel */
+    /* Header mark */
     .paper-name {
-        font-family: 'UnifrakturMaguntia', cursive;
-        font-size: clamp(2.6rem, 8vw, 5.5rem);
-        color: var(--white);
-        line-height: 1;
-        letter-spacing: 0.02em;
+        display: block;
+        width: min(360px, 72vw);
+        height: auto;
+        filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.55));
     }
-
-    .paper-name span { color: var(--gold); }
 
     /* Horizontal rule with diamond ornaments */
     .paper-rule {
@@ -1516,7 +1515,11 @@
     <div class="paper-masthead">
         <div class="paper-kicker">Schulprojekt · Literaturanalyse</div>
 
-        <div class="paper-name">Literatur<span>Zeitung</span></div>
+        <img
+            class="paper-name"
+            src="/static/site-icon.png"
+            alt="LiteraturZeitung"
+        >
 
         <div class="paper-rule"></div>
 
