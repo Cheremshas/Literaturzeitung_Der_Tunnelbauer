@@ -741,6 +741,13 @@
         font-size: 13px;
     }
 
+    .section-manage-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
     .section-manage-item:last-child { border-bottom: none; }
 
     .section-manage-item input {
@@ -1964,17 +1971,21 @@ function renderSectionManager(settings = getSectionSettings()) {
     if (!list) return;
 
     list.innerHTML = getAllSections().map(section => `
-        <label class="section-manage-item">
+        <div class="section-manage-item">
             <span>${section.label}</span>
-            <span style="display:flex; gap:8px; align-items:center;">
-                ${section.custom ? `<button class="action-btn del" onclick="event.preventDefault(); deleteCustomSection('${section.id}')">Löschen</button>` : ''}
+            <span class="section-manage-controls">
+                ${section.custom
+                    ? `<button type="button" class="action-btn del" onclick="deleteCustomSection('${section.id}')">Löschen</button>`
+                    : `<button type="button" class="action-btn del" onclick="toggleSection('${section.id}', false)">Ausblenden</button>`
+                }
                 <input
                     type="checkbox"
                     ${settings[section.id] ? 'checked' : ''}
                     onchange="toggleSection('${section.id}', this.checked)"
+                    aria-label="${section.label}"
                 >
             </span>
-        </label>
+        </div>
     `).join('');
 }
 
@@ -2115,28 +2126,33 @@ async function syncCustomSectionsFromDOM() {
 async function deleteCustomSection(sectionId) {
     if (!confirm('Diesen Abschnitt wirklich löschen?')) return;
 
-    customSections = customSections.filter(section => section.id !== sectionId);
+    customSections = getCustomSections().filter(section => section.id !== sectionId);
     const settings = getSectionSettings();
     delete settings[sectionId];
+
+    const removedKeys = [
+        `${sectionId}-label`,
+        `${sectionId}-title`,
+        `${sectionId}-body`,
+    ];
 
     delete DATA.kv[`${sectionId}-label`];
     delete DATA.kv[`${sectionId}-title`];
     delete DATA.kv[`${sectionId}-body`];
 
-    await fetch('/api/kv', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            'custom-sections': JSON.stringify(customSections),
-            'sections-enabled': JSON.stringify(settings),
-        }),
+    await saveKV({
+        'custom-sections': JSON.stringify(customSections),
+        'sections-enabled': JSON.stringify(settings),
     });
 
-    DATA.kv['custom-sections'] = JSON.stringify(customSections);
-    DATA.kv['sections-enabled'] = JSON.stringify(settings);
+    await fetch('/api/kv/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keys: removedKeys }),
+    });
+
     renderCustomSections();
     renderSectionVisibility();
-    showToast();
 }
 
 
