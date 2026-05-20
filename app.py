@@ -340,6 +340,15 @@ def api_kv():
     return jsonify({'ok': True})
 
 
+@app.route('/api/kv/delete', methods=['POST'])
+def api_kv_delete():
+    keys = request.json.get('keys', [])
+    with get_db() as db:
+        for key in keys:
+            db.execute("DELETE FROM kv WHERE key=?", (key,))
+    return jsonify({'ok': True})
+
+
 # ── Zitate ──────────────────────────────────
 
 @app.route('/api/zitat', methods=['POST'])
