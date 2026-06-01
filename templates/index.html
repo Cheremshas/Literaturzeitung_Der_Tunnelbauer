@@ -1404,8 +1404,147 @@
         background: var(--border2);
         margin: 0.6rem auto;
     }
+    /* ═══════════════════════════════════════════
+       STANDALONE IMAGES
+    ═══════════════════════════════════════════ */
+    #standalone-images-section {
+        margin-bottom: 4rem;
+    }
+
+    .standalone-img-block {
+        position: relative;
+        margin: 0 auto 1.5rem;
+        display: block;
+    }
+
+    .standalone-img-block.align-left   { margin-left: 0; margin-right: auto; }
+    .standalone-img-block.align-center { margin-left: auto; margin-right: auto; }
+    .standalone-img-block.align-right  { margin-left: auto; margin-right: 0; }
+
+    .standalone-img-block img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        border: 1px solid var(--border2);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    .standalone-img-caption {
+        text-align: center;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 0.5em;
+        font-style: italic;
+        font-family: 'Lora', serif;
+    }
+
+    /* Admin overlay — shown only on hover in admin mode */
+    .simg-admin-bar {
+        display: none;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(10, 10, 10, 0.82);
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        padding: 4px 6px;
+        gap: 4px;
+        align-items: center;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+    }
+
+    body.admin-mode .standalone-img-block:hover .simg-admin-bar {
+        display: flex;
+    }
+
+    .simg-admin-bar button {
+        background: none;
+        border: none;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-family: inherit;
+        white-space: nowrap;
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .simg-admin-bar button:hover            { background: rgba(255,255,255,0.12); color: var(--gold); }
+    .simg-admin-bar button.del:hover        { color: var(--red); }
+    .simg-admin-bar .simg-sep              { width: 1px; height: 14px; background: var(--border2); flex-shrink: 0; }
+
+    /* Resize/align panel */
+    .simg-resize-panel {
+        display: none;
+        position: absolute;
+        bottom: -54px;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 10, 0.88);
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        padding: 7px 12px;
+        z-index: 20;
+        align-items: center;
+        gap: 10px;
+        color: var(--text);
+        font-size: 12px;
+        backdrop-filter: blur(4px);
+    }
+
+    .simg-resize-panel.open { display: flex; }
+
+    .simg-resize-panel input[type=range] {
+        flex: 1;
+        accent-color: var(--gold);
+    }
+
+    .simg-resize-panel select {
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        border-radius: 3px;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-family: inherit;
+        cursor: pointer;
+    }
+
+    .simg-width-label {
+        color: var(--gold);
+        font-weight: 600;
+        min-width: 44px;
+        text-align: right;
+        font-size: 11px;
+    }
+
+    /* Add image button */
+    .simg-add-btn {
+        display: none;
+        background: transparent;
+        border: 1px dashed rgba(232, 160, 32, 0.5);
+        color: var(--gold);
+        padding: 7px 18px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 0.5rem;
+        letter-spacing: 0.05em;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .simg-add-btn:hover {
+        background: rgba(232, 160, 32, 0.08);
+        border-color: var(--gold);
+    }
+
+    body.admin-mode .simg-add-btn { display: inline-block; }
     </style>
-</head>
 <body>
 
 <!-- ════════════════════════════════════════
@@ -1422,6 +1561,7 @@
     <span class="ab-label">Admin</span>
     <div class="ab-sep"></div>
     <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
+    <button class="ab-btn" onclick="addStandaloneImage()">🖼 Freies Bild</button>
     <button class="ab-btn" onclick="openInlineImageUpload()">🖼 Bild</button>
     <button class="ab-btn" onclick="openSectionsModal()">☰ Abschnitte</button>
     <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
@@ -1771,6 +1911,13 @@
     </section>
 
 
+    <!-- ── STANDALONE IMAGES ─────────────────── -->
+    <section id="standalone-images-section" data-section-id="standalone-images">
+        <div id="standalone-images-container"></div>
+        <button class="simg-add-btn" onclick="addStandaloneImage()">+ Bild hinzufügen</button>
+    </section>
+
+
     <!-- ── KOMMENTARE ──────────────────────── -->
     <section id="kommentare" data-section-id="kommentare">
         <div class="section-head">
@@ -1880,6 +2027,7 @@ const DEFAULT_SECTIONS = [
     { id: 'interviews', label: 'Interviews mit Charakteren' },
     { id: 'zitate', label: 'Zitate / bedeutsame Stellen' },
     { id: 'themen', label: 'Themen & Motive' },
+    { id: 'standalone-images', label: 'Bilder' },
     { id: 'kommentare', label: 'Kommentare' },
 ];
 
@@ -1899,6 +2047,7 @@ async function init() {
 async function loadData() {
     const res = await fetch('/api/data');
     DATA = await res.json();
+    standaloneImages = DATA.standalone_images || [];
 }
 
 function renderAll() {
@@ -1923,6 +2072,7 @@ function renderAll() {
     renderInterviews();
     renderAuthorQA();
     renderCustomSections();
+    renderStandaloneImages();
     renderSectionVisibility();
 }
 
@@ -3635,6 +3785,179 @@ window.addEventListener('scroll', () => {
         a.classList.toggle('active', a.getAttribute('href') === '#' + current);
     });
 });
+
+// ════════════════════════════════════════════
+// STANDALONE IMAGES
+// ════════════════════════════════════════════
+
+let standaloneImages = [];
+
+function renderStandaloneImages() {
+    const container = document.getElementById('standalone-images-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    standaloneImages.forEach(img => {
+        const block = document.createElement('div');
+        block.className = `standalone-img-block align-${img.align || 'center'}`;
+        block.style.width = Math.min(img.width || 400, window.innerWidth - 32) + 'px';
+        block.dataset.sid = img.id;
+
+        block.innerHTML = `
+            <img src="${img.url}" alt="${img.caption ? escapeHtml(img.caption) : ''}">
+            ${img.caption ? `<div class="standalone-img-caption">${escapeHtml(img.caption)}</div>` : ''}
+            <div class="simg-admin-bar">
+                <button onclick="toggleSimgResize('${img.id}')" title="Größe &amp; Position">↔ Größe</button>
+                <div class="simg-sep"></div>
+                <button onclick="editSimgCaption('${img.id}')">✏ Beschriftung</button>
+                <div class="simg-sep"></div>
+                <button onclick="replaceSimgFile('${img.id}')">📷 Ersetzen</button>
+                <div class="simg-sep"></div>
+                <button class="del" onclick="deleteStandaloneImage('${img.id}')">✕</button>
+            </div>
+            <div class="simg-resize-panel" id="srp-${img.id}">
+                <span>Breite:</span>
+                <input
+                    type="range" min="80" max="900"
+                    value="${img.width || 400}"
+                    oninput="liveSimgWidth('${img.id}', this.value)"
+                    onchange="saveSimgSettings('${img.id}')"
+                >
+                <span class="simg-width-label" id="swl-${img.id}">${img.width || 400}px</span>
+                <select onchange="liveSimgAlign('${img.id}', this.value)">
+                    <option value="left"   ${(img.align || 'center') === 'left'   ? 'selected' : ''}>Links</option>
+                    <option value="center" ${(img.align || 'center') === 'center' ? 'selected' : ''}>Mitte</option>
+                    <option value="right"  ${(img.align || 'center') === 'right'  ? 'selected' : ''}>Rechts</option>
+                </select>
+            </div>
+        `;
+
+        container.appendChild(block);
+    });
+
+    // Show/hide section
+    const section = document.getElementById('standalone-images-section');
+    if (section) {
+        section.hidden = standaloneImages.length === 0 && !isAdmin;
+    }
+}
+
+function toggleSimgResize(id) {
+    const panel = document.getElementById('srp-' + id);
+    if (!panel) return;
+    panel.classList.toggle('open');
+}
+
+function liveSimgWidth(id, val) {
+    const block = document.querySelector(`.standalone-img-block[data-sid="${id}"]`);
+    if (block) block.style.width = val + 'px';
+    const label = document.getElementById('swl-' + id);
+    if (label) label.textContent = val + 'px';
+    const img = standaloneImages.find(i => i.id === id);
+    if (img) img.width = parseInt(val, 10);
+}
+
+function liveSimgAlign(id, val) {
+    const block = document.querySelector(`.standalone-img-block[data-sid="${id}"]`);
+    if (block) {
+        block.classList.remove('align-left', 'align-center', 'align-right');
+        block.classList.add('align-' + val);
+    }
+    const img = standaloneImages.find(i => i.id === id);
+    if (img) img.align = val;
+    saveSimgSettings(id);
+}
+
+async function saveSimgSettings(id) {
+    const img = standaloneImages.find(i => i.id === id);
+    if (!img) return;
+    await fetch('/api/images/' + id, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ caption: img.caption || '', width: img.width, align: img.align }),
+    });
+    showToast();
+}
+
+async function editSimgCaption(id) {
+    const img = standaloneImages.find(i => i.id === id);
+    if (!img) return;
+    const newCaption = prompt('Bildbeschriftung:', img.caption || '');
+    if (newCaption === null) return;
+    img.caption = newCaption.trim();
+    await saveSimgSettings(id);
+    renderStandaloneImages();
+}
+
+async function deleteStandaloneImage(id) {
+    if (!confirm('Dieses Bild wirklich löschen?')) return;
+    await fetch('/api/images/' + id, { method: 'DELETE' });
+    standaloneImages = standaloneImages.filter(i => i.id !== id);
+    renderStandaloneImages();
+    showToast();
+}
+
+async function replaceSimgFile(id) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        let dataUrl;
+        try { dataUrl = await fileToDataUrl(file); }
+        catch (err) { alert(err.message); return; }
+
+        const img = standaloneImages.find(i => i.id === id);
+        if (!img) return;
+        img.url = dataUrl;
+
+        await fetch('/api/images', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(img),
+        });
+        renderStandaloneImages();
+        showToast();
+    };
+    input.click();
+}
+
+async function addStandaloneImage() {
+    if (!isAdmin) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        let dataUrl;
+        try { dataUrl = await fileToDataUrl(file); }
+        catch (err) { alert(err.message); return; }
+
+        const newImg = {
+            id:         'img' + Math.random().toString(36).substr(2, 8),
+            url:        dataUrl,
+            caption:    '',
+            width:      400,
+            align:      'center',
+            sort_order: standaloneImages.length,
+        };
+
+        const res  = await fetch('/api/images', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(newImg),
+        });
+        const data = await res.json();
+        if (data.id) newImg.id = data.id;
+
+        standaloneImages.push(newImg);
+        renderStandaloneImages();
+        showToast();
+    };
+    input.click();
+}
 
 </script>
 </body>
