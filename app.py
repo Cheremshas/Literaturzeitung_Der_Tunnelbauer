@@ -97,6 +97,15 @@ def init_db():
                 rating     INTEGER DEFAULT 5,
                 created_at TEXT DEFAULT (datetime('now'))
             );
+
+            CREATE TABLE IF NOT EXISTS standalone_images (
+                id         TEXT PRIMARY KEY,
+                url        TEXT NOT NULL,
+                caption    TEXT DEFAULT '',
+                width      INTEGER DEFAULT 400,
+                align      TEXT DEFAULT 'center',
+                sort_order INTEGER DEFAULT 0
+            );
         """)
         _seed_defaults(db)
 
@@ -294,6 +303,12 @@ def get_all_data():
         'comments':      comments,
         'avg_rating':    avg_rating,
         'comment_count': comment_count,
+        'standalone_images': [
+            dict(r)
+            for r in db.execute(
+                "SELECT * FROM standalone_images ORDER BY sort_order"
+            ).fetchall()
+        ],
     }
 
 
@@ -600,6 +615,66 @@ def api_comments_post():
 def api_comments_delete(cid):
     with get_db() as db:
         db.execute("DELETE FROM comments WHERE id=?", (cid,))
+    return jsonify({'ok': True})
+
+
+# ── Standalone Images ────────────────────────
+
+@app.route('/api/images', methods=['GET'])
+def api_images_get():
+    db = get_db()
+    images = [
+        dict(r)
+        for r in db.execute(
+            "SELECT * FROM standalone_images ORDER BY sort_order"
+        ).fetchall()
+    ]
+    db.close()
+    return jsonify({'images': images})
+
+
+@app.route('/api/images', methods=['POST'])
+def api_images_create():
+    d   = request.json
+    nid = d.get('id', 'img' + uuid.uuid4().hex[:8])
+    with get_db() as db:
+        count = db.execute(
+            "SELECT COUNT(*) FROM standalone_images"
+        ).fetchone()[0]
+        db.execute(
+            "INSERT INTO standalone_images VALUES(?,?,?,?,?,?) "
+            "ON CONFLICT(id) DO UPDATE SET "
+            "url=excluded.url, caption=excluded.caption, "
+            "width=excluded.width, align=excluded.align, "
+            "sort_order=excluded.sort_order",
+            (
+                nid,
+                d.get('url', ''),
+                d.get('caption', ''),
+                d.get('width', 400),
+                d.get('align', 'center'),
+                d.get('sort_order', count),
+            )
+        )
+    return jsonify({'ok': True, 'id': nid})
+
+
+@app.route('/api/images/<iid>', methods=['PUT'])
+def api_images_update(iid):
+    d = request.json
+    with get_db() as db:
+        db.execute(
+            "UPDATE standalone_images SET "
+            "caption=?, width=?, align=? WHERE id=?",
+            (d.get('caption'), d.get('width'), d.get('align'), iid)
+        )
+    return jsonify({'ok': True})
+
+
+@app.route('/api/images/<iid>', methods=['DELETE'])
+def api_images_delete(iid):
+    with get_db() as db:
+        db.execute("DELETE FROM standalone_images WHERE id=?", (iid,))
     return jsonify({'ok': True})
 
 
