@@ -52,22 +52,6 @@
 
 
     /* ═══════════════════════════════════════════
-       SCROLL PROGRESS BAR
-    ═══════════════════════════════════════════ */
-    #scroll-progress {
-        position: fixed;
-        top: 0; left: 0;
-        height: 3px;
-        width: 0%;
-        background: linear-gradient(90deg, var(--gold), var(--gold2));
-        z-index: 10000;
-        pointer-events: none;
-        box-shadow: 0 0 10px rgba(232, 160, 32, 0.7);
-        transition: width 0.08s linear;
-    }
-
-
-    /* ═══════════════════════════════════════════
        ADMIN BAR
     ═══════════════════════════════════════════ */
     #admin-bar {
@@ -155,7 +139,7 @@
         backdrop-filter: blur(6px);
     }
 
-    #login-overlay.visible  { display: flex; }
+    #login-overlay.visible { display: flex; }
     #sections-modal.visible { display: flex; }
 
     #login-box,
@@ -166,11 +150,6 @@
         padding: 2.5rem;
         width: 360px;
         box-shadow: 0 0 60px rgba(232, 160, 32, 0.15);
-    }
-
-    #login-overlay.visible #login-box,
-    #sections-modal.visible #sections-box {
-        animation: modalIn 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
     }
 
     #sections-box { width: 420px; max-width: calc(100vw - 32px); }
@@ -218,25 +197,16 @@
         cursor: pointer;
         font-family: inherit;
         letter-spacing: 0.04em;
-        transition: background 0.15s, transform 0.1s;
+        transition: background 0.15s;
     }
 
-    .btn-login:hover  { background: var(--gold2); }
-    .btn-login:active { transform: scale(0.98); }
+    .btn-login:hover { background: var(--gold2); }
 
     #login-error {
         color: #cc6666;
         font-size: 13px;
         margin-top: 8px;
         display: none;
-        animation: shake 0.35s ease;
-    }
-
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20%       { transform: translateX(-6px); }
-        60%       { transform: translateX(6px); }
-        80%       { transform: translateX(-3px); }
     }
 
     #login-close,
@@ -248,11 +218,10 @@
         font-size: 22px;
         cursor: pointer;
         line-height: 1;
-        transition: color 0.15s, transform 0.2s;
     }
 
     #login-close:hover,
-    #sections-close:hover { color: var(--white); transform: rotate(90deg); }
+    #sections-close:hover { color: var(--white); }
 
 
     /* ═══════════════════════════════════════════
@@ -270,10 +239,7 @@
         width: 300px;
     }
 
-    #emoji-picker.visible {
-        display: block;
-        animation: pickerIn 0.18s ease both;
-    }
+    #emoji-picker.visible { display: block; }
 
     .ep-search {
         width: 100%;
@@ -313,10 +279,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: background 0.1s, transform 0.1s;
+        transition: background 0.1s;
     }
 
-    .ep-btn:hover { background: var(--dark3); transform: scale(1.2); }
+    .ep-btn:hover { background: var(--dark3); }
 
 
     /* ═══════════════════════════════════════════
@@ -334,15 +300,7 @@
         width: 230px;
     }
 
-    #color-picker.visible {
-        display: block;
-        animation: pickerIn 0.18s ease both;
-    }
-
-    @keyframes pickerIn {
-        from { opacity: 0; transform: translateY(-8px) scale(0.95); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    #color-picker.visible { display: block; }
 
     #color-picker h4 {
         font-size: 10px;
@@ -422,10 +380,6 @@
         padding: 2rem;
         width: 420px;
         box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
-    }
-
-    #img-modal.visible #img-box {
-        animation: modalIn 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
     }
 
     #img-box h3 {
@@ -509,258 +463,15 @@
         font-size: 13px;
         font-weight: 500;
         opacity: 0;
-        transform: translateY(16px) scale(0.95);
+        transform: translateY(10px);
         transition: opacity 0.3s, transform 0.3s;
         z-index: 9999;
         pointer-events: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    #toast::before {
-        content: '✓';
-        font-weight: 700;
-        font-size: 15px;
     }
 
     #toast.visible {
         opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-
-
-    /* ═══════════════════════════════════════════
-       LIGHTBOX
-    ═══════════════════════════════════════════ */
-    #lightbox-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.96);
-        z-index: 9900;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(10px);
-        cursor: zoom-out;
-    }
-
-    #lightbox-overlay.visible {
-        display: flex;
-        animation: fadeIn 0.2s ease both;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-    }
-
-    #lightbox-box {
-        position: relative;
-        max-width: min(480px, 90vw);
-        cursor: default;
-        animation: lightboxIn 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) both;
-    }
-
-    @keyframes lightboxIn {
-        from { opacity: 0; transform: scale(0.82); }
-        to   { opacity: 1; transform: scale(1); }
-    }
-
-    #lightbox-img {
-        display: block;
-        max-width: 100%;
-        max-height: 86vh;
-        object-fit: contain;
-        border: 1px solid var(--border2);
-        border-top: 3px solid var(--gold);
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
-    }
-
-    #lightbox-close {
-        position: absolute;
-        top: -14px;
-        right: -14px;
-        width: 32px;
-        height: 32px;
-        background: var(--dark2);
-        border: 1px solid var(--gold);
-        color: var(--gold);
-        border-radius: 50%;
-        font-size: 18px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        transition: background 0.15s, color 0.15s, transform 0.2s;
-    }
-
-    #lightbox-close:hover {
-        background: var(--gold);
-        color: var(--black);
-        transform: rotate(90deg);
-    }
-
-    #lightbox-hint {
-        text-align: center;
-        color: var(--muted);
-        font-size: 11px;
-        margin-top: 10px;
-        letter-spacing: 0.06em;
-    }
-
-
-    /* ═══════════════════════════════════════════
-       CUSTOM CONFIRM DIALOG
-    ═══════════════════════════════════════════ */
-    #confirm-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.88);
-        z-index: 9999;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(6px);
-    }
-
-    #confirm-overlay.visible { display: flex; }
-
-    #confirm-box {
-        background: var(--dark2);
-        border: 1px solid var(--border2);
-        border-top: 2px solid var(--red);
-        border-radius: 4px;
-        padding: 2rem;
-        width: 340px;
-        max-width: calc(100vw - 32px);
-        box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
-    }
-
-    #confirm-overlay.visible #confirm-box {
-        animation: modalIn 0.26s cubic-bezier(0.34, 1.4, 0.64, 1) both;
-    }
-
-    #confirm-icon {
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-        display: block;
-    }
-
-    #confirm-box h3 {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.1rem;
-        color: var(--white);
-        margin-bottom: 0.5rem;
-    }
-
-    #confirm-message {
-        color: var(--muted);
-        font-size: 13px;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
-    }
-
-    .confirm-actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    .confirm-actions button {
-        flex: 1;
-        padding: 10px;
-        border-radius: 3px;
-        border: none;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 600;
-        font-family: inherit;
-        transition: background 0.15s, transform 0.1s;
-    }
-
-    .confirm-actions button:active { transform: scale(0.97); }
-
-    #confirm-yes { background: var(--red); color: #fff; }
-    #confirm-yes:hover { background: #e74c3c; }
-
-    #confirm-no {
-        background: var(--dark3);
-        color: var(--text);
-        border: 1px solid var(--border2);
-    }
-    #confirm-no:hover { border-color: var(--gold); color: var(--gold); }
-
-
-    /* ═══════════════════════════════════════════
-       MODAL ENTRANCE (shared)
-    ═══════════════════════════════════════════ */
-    @keyframes modalIn {
-        from { opacity: 0; transform: scale(0.88) translateY(16px); }
-        to   { opacity: 1; transform: scale(1)    translateY(0); }
-    }
-
-
-    /* ═══════════════════════════════════════════
-       REVEAL ANIMATIONS (scroll)
-    ═══════════════════════════════════════════ */
-    .reveal {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.65s ease, transform 0.65s ease;
-    }
-
-    .reveal.revealed {
-        opacity: 1;
         transform: translateY(0);
-    }
-
-    /* Staggered delays for grid and list children */
-    .themen-grid .thema-card.reveal:nth-child(2)  { transition-delay: 0.08s; }
-    .themen-grid .thema-card.reveal:nth-child(3)  { transition-delay: 0.16s; }
-    .themen-grid .thema-card.reveal:nth-child(4)  { transition-delay: 0.24s; }
-    .themen-grid .thema-card.reveal:nth-child(5)  { transition-delay: 0.32s; }
-    .themen-grid .thema-card.reveal:nth-child(6)  { transition-delay: 0.40s; }
-    .themen-grid .thema-card.reveal:nth-child(n+7){ transition-delay: 0.48s; }
-
-    .zitate-list .zitat-card.reveal:nth-child(2)  { transition-delay: 0.1s; }
-    .zitate-list .zitat-card.reveal:nth-child(3)  { transition-delay: 0.2s; }
-    .zitate-list .zitat-card.reveal:nth-child(n+4){ transition-delay: 0.3s; }
-
-    .comments-list .comment-card.reveal:nth-child(2)  { transition-delay: 0.07s; }
-    .comments-list .comment-card.reveal:nth-child(3)  { transition-delay: 0.14s; }
-    .comments-list .comment-card.reveal:nth-child(n+4){ transition-delay: 0.21s; }
-
-
-    /* ═══════════════════════════════════════════
-       HEADER & NAV LOAD ANIMATIONS
-    ═══════════════════════════════════════════ */
-    .gold-stripe {
-        animation: stripeExpand 0.6s ease both;
-        transform-origin: left;
-    }
-
-    @keyframes stripeExpand {
-        from { transform: scaleX(0); }
-        to   { transform: scaleX(1); }
-    }
-
-    .paper-masthead {
-        animation: headerFade 0.7s 0.1s ease both;
-    }
-
-    @keyframes headerFade {
-        from { opacity: 0; transform: translateY(-18px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    nav {
-        animation: navSlide 0.5s 0.3s ease both;
-    }
-
-    @keyframes navSlide {
-        from { opacity: 0; transform: translateY(-8px); }
-        to   { opacity: 1; transform: translateY(0); }
     }
 
 
@@ -806,11 +517,10 @@
         font-weight: 500;
         cursor: pointer;
         font-family: inherit;
-        transition: border-color 0.15s, color 0.15s, transform 0.1s;
+        transition: border-color 0.15s, color 0.15s;
     }
 
     .action-btn:hover      { border-color: var(--gold); color: var(--gold); }
-    .action-btn:active     { transform: scale(0.96); }
     .action-btn.del:hover  { border-color: var(--red);  color: var(--red);  }
 
     /* Action row — hidden for readers, shown for admins */
@@ -823,6 +533,32 @@
     }
 
     body.admin-mode .action-row { display: flex; }
+
+    .inline-image-block {
+        display: block;
+        width: min(100%, 560px);
+        margin: 1rem auto;
+        position: relative;
+        text-align: center;
+    }
+
+    .inline-image-block img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        border: 1px solid var(--border2);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    .inline-image-actions {
+        display: none;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    body.admin-mode .inline-image-actions { display: flex; }
 
     /* Dashed "add" button — hidden for readers */
     .add-btn {
@@ -838,11 +574,13 @@
         font-family: inherit;
         margin-top: 1rem;
         letter-spacing: 0.05em;
-        transition: background 0.15s, border-color 0.15s, transform 0.1s;
+        transition: background 0.15s, border-color 0.15s;
     }
 
-    .add-btn:hover  { background: rgba(232, 160, 32, 0.08); border-color: var(--gold); }
-    .add-btn:active { transform: scale(0.97); }
+    .add-btn:hover {
+        background: rgba(232, 160, 32, 0.08);
+        border-color: var(--gold);
+    }
 
     body.admin-mode .add-btn { display: inline-block; }
 
@@ -900,11 +638,6 @@
         cursor: pointer;
         padding: 0;
         font-family: inherit;
-        transition: filter 0.2s;
-    }
-
-    .paper-logo-button:hover {
-        filter: drop-shadow(0 0 12px rgba(232, 160, 32, 0.4));
     }
 
     .paper-logo-button:focus-visible {
@@ -1132,15 +865,12 @@
         font-size: 20px;
         color: var(--gold);
         line-height: 1;
-        transition: transform 0.15s, filter 0.15s;
+        transition: transform 0.1s;
         user-select: none;
     }
 
     .star-glyph.empty            { color: var(--border2); }
-    body.admin-mode .star-glyph:hover {
-        transform: scale(1.3);
-        filter: drop-shadow(0 0 6px rgba(232,160,32,0.7));
-    }
+    body.admin-mode .star-glyph:hover { transform: scale(1.2); }
 
     .prose {
         font-family: 'Lora', serif;
@@ -1157,11 +887,6 @@
         background: var(--dark2);
         border: 1px solid var(--border2);
         border-top: 3px solid var(--gold);
-        transition: box-shadow 0.25s ease;
-    }
-
-    .book-card:hover {
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(232,160,32,0.15);
     }
 
     .book-cover-wrap {
@@ -1169,7 +894,7 @@
         aspect-ratio: 2 / 3;
         background: var(--dark3);
         overflow: hidden;
-        cursor: zoom-in;
+        cursor: default;
     }
 
     body.admin-mode .book-cover-wrap { cursor: pointer; }
@@ -1179,10 +904,7 @@
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform 0.4s ease;
     }
-
-    .book-cover-wrap:hover img { transform: scale(1.03); }
 
     .book-cover-overlay {
         display: none;
@@ -1249,12 +971,6 @@
         border-left: 3px solid var(--gold);
         padding: 1.5rem 1.75rem;
         position: relative;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .zitat-card:hover {
-        transform: translateX(5px);
-        box-shadow: -4px 0 24px rgba(232, 160, 32, 0.12);
     }
 
     /* Large decorative opening quote */
@@ -1316,13 +1032,12 @@
         border: 1px solid var(--border2);
         border-top: 2px solid var(--gold);
         padding: 1.5rem;
-        transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+        transition: border-color 0.2s, transform 0.2s;
     }
 
     .thema-card:hover {
         border-color: var(--card-accent, var(--gold));
-        transform: translateY(-4px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        transform: translateY(-2px);
     }
 
     .thema-icon-wrap {
@@ -1334,11 +1049,6 @@
         justify-content: center;
         font-size: 1.5rem;
         margin-bottom: 1rem;
-        transition: transform 0.25s ease;
-    }
-
-    .thema-card:hover .thema-icon-wrap {
-        transform: scale(1.12) rotate(-4deg);
     }
 
     .thema-card h3 {
@@ -1369,12 +1079,6 @@
         border: 1px solid var(--border2);
         display: grid;
         grid-template-columns: 4px 1fr;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .interview-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     }
 
     .interview-body { padding: 1.75rem 2rem; }
@@ -1400,10 +1104,7 @@
         font-weight: 700;
         color: var(--black);
         overflow: hidden;
-        transition: transform 0.2s ease;
     }
-
-    .interview-card:hover .avatar { transform: scale(1.05); }
 
     .avatar img {
         width: 100%;
@@ -1479,11 +1180,6 @@
         border-left: 3px solid var(--gold);
         padding: 1rem 1.5rem;
         margin-bottom: 1.75rem;
-        transition: box-shadow 0.25s;
-    }
-
-    .avg-badge:hover {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
 
     .avg-number {
@@ -1552,13 +1248,10 @@
         font-size: 13px;
         font-family: inherit;
         outline: none;
-        transition: border-color 0.15s, box-shadow 0.15s;
+        transition: border-color 0.15s;
     }
 
-    .form-input:focus  {
-        border-color: var(--gold);
-        box-shadow: 0 0 0 2px rgba(232,160,32,0.08);
-    }
+    .form-input:focus  { border-color: var(--gold); }
     .form-textarea     { resize: vertical; min-height: 90px; }
 
     /* Interactive star rating in the form */
@@ -1572,16 +1265,13 @@
         font-size: 26px;
         cursor: pointer;
         color: var(--border2);
-        transition: color 0.1s, transform 0.15s;
+        transition: color 0.1s, transform 0.1s;
         line-height: 1;
         user-select: none;
     }
 
     .rating-star.active    { color: var(--gold); }
-    .rating-star:hover     {
-        transform: scale(1.2);
-        filter: drop-shadow(0 0 4px rgba(232,160,32,0.5));
-    }
+    .rating-star:hover     { transform: scale(1.15); }
 
     .btn-submit {
         background: var(--gold);
@@ -1595,11 +1285,10 @@
         letter-spacing: 0.05em;
         cursor: pointer;
         margin-top: 1rem;
-        transition: background 0.15s, transform 0.1s;
+        transition: background 0.15s;
     }
 
-    .btn-submit:hover  { background: var(--gold2); }
-    .btn-submit:active { transform: scale(0.97); }
+    .btn-submit:hover { background: var(--gold2); }
 
     /* Divider ornament */
     .divider {
@@ -1631,12 +1320,6 @@
         border: 1px solid var(--border2);
         border-left: 3px solid var(--border2);
         padding: 1.25rem 1.5rem;
-        transition: transform 0.22s ease, border-left-color 0.22s ease, box-shadow 0.22s ease;
-    }
-
-    .comment-card:hover {
-        transform: translateX(4px);
-        box-shadow: -2px 0 16px rgba(0,0,0,0.3);
     }
 
     /* 5-star comments get gold accent */
@@ -1721,187 +1404,14 @@
         background: var(--border2);
         margin: 0.6rem auto;
     }
-
-
-    /* ═══════════════════════════════════════════
-       BACK-TO-TOP BUTTON
-    ═══════════════════════════════════════════ */
-    #back-to-top {
-        position: fixed;
-        bottom: 1.5rem;
-        left: 1.5rem;
-        width: 42px;
-        height: 42px;
-        background: var(--dark2);
-        border: 1px solid var(--border2);
-        border-radius: 50%;
-        color: var(--muted);
-        font-size: 18px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9990;
-        opacity: 0;
-        transform: translateY(16px) scale(0.85);
-        pointer-events: none;
-        transition: opacity 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
-                    transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
-                    border-color 0.2s, color 0.2s, background 0.2s;
-    }
-
-    #back-to-top.visible {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        pointer-events: auto;
-    }
-
-    #back-to-top:hover {
-        border-color: var(--gold);
-        color: var(--gold);
-        background: rgba(232,160,32,0.08);
-        transform: translateY(-3px) scale(1.08);
-    }
-
-    #back-to-top:active {
-        transform: scale(0.93);
-    }
-
-
-    /* ═══════════════════════════════════════════
-       RIPPLE EFFECT
-    ═══════════════════════════════════════════ */
-    .ripple-host {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .ripple-wave {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.18);
-        transform: scale(0);
-        animation: rippleGrow 0.55s linear;
-        pointer-events: none;
-    }
-
-    @keyframes rippleGrow {
-        to { transform: scale(4); opacity: 0; }
-    }
-
-
-    /* ═══════════════════════════════════════════
-       NAV SLIDING INDICATOR
-    ═══════════════════════════════════════════ */
-    #nav-indicator {
-        position: absolute;
-        bottom: -1px;
-        height: 2px;
-        background: var(--gold);
-        border-radius: 2px 2px 0 0;
-        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                    opacity 0.2s;
-        pointer-events: none;
-        opacity: 0;
-        box-shadow: 0 0 8px rgba(232,160,32,0.6);
-    }
-
-    #nav-indicator.visible { opacity: 1; }
-
-
-    /* ═══════════════════════════════════════════
-       QUOTE COPY BUTTON
-    ═══════════════════════════════════════════ */
-    .zitat-copy {
-        position: absolute;
-        top: 0.75rem;
-        right: 0.75rem;
-        background: none;
-        border: 1px solid var(--border2);
-        color: var(--muted);
-        width: 30px;
-        height: 30px;
-        border-radius: 4px;
-        font-size: 13px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
-    }
-
-    .zitat-card:hover .zitat-copy { opacity: 1; }
-    .zitat-copy:hover {
-        border-color: var(--gold);
-        color: var(--gold);
-        transform: scale(1.1);
-    }
-
-    .zitat-copy.copied {
-        border-color: #2ecc71;
-        color: #2ecc71;
-        animation: copyBounce 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    }
-
-    @keyframes copyBounce {
-        0%   { transform: scale(1); }
-        40%  { transform: scale(1.3) rotate(-10deg); }
-        100% { transform: scale(1) rotate(0deg); }
-    }
-
-
-    /* ═══════════════════════════════════════════
-       ANIMATED COUNT-UP (avg rating)
-    ═══════════════════════════════════════════ */
-    .avg-number {
-        font-variant-numeric: tabular-nums;
-    }
-
-
-    /* ═══════════════════════════════════════════
-       SECTION REVEAL PULSE on the gold top border
-    ═══════════════════════════════════════════ */
-    .section-head {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .section-head::before {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%;
-        width: 60%;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, var(--gold2), transparent);
-        animation: sectionSweep 3.5s ease-in-out infinite;
-        pointer-events: none;
-    }
-
-    @keyframes sectionSweep {
-        0%   { left: -60%; opacity: 0; }
-        10%  { opacity: 1; }
-        90%  { opacity: 0.6; }
-        100% { left: 110%; opacity: 0; }
-    }
     </style>
 </head>
 <body>
 
-<!-- Scroll progress bar -->
-<div id="scroll-progress"></div>
-
 <!-- ════════════════════════════════════════
      TOAST
 ════════════════════════════════════════ -->
-<div id="toast">Gespeichert</div>
-
-<!-- ════════════════════════════════════════
-     BACK-TO-TOP
-════════════════════════════════════════ -->
-<button id="back-to-top" title="Nach oben" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-
+<div id="toast">✓ Gespeichert</div>
 
 
 <!-- ════════════════════════════════════════
@@ -1912,6 +1422,7 @@
     <span class="ab-label">Admin</span>
     <div class="ab-sep"></div>
     <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
+    <button class="ab-btn" onclick="openInlineImageUpload()">🖼 Bild</button>
     <button class="ab-btn" onclick="openSectionsModal()">☰ Abschnitte</button>
     <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
     <button class="ab-btn" onclick="addThema()">+ Thema</button>
@@ -2031,34 +1542,6 @@
 
 
 <!-- ════════════════════════════════════════
-     LIGHTBOX
-════════════════════════════════════════ -->
-<div id="lightbox-overlay" onclick="handleLightboxBackdrop(event)">
-    <div id="lightbox-box">
-        <button id="lightbox-close" onclick="closeLightbox()" title="Schließen">×</button>
-        <img id="lightbox-img" src="" alt="Buchcover">
-        <div id="lightbox-hint">ESC oder Klick um zu schließen</div>
-    </div>
-</div>
-
-
-<!-- ════════════════════════════════════════
-     CUSTOM CONFIRM DIALOG
-════════════════════════════════════════ -->
-<div id="confirm-overlay">
-    <div id="confirm-box">
-        <span id="confirm-icon">🗑️</span>
-        <h3 id="confirm-title">Wirklich löschen?</h3>
-        <p id="confirm-message">Diese Aktion kann nicht rückgängig gemacht werden.</p>
-        <div class="confirm-actions">
-            <button id="confirm-no"  onclick="resolveConfirm(false)">Abbrechen</button>
-            <button id="confirm-yes" onclick="resolveConfirm(true)">Löschen</button>
-        </div>
-    </div>
-</div>
-
-
-<!-- ════════════════════════════════════════
      NEWSPAPER HEADER
 ════════════════════════════════════════ -->
 <header class="paper-header">
@@ -2099,7 +1582,7 @@
      NAVIGATION
 ════════════════════════════════════════ -->
 <nav>
-    <ul id="nav-list"><div id="nav-indicator"></div></ul>
+    <ul id="nav-list"></ul>
 </nav>
 
 
@@ -2110,7 +1593,7 @@
 
     <!-- ── ZUSAMMENFASSUNG ───────────────── -->
     <section id="zusammenfassung" data-section-id="zusammenfassung">
-        <div class="section-head reveal">
+        <div class="section-head">
             <div class="section-label">Zusammenfassung des Buches</div>
             <div class="section-title" contenteditable="false" data-key="summary-title">
                 Worum es in „Der Tunnelbauer" geht
@@ -2121,7 +1604,7 @@
         </div>
 
         <div class="edit-hint">✏ Zusammenfassung bearbeiten</div>
-        <div class="prose reveal" contenteditable="false" data-key="summary-text">
+        <div class="prose" contenteditable="false" data-key="summary-text">
             <p>Hier kannst du die Handlung des Buches knapp zusammenfassen.</p>
         </div>
     </section>
@@ -2129,7 +1612,7 @@
 
     <!-- ── REZENSION ──────────────────────── -->
     <section id="rezension" data-section-id="rezension">
-        <div class="section-head reveal">
+        <div class="section-head">
             <div class="section-label">Buchrezension</div>
             <div class="section-title">Analyse &amp; Bewertung</div>
         </div>
@@ -2137,7 +1620,7 @@
             <button class="action-btn del" onclick="toggleSection('rezension', false)">Abschnitt ausblenden</button>
         </div>
 
-        <div class="rez-grid reveal">
+        <div class="rez-grid">
 
             <div>
                 <div class="edit-hint">✏ Titel bearbeiten</div>
@@ -2173,8 +1656,8 @@
                     <div
                         class="book-cover-wrap"
                         id="book-cover-wrap"
-                        onclick="handleCoverClick()"
-                        title="Klicken zum Vergrößern"
+                        onclick="adminAction(() => openImgModal('book-cover'))"
+                        title="Im Admin-Modus: Bild ändern"
                     >
                         <img
                             id="book-cover-img"
@@ -2220,7 +1703,7 @@
 
     <!-- ── INTERVIEWS ──────────────────────── -->
     <section id="autor-interview" data-section-id="autor-interview">
-        <div class="section-head reveal">
+        <div class="section-head">
             <div class="section-label">Interview mit der Autorin</div>
             <div class="section-title" contenteditable="false" data-key="author-interview-title">
                 Fragen an Maja Nielsen
@@ -2242,7 +1725,7 @@
 
     <!-- ── INTERVIEWS MIT CHARAKTEREN ─────── -->
     <section id="interviews" data-section-id="interviews">
-        <div class="section-head reveal">
+        <div class="section-head">
             <div class="section-label">Interviews mit Charakteren aus dem Buch</div>
             <div class="section-title">Im Gespräch mit den Figuren</div>
         </div>
@@ -2258,7 +1741,7 @@
 
     <!-- ── ZITATE ──────────────────────────── -->
     <section id="zitate" data-section-id="zitate">
-        <div class="section-head reveal">
+        <div class="section-head">
             <div class="section-label">Zitate / bedeutsame Stellen</div>
             <div class="section-title">Wichtige Stellen aus dem Buch</div>
         </div>
@@ -2274,7 +1757,7 @@
 
     <!-- ── THEMEN ──────────────────────────── -->
     <section id="themen" data-section-id="themen">
-        <div class="section-head reveal">
+        <div class="section-head">
             <div class="section-label">Analyse</div>
             <div class="section-title">Themen &amp; Motive</div>
         </div>
@@ -2290,7 +1773,7 @@
 
     <!-- ── KOMMENTARE ──────────────────────── -->
     <section id="kommentare" data-section-id="kommentare">
-        <div class="section-head reveal">
+        <div class="section-head">
             <div class="section-label">Leserstimmen</div>
             <div class="section-title">Kommentare &amp; Bewertungen</div>
         </div>
@@ -2299,7 +1782,7 @@
         </div>
 
         <!-- Average rating display -->
-        <div class="avg-badge reveal">
+        <div class="avg-badge">
             <div class="avg-number" id="avg-number">–</div>
             <div>
                 <div class="avg-stars" id="avg-stars"></div>
@@ -2308,7 +1791,7 @@
         </div>
 
         <!-- Submission form -->
-        <div class="comment-form reveal">
+        <div class="comment-form">
             <h3>Kommentar hinterlassen</h3>
 
             <div class="form-row">
@@ -2379,6 +1862,8 @@ let selectedRating = 5;  // rating picked in comment form
 
 let imgTarget = null;    // 'book-cover' | { type:'avatar', id:'...' }
 let imgFile   = null;    // pending File for upload
+let lastEditableEl = null;
+let lastEditableRange = null;
 
 let cpCallback = null;   // called with chosen color
 let epCallback = null;   // called with chosen emoji
@@ -2400,126 +1885,6 @@ const DEFAULT_SECTIONS = [
 
 
 // ════════════════════════════════════════════
-// SCROLL PROGRESS BAR
-// ════════════════════════════════════════════
-
-function updateScrollProgress() {
-    const scrollTop    = window.scrollY || document.documentElement.scrollTop;
-    const docHeight    = document.documentElement.scrollHeight - window.innerHeight;
-    const pct          = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    document.getElementById('scroll-progress').style.width = pct + '%';
-}
-
-window.addEventListener('scroll', updateScrollProgress, { passive: true });
-
-
-// ════════════════════════════════════════════
-// REVEAL ON SCROLL (Intersection Observer)
-// ════════════════════════════════════════════
-
-const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-            revealObserver.unobserve(entry.target);
-        }
-    });
-}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
-function observeRevealElements() {
-    document.querySelectorAll('.reveal:not(.revealed)').forEach(el => {
-        revealObserver.observe(el);
-    });
-}
-
-// Also trigger for elements already in viewport on load
-function revealInViewport() {
-    document.querySelectorAll('.reveal:not(.revealed)').forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight) {
-            el.classList.add('revealed');
-        } else {
-            revealObserver.observe(el);
-        }
-    });
-}
-
-
-// ════════════════════════════════════════════
-// LIGHTBOX
-// ════════════════════════════════════════════
-
-function openLightbox(src) {
-    const img = document.getElementById('lightbox-img');
-    img.src = src;
-    document.getElementById('lightbox-overlay').classList.add('visible');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox() {
-    document.getElementById('lightbox-overlay').classList.remove('visible');
-    document.body.style.overflow = '';
-}
-
-function handleLightboxBackdrop(e) {
-    if (e.target === document.getElementById('lightbox-overlay')) {
-        closeLightbox();
-    }
-}
-
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeLightbox();
-        closeConfirm();
-        closeAllPickers();
-    }
-});
-
-function handleCoverClick() {
-    if (isAdmin) {
-        openImgModal('book-cover');
-    } else {
-        const src = document.getElementById('book-cover-img').src;
-        openLightbox(src);
-    }
-}
-
-
-// ════════════════════════════════════════════
-// CUSTOM CONFIRM DIALOG
-// ════════════════════════════════════════════
-
-let confirmResolve = null;
-
-function confirmDialog(message, title = 'Wirklich löschen?', icon = '🗑️') {
-    return new Promise(resolve => {
-        confirmResolve = resolve;
-        document.getElementById('confirm-icon').textContent    = icon;
-        document.getElementById('confirm-title').textContent   = title;
-        document.getElementById('confirm-message').textContent = message;
-        document.getElementById('confirm-overlay').classList.add('visible');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => document.getElementById('confirm-yes').focus(), 60);
-    });
-}
-
-function resolveConfirm(value) {
-    document.getElementById('confirm-overlay').classList.remove('visible');
-    document.body.style.overflow = '';
-    if (confirmResolve) {
-        confirmResolve(value);
-        confirmResolve = null;
-    }
-}
-
-function closeConfirm() {
-    if (document.getElementById('confirm-overlay').classList.contains('visible')) {
-        resolveConfirm(false);
-    }
-}
-
-
-// ════════════════════════════════════════════
 // BOOTSTRAP
 // ════════════════════════════════════════════
 
@@ -2529,8 +1894,6 @@ async function init() {
     await loadComments();
     buildEmojiGrid(ALL_EMOJIS);
     buildSwatches();
-    // Start reveal observations after content is rendered
-    setTimeout(revealInViewport, 80);
 }
 
 async function loadData() {
@@ -2592,6 +1955,7 @@ function getAllSections() {
 
 function getSectionSettings() {
     const defaults = Object.fromEntries(getAllSections().map(s => [s.id, true]));
+
     try {
         return { ...defaults, ...JSON.parse(DATA.kv['sections-enabled'] || '{}') };
     } catch {
@@ -2665,6 +2029,7 @@ function closeSectionsModal() {
 
 async function toggleSection(sectionId, enabled) {
     const settings = getSectionSettings();
+
     settings[sectionId] = enabled;
 
     if (!Object.values(settings).some(Boolean)) {
@@ -2685,14 +2050,14 @@ function renderCustomSections() {
     customSections.forEach(section => {
         const label = DATA.kv[`${section.id}-label`] || section.label || 'Neuer Abschnitt';
         const title = DATA.kv[`${section.id}-title`] || section.title || 'Neuer Abschnitt';
-        const body  = DATA.kv[`${section.id}-body`]  || section.body  || '<p>Text hier eingeben…</p>';
+        const body = DATA.kv[`${section.id}-body`] || section.body || '<p>Text hier eingeben…</p>';
 
         const el = document.createElement('section');
         el.id = section.id;
         el.className = 'custom-section';
         el.dataset.sectionId = section.id;
         el.innerHTML = `
-            <div class="section-head reveal">
+            <div class="section-head">
                 <div class="section-label" contenteditable="false" data-key="${section.id}-label">${label}</div>
                 <div class="section-title" contenteditable="false" data-key="${section.id}-title">${title}</div>
             </div>
@@ -2701,7 +2066,7 @@ function renderCustomSections() {
                 <button class="action-btn del" onclick="deleteCustomSection('${section.id}')">Abschnitt löschen</button>
             </div>
             <div class="edit-hint">✏ Abschnitt bearbeiten</div>
-            <div class="prose reveal" contenteditable="false" data-key="${section.id}-body">${body}</div>
+            <div class="prose" contenteditable="false" data-key="${section.id}-body">${body}</div>
         `;
 
         if (comments) {
@@ -2716,8 +2081,6 @@ function renderCustomSections() {
             el.contentEditable = 'true';
         });
     }
-
-    setTimeout(observeRevealElements, 50);
 }
 
 async function saveCustomSections() {
@@ -2731,24 +2094,24 @@ async function addCustomSection() {
         id,
         label: 'Neuer Abschnitt',
         title: 'Neuer Abschnitt',
-        body:  '<p>Text hier eingeben…</p>',
+        body: '<p>Text hier eingeben…</p>',
     };
 
     customSections = [...getCustomSections(), section];
     DATA.kv['custom-sections'] = JSON.stringify(customSections);
     DATA.kv[`${id}-label`] = section.label;
     DATA.kv[`${id}-title`] = section.title;
-    DATA.kv[`${id}-body`]  = section.body;
+    DATA.kv[`${id}-body`] = section.body;
 
     const settings = getSectionSettings();
     settings[id] = true;
 
     await saveKV({
-        'custom-sections':   DATA.kv['custom-sections'],
-        'sections-enabled':  JSON.stringify(settings),
-        [`${id}-label`]:     section.label,
-        [`${id}-title`]:     section.title,
-        [`${id}-body`]:      section.body,
+        'custom-sections': DATA.kv['custom-sections'],
+        'sections-enabled': JSON.stringify(settings),
+        [`${id}-label`]: section.label,
+        [`${id}-title`]: section.title,
+        [`${id}-body`]: section.body,
     });
 
     renderCustomSections();
@@ -2762,18 +2125,18 @@ async function syncCustomSectionsFromDOM() {
     customSections = getCustomSections().map(section => {
         const label = document.querySelector(`[data-key="${section.id}-label"]`)?.innerHTML;
         const title = document.querySelector(`[data-key="${section.id}-title"]`)?.innerHTML;
-        const body  = document.querySelector(`[data-key="${section.id}-body"]`)?.innerHTML;
-        const next  = {
+        const body = document.querySelector(`[data-key="${section.id}-body"]`)?.innerHTML;
+        const next = {
             ...section,
             label: label || section.label,
             title: title || section.title,
-            body:  body  || section.body,
+            body: body || section.body,
         };
 
         changed = changed
             || next.label !== section.label
             || next.title !== section.title
-            || next.body  !== section.body;
+            || next.body !== section.body;
 
         return next;
     });
@@ -2781,20 +2144,16 @@ async function syncCustomSectionsFromDOM() {
     if (changed) {
         DATA.kv['custom-sections'] = JSON.stringify(customSections);
         await fetch('/api/kv', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ 'custom-sections': DATA.kv['custom-sections'] }),
+            body: JSON.stringify({ 'custom-sections': DATA.kv['custom-sections'] }),
         });
         renderSectionVisibility();
     }
 }
 
 async function deleteCustomSection(sectionId) {
-    const ok = await confirmDialog(
-        'Möchtest du diesen Abschnitt wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
-        'Abschnitt löschen?', '📄'
-    );
-    if (!ok) return;
+    if (!confirm('Diesen Abschnitt wirklich löschen?')) return;
 
     customSections = getCustomSections().filter(section => section.id !== sectionId);
     const settings = getSectionSettings();
@@ -2811,14 +2170,14 @@ async function deleteCustomSection(sectionId) {
     delete DATA.kv[`${sectionId}-body`];
 
     await saveKV({
-        'custom-sections':  JSON.stringify(customSections),
+        'custom-sections': JSON.stringify(customSections),
         'sections-enabled': JSON.stringify(settings),
     });
 
     await fetch('/api/kv/delete', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ keys: removedKeys }),
+        body: JSON.stringify({ keys: removedKeys }),
     });
 
     renderCustomSections();
@@ -2853,7 +2212,7 @@ function renderAuthorQA() {
     if (!list) return;
 
     list.innerHTML = authorQA.map(item => `
-        <li class="qa-item author-qa-item reveal" id="${item.id}">
+        <li class="qa-item author-qa-item" id="${item.id}">
             <div class="qa-q" contenteditable="false" data-key="${item.qKey}">
                 ${DATA.kv[item.qKey] || 'Neue Frage?'}
             </div>
@@ -2871,8 +2230,6 @@ function renderAuthorQA() {
             el.contentEditable = 'true';
         });
     }
-
-    setTimeout(observeRevealElements, 50);
 }
 
 async function saveAuthorQAList() {
@@ -2881,17 +2238,21 @@ async function saveAuthorQAList() {
 }
 
 async function addAuthorQA() {
-    const id   = 'author-qa-' + Date.now().toString(36);
-    const item = { id, qKey: id + '-q', aKey: id + '-a' };
+    const id = 'author-qa-' + Date.now().toString(36);
+    const item = {
+        id,
+        qKey: id + '-q',
+        aKey: id + '-a',
+    };
 
     authorQA = [...getAuthorQA(), item];
     DATA.kv[item.qKey] = 'Neue Frage?';
     DATA.kv[item.aKey] = 'Antwort hier eingeben…';
 
     await saveKV({
-        'author-qa':  JSON.stringify(authorQA),
-        [item.qKey]:  DATA.kv[item.qKey],
-        [item.aKey]:  DATA.kv[item.aKey],
+        'author-qa': JSON.stringify(authorQA),
+        [item.qKey]: DATA.kv[item.qKey],
+        [item.aKey]: DATA.kv[item.aKey],
     });
 
     renderAuthorQA();
@@ -2899,8 +2260,8 @@ async function addAuthorQA() {
 }
 
 async function deleteAuthorQA(id) {
-    const ok = await confirmDialog('Diese Frage wirklich löschen?', 'Frage löschen?', '❓');
-    if (!ok) return;
+    if (!confirm('Diese Frage wirklich löschen?')) return;
+
     authorQA = getAuthorQA().filter(item => item.id !== id);
     await saveAuthorQAList();
     renderAuthorQA();
@@ -2936,12 +2297,7 @@ async function doLogin() {
         closeLogin();
         activateAdmin();
     } else {
-        const errEl = document.getElementById('login-error');
-        errEl.style.display = 'block';
-        // Re-trigger shake animation
-        errEl.style.animation = 'none';
-        errEl.offsetHeight; // reflow
-        errEl.style.animation = '';
+        document.getElementById('login-error').style.display = 'block';
         document.getElementById('pw-input').value = '';
         document.getElementById('pw-input').focus();
     }
@@ -2978,6 +2334,42 @@ function adminAction(fn) {
     if (isAdmin) fn();
 }
 
+function findEditableByKey(key) {
+    return [...document.querySelectorAll('[data-key]')]
+        .find(el => el.dataset.key === key) || null;
+}
+
+function getEditableRoot(node) {
+    return node?.nodeType === Node.ELEMENT_NODE
+        ? node.closest('[data-key][contenteditable="true"]')
+        : node?.parentElement?.closest('[data-key][contenteditable="true"]');
+}
+
+function rememberEditableSelection() {
+    if (!isAdmin) return;
+
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    const range = sel.getRangeAt(0);
+    const editable = getEditableRoot(range.commonAncestorContainer);
+    if (!editable) return;
+
+    lastEditableEl = editable;
+    lastEditableRange = range.cloneRange();
+}
+
+document.addEventListener('focusin', (e) => {
+    const editable = e.target.closest?.('[data-key][contenteditable="true"]');
+    if (editable) {
+        lastEditableEl = editable;
+    }
+});
+
+document.addEventListener('keyup', rememberEditableSelection);
+document.addEventListener('mouseup', rememberEditableSelection);
+document.addEventListener('selectionchange', rememberEditableSelection);
+
 
 // ════════════════════════════════════════════
 // SAVING
@@ -2991,6 +2383,42 @@ async function saveKV(obj) {
     });
     Object.assign(DATA.kv, obj);
     showToast();
+}
+
+async function saveEditableElement(el) {
+    if (!el?.dataset?.key) return;
+
+    const key = el.dataset.key;
+
+    if (key.startsWith('ztag-') || key.startsWith('ztext-') || key.startsWith('zsrc-')) {
+        saveZitatFromDOM(key.replace(/^(ztag|ztext|zsrc)-/, ''));
+        showToast();
+        return;
+    }
+
+    if (key.startsWith('ttitle-') || key.startsWith('tbody-')) {
+        saveThemaFromDOM(key.replace(/^(ttitle|tbody)-/, ''));
+        showToast();
+        return;
+    }
+
+    if (key.startsWith('iname-') || key.startsWith('irole-')) {
+        saveInterviewFromDOM(key.replace(/^(iname|irole)-/, ''));
+        showToast();
+        return;
+    }
+
+    if (key.startsWith('qq-') || key.startsWith('qa-')) {
+        saveQAFromDOM(key.replace(/^(qq|qa)-/, ''));
+        showToast();
+        return;
+    }
+
+    await saveKV({ [key]: el.innerHTML });
+
+    if (el.closest('.custom-section')) {
+        await syncCustomSectionsFromDOM();
+    }
 }
 
 async function saveAll() {
@@ -3008,21 +2436,14 @@ document.addEventListener('blur', async (e) => {
     if (!isAdmin) return;
     const el = e.target;
     if (!el.dataset.key) return;
-    await saveKV({ [el.dataset.key]: el.innerHTML });
-
-    if (el.closest('.custom-section')) {
-        await syncCustomSectionsFromDOM();
-    }
+    await saveEditableElement(el);
 }, true);
 
-function showToast(msg = 'Gespeichert') {
+function showToast() {
     const t = document.getElementById('toast');
-    t.childNodes[t.childNodes.length - 1].textContent = msg;
-    t.classList.remove('visible');
-    void t.offsetWidth; // reflow to restart animation
     t.classList.add('visible');
     clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('visible'), 2400);
+    t._timer = setTimeout(() => t.classList.remove('visible'), 2200);
 }
 
 
@@ -3084,36 +2505,42 @@ function filterEmoji(query) {
         buildEmojiGrid(ALL_EMOJIS);
         return;
     }
+    // Show emojis that include the typed character(s)
     buildEmojiGrid(ALL_EMOJIS.filter(e => e.includes(query.trim())));
 }
 
 function positionPicker(picker, triggerEl, width, height) {
-    const rect    = triggerEl.getBoundingClientRect();
-    const gap     = 6;
-    const margin  = 10;
+    const rect = triggerEl.getBoundingClientRect();
+    const gap = 6;
+    const margin = 10;
     const maxLeft = Math.max(margin, window.innerWidth - width - margin);
-    const maxTop  = Math.max(margin, window.innerHeight - height - margin);
+    const maxTop = Math.max(margin, window.innerHeight - height - margin);
 
     let left = Math.min(Math.max(rect.left, margin), maxLeft);
-    let top  = rect.bottom + gap;
+    let top = rect.bottom + gap;
 
     if (top > maxTop) {
         top = rect.top - height - gap;
     }
 
     picker.style.left = left + 'px';
-    picker.style.top  = Math.min(Math.max(top, margin), maxTop) + 'px';
+    picker.style.top = Math.min(Math.max(top, margin), maxTop) + 'px';
 }
 
 function openEmojiPicker(triggerEl, callback) {
     epCallback = callback;
 
     const picker = document.getElementById('emoji-picker');
+
+    // Close color picker if open
     document.getElementById('color-picker').classList.remove('visible');
 
     picker.querySelector('.ep-search').value = '';
     buildEmojiGrid(ALL_EMOJIS);
     positionPicker(picker, triggerEl, 300, 270);
+
+    // Show AFTER positioning, and stop this open-click from
+    // immediately re-triggering the outside-click handler
     picker.classList.add('visible');
     picker.querySelector('.ep-search').focus();
 }
@@ -3183,15 +2610,18 @@ function buildSwatches(currentColor) {
 function openColorPicker(triggerEl, currentColor, callback) {
     cpCallback = callback;
 
-    const picker     = document.getElementById('color-picker');
+    const picker = document.getElementById('color-picker');
     const normalized = normalizeColor(currentColor);
 
+    // Close emoji picker if it is open
     document.getElementById('emoji-picker').classList.remove('visible');
 
     buildSwatches(normalized);
     document.getElementById('cp-custom-input').value       = normalized;
     document.getElementById('cp-preview').style.background = normalized;
     positionPicker(picker, triggerEl, 230, 235);
+
+    // Show AFTER positioning
     picker.classList.add('visible');
 }
 
@@ -3213,6 +2643,7 @@ function pickColor(color) {
 
 function onCustomColor(color) {
     const normalized = normalizeColor(color);
+
     document.getElementById('cp-preview').style.background = normalized;
     document.querySelectorAll('.cp-swatch').forEach(s => s.classList.remove('selected'));
     if (cpCallback) cpCallback(normalized);
@@ -3223,10 +2654,14 @@ function closeAllPickers() {
     document.getElementById('color-picker').classList.remove('visible');
 }
 
-// Close pickers when clicking outside them
+// Close pickers when clicking outside them AND outside their trigger buttons
 document.addEventListener('click', (e) => {
     const ep = document.getElementById('emoji-picker');
     const cp = document.getElementById('color-picker');
+
+    // A click that opened the picker will also bubble here immediately.
+    // We ignore it by checking if the target is a trigger button
+    // (action-btn) — those are handled by openXxxPicker directly.
     const isActionBtn = e.target.closest('.action-btn');
 
     if (!isActionBtn) {
@@ -3247,6 +2682,7 @@ document.addEventListener('click', (e) => {
 function openImgModal(target) {
     imgTarget = target;
     imgFile   = null;
+    document.getElementById('img-file-input').value = '';
     document.getElementById('img-preview').style.display = 'none';
     document.getElementById('img-preview').src = '';
     document.getElementById('img-modal').classList.add('visible');
@@ -3256,6 +2692,19 @@ function closeImgModal() {
     document.getElementById('img-modal').classList.remove('visible');
     imgTarget = null;
     imgFile   = null;
+}
+
+function openInlineImageUpload() {
+    if (!isAdmin) return;
+
+    rememberEditableSelection();
+
+    if (!lastEditableEl?.dataset?.key) {
+        alert('Bitte zuerst in den Text klicken, wo das Bild erscheinen soll.');
+        return;
+    }
+
+    openImgModal({ type: 'inline', key: lastEditableEl.dataset.key });
 }
 
 function previewFile(input) {
@@ -3278,24 +2727,54 @@ function handleDrop(e) {
     prev.style.display = 'block';
 }
 
+function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        if (!file.type.startsWith('image/')) {
+            reject(new Error('Bitte eine Bilddatei auswählen.'));
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const img = new Image();
+
+            img.onload = () => {
+                const maxSize = 900;
+                const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.max(1, Math.round(img.width * scale));
+                canvas.height = Math.max(1, Math.round(img.height * scale));
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const mime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                resolve(canvas.toDataURL(mime, 0.86));
+            };
+
+            img.onerror = () => reject(new Error('Bild konnte nicht gelesen werden.'));
+            img.src = reader.result;
+        };
+
+        reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden.'));
+        reader.readAsDataURL(file);
+    });
+}
+
 async function confirmUpload() {
     if (!imgFile) {
         alert('Bitte zuerst eine Datei auswählen.');
         return;
     }
 
-    const fd = new FormData();
-    fd.append('file', imgFile);
-
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const d   = await res.json();
-
-    if (!d.ok) {
-        alert('Upload fehlgeschlagen: ' + (d.error || 'Unbekannter Fehler'));
+    let url = '';
+    try {
+        url = await fileToDataUrl(imgFile);
+    } catch (err) {
+        alert(err.message || 'Bild konnte nicht gespeichert werden.');
         return;
     }
-
-    const url = d.url;
 
     if (imgTarget === 'book-cover') {
         document.getElementById('book-cover-img').src = url;
@@ -3310,10 +2789,84 @@ async function confirmUpload() {
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ ...iv, avatar_img: url }),
         });
+        iv.avatar_img = url;
+    } else if (imgTarget && imgTarget.type === 'inline') {
+        const target = findEditableByKey(imgTarget.key);
+        if (!target) {
+            alert('Textstelle wurde nicht gefunden. Bitte erneut in den Text klicken.');
+            return;
+        }
+
+        insertInlineImage(target, url);
+        await saveEditableElement(target);
     }
 
     closeImgModal();
-    showToast('Bild gespeichert');
+    showToast();
+}
+
+function buildInlineImage(url) {
+    const figure = document.createElement('figure');
+    figure.className = 'inline-image-block';
+    figure.contentEditable = 'false';
+    figure.innerHTML = `
+        <img src="${url}" alt="">
+        <div class="inline-image-actions">
+            <button type="button" class="action-btn" onclick="moveInlineImage(this, -1)">↑ Vor Text</button>
+            <button type="button" class="action-btn" onclick="moveInlineImage(this, 1)">↓ Nach Text</button>
+            <button type="button" class="action-btn del" onclick="deleteInlineImage(this)">✕ Löschen</button>
+        </div>
+    `;
+    return figure;
+}
+
+function insertInlineImage(target, url) {
+    const figure = buildInlineImage(url);
+
+    if (lastEditableRange && target.contains(lastEditableRange.commonAncestorContainer)) {
+        const range = lastEditableRange.cloneRange();
+        range.deleteContents();
+        range.insertNode(figure);
+        range.setStartAfter(figure);
+        range.collapse(true);
+
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else {
+        target.appendChild(figure);
+    }
+
+    lastEditableEl = target;
+}
+
+function findEditableForInlineButton(btn) {
+    return btn.closest('[data-key]');
+}
+
+async function moveInlineImage(btn, direction) {
+    const figure = btn.closest('.inline-image-block');
+    const editable = findEditableForInlineButton(btn);
+    if (!figure || !editable) return;
+
+    if (direction < 0) {
+        const previous = figure.previousSibling;
+        if (previous) editable.insertBefore(figure, previous);
+    } else {
+        const next = figure.nextSibling;
+        if (next) editable.insertBefore(next, figure);
+    }
+
+    await saveEditableElement(editable);
+}
+
+async function deleteInlineImage(btn) {
+    const figure = btn.closest('.inline-image-block');
+    const editable = findEditableForInlineButton(btn);
+    if (!figure || !editable) return;
+
+    figure.remove();
+    await saveEditableElement(editable);
 }
 
 function applyAvatarImage(iid, url) {
@@ -3327,6 +2880,7 @@ function applyAvatarImage(iid, url) {
     }
     img.src = url;
 
+    // Hide text initials
     const initSpan = av.querySelector('.av-initials');
     if (initSpan) initSpan.style.display = 'none';
 }
@@ -3340,7 +2894,6 @@ function renderZitate() {
     const container = document.getElementById('zitate-container');
     container.innerHTML = '';
     DATA.zitate.forEach(z => container.appendChild(buildZitatEl(z)));
-    setTimeout(observeRevealElements, 50);
 }
 
 function buildZitatEl(z) {
@@ -3348,7 +2901,7 @@ function buildZitatEl(z) {
     const tagColor = z.tag_color    || color;
 
     const div = document.createElement('div');
-    div.className = 'zitat-card reveal';
+    div.className = 'zitat-card';
     div.id        = 'zc-' + z.id;
     div.style.borderLeftColor = color;
 
@@ -3384,10 +2937,12 @@ function buildZitatEl(z) {
         });
     }
 
+    // Auto-save when user leaves any editable field
     div.querySelectorAll('[data-key]').forEach(el => {
         el.addEventListener('blur', () => saveZitatFromDOM(z.id));
     });
 
+    // Wire buttons via addEventListener — avoids stale color in inline onclick
     div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
         e.stopPropagation();
         const cur = div.style.borderLeftColor || color;
@@ -3459,7 +3014,7 @@ async function addZitat() {
         }),
     });
 
-    const d    = await res.json();
+    const d   = await res.json();
     const newZ = {
         id: d.id, tag: 'Thema',
         text: '„Neues Zitat eingeben…"', source: '— Kapitel X, S. XX',
@@ -3474,28 +3029,14 @@ async function addZitat() {
     if (isAdmin) {
         el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
     }
-
-    setTimeout(() => {
-        el.classList.add('revealed');
-    }, 20);
 }
 
 async function deleteZitat(zid) {
-    const ok = await confirmDialog(
-        'Dieses Zitat wirklich löschen?', 'Zitat löschen?', '💬'
-    );
-    if (!ok) return;
+    if (!confirm('Dieses Zitat wirklich löschen?')) return;
     await fetch('/api/zitat/' + zid, { method: 'DELETE' });
     DATA.zitate = DATA.zitate.filter(z => z.id !== zid);
-
-    const card = document.getElementById('zc-' + zid);
-    if (card) {
-        card.style.transition = 'opacity 0.3s, transform 0.3s';
-        card.style.opacity = '0';
-        card.style.transform = 'translateX(-20px)';
-        setTimeout(() => card.remove(), 300);
-    }
-    showToast('Zitat gelöscht');
+    document.getElementById('zc-' + zid)?.remove();
+    showToast();
 }
 
 
@@ -3507,7 +3048,6 @@ function renderThemen() {
     const container = document.getElementById('themen-container');
     container.innerHTML = '';
     DATA.themen.forEach(t => container.appendChild(buildThemaEl(t)));
-    setTimeout(observeRevealElements, 50);
 }
 
 function buildThemaEl(t) {
@@ -3515,7 +3055,7 @@ function buildThemaEl(t) {
     const iconBg = colorWithAlpha(accent, '30');
 
     const div = document.createElement('div');
-    div.className = 'thema-card reveal';
+    div.className = 'thema-card';
     div.id        = 'tc-' + t.id;
     applyThemaCardColor(div, accent);
 
@@ -3546,6 +3086,7 @@ function buildThemaEl(t) {
         el.addEventListener('blur', () => saveThemaFromDOM(t.id));
     });
 
+    // Wire buttons — closures capture t.id reliably
     div.querySelector('[data-picker="emoji"]').addEventListener('click', (e) => {
         e.stopPropagation();
         openEmojiPicker(e.currentTarget, (emoji) => setThemaIcon(t.id, emoji));
@@ -3564,11 +3105,12 @@ function buildThemaEl(t) {
 
 function applyThemaCardColor(card, color) {
     const accent = normalizeColor(color);
+
     card.dataset.accentColor = accent;
     card.style.setProperty('--card-accent', accent);
-    card.style.borderColor    = colorWithAlpha(accent, '66');
+    card.style.borderColor = colorWithAlpha(accent, '66');
     card.style.borderTopColor = accent;
-    card.style.background     =
+    card.style.background =
         `linear-gradient(135deg, ${colorWithAlpha(accent, '18')}, var(--dark2) 42%)`;
 }
 
@@ -3612,8 +3154,8 @@ function setThemaBg(tid, color) {
     const wrap = document.getElementById('ticon-wrap-' + tid);
     if (wrap) wrap.style.background = colorWithAlpha(accent, '30');
 
-    const cur    = DATA.themen.find(t => t.id === tid) || {};
-    cur.icon_bg  = colorWithAlpha(accent, '30');
+    const cur   = DATA.themen.find(t => t.id === tid) || {};
+    cur.icon_bg = colorWithAlpha(accent, '30');
 
     fetch('/api/thema/' + tid, {
         method:  'PUT',
@@ -3641,7 +3183,7 @@ async function addThema() {
         }),
     });
 
-    const d    = await res.json();
+    const d   = await res.json();
     const newT = {
         id: d.id, icon, icon_bg: color + '20',
         title: 'Neues Thema', body: 'Beschreibung hier eingeben…',
@@ -3655,26 +3197,14 @@ async function addThema() {
     if (isAdmin) {
         el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
     }
-
-    setTimeout(() => el.classList.add('revealed'), 20);
 }
 
 async function deleteThema(tid) {
-    const ok = await confirmDialog(
-        'Dieses Thema wirklich löschen?', 'Thema löschen?', '🗑️'
-    );
-    if (!ok) return;
+    if (!confirm('Dieses Thema wirklich löschen?')) return;
     await fetch('/api/thema/' + tid, { method: 'DELETE' });
     DATA.themen = DATA.themen.filter(t => t.id !== tid);
-
-    const card = document.getElementById('tc-' + tid);
-    if (card) {
-        card.style.transition = 'opacity 0.3s, transform 0.3s';
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.9)';
-        setTimeout(() => card.remove(), 300);
-    }
-    showToast('Thema gelöscht');
+    document.getElementById('tc-' + tid)?.remove();
+    showToast();
 }
 
 
@@ -3686,7 +3216,6 @@ function renderInterviews() {
     const container = document.getElementById('interviews-container');
     container.innerHTML = '';
     DATA.interviews.forEach(iv => container.appendChild(buildInterviewEl(iv)));
-    setTimeout(observeRevealElements, 50);
 }
 
 function buildInterviewEl(iv) {
@@ -3698,7 +3227,7 @@ function buildInterviewEl(iv) {
         : `<span class="av-initials">${iv.initials || '??'}</span>`;
 
     const div = document.createElement('div');
-    div.className = 'interview-card reveal';
+    div.className = 'interview-card';
     div.id        = 'iv-' + iv.id;
 
     div.innerHTML = `
@@ -3749,12 +3278,15 @@ function buildInterviewEl(iv) {
         });
     }
 
+    // Auto-save name and role
     div.querySelectorAll('[data-key]').forEach(el => {
         el.addEventListener('blur', () => saveInterviewFromDOM(iv.id));
     });
 
+    // Wire up Q&A auto-save
     (iv.qa || []).forEach(q => setTimeout(() => attachQABlur(q.id), 0));
 
+    // Wire action buttons — closures capture iv.id reliably
     div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
         e.stopPropagation();
         const cur = div.querySelector('.interview-body').previousElementSibling.style.background || accentColor;
@@ -3828,6 +3360,7 @@ function setInterviewColor(iid, color) {
     const card = document.getElementById('iv-' + iid);
     if (!card) return;
 
+    // The first div inside the card is the accent stripe
     card.firstElementChild.style.background = color;
 
     const av = document.getElementById('av-' + iid);
@@ -3862,7 +3395,7 @@ async function addInterview() {
         }),
     });
 
-    const d    = await res.json();
+    const d   = await res.json();
     const newIV = {
         id:           d.id,
         name:         'Name der Figur',
@@ -3882,26 +3415,14 @@ async function addInterview() {
     if (isAdmin) {
         el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
     }
-
-    setTimeout(() => el.classList.add('revealed'), 20);
 }
 
 async function deleteInterview(iid) {
-    const ok = await confirmDialog(
-        'Dieses Interview wirklich löschen?', 'Interview löschen?', '🎤'
-    );
-    if (!ok) return;
+    if (!confirm('Dieses Interview wirklich löschen?')) return;
     await fetch('/api/interview/' + iid, { method: 'DELETE' });
     DATA.interviews = DATA.interviews.filter(i => i.id !== iid);
-
-    const card = document.getElementById('iv-' + iid);
-    if (card) {
-        card.style.transition = 'opacity 0.3s, transform 0.3s';
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(-10px)';
-        setTimeout(() => card.remove(), 300);
-    }
-    showToast('Interview gelöscht');
+    document.getElementById('iv-' + iid)?.remove();
+    showToast();
 }
 
 async function addQA(iid) {
@@ -3916,7 +3437,7 @@ async function addQA(iid) {
     });
 
     const d    = await res.json();
-    const newQ = { id: d.id, question: 'Neue Frage?', answer: '„Antwort hier eingeben…"' };
+    const newQ  = { id: d.id, question: 'Neue Frage?', answer: '„Antwort hier eingeben…"' };
 
     const iv = DATA.interviews.find(i => i.id === iid);
     if (iv) iv.qa.push(newQ);
@@ -3935,17 +3456,9 @@ async function addQA(iid) {
 }
 
 async function deleteQA(qid) {
-    const ok = await confirmDialog('Diese Frage wirklich löschen?', 'Frage löschen?', '❓');
-    if (!ok) return;
-
     await fetch('/api/qa/' + qid, { method: 'DELETE' });
-    const item = document.getElementById('qi-' + qid);
-    if (item) {
-        item.style.transition = 'opacity 0.25s';
-        item.style.opacity = '0';
-        setTimeout(() => item.remove(), 250);
-    }
-    showToast('Frage gelöscht');
+    document.getElementById('qi-' + qid)?.remove();
+    showToast();
 }
 
 
@@ -3992,10 +3505,11 @@ function renderCommentsList(comments) {
             .map(i => `<span class="c-star${i <= c.rating ? '' : ' empty'}">★</span>`)
             .join('');
 
+        // Top-rated comments (5 stars) get a gold accent
         const extra = c.rating === 5 ? ' top-rated' : '';
 
         return `
-            <div class="comment-card${extra} reveal" id="cc-${c.id}">
+            <div class="comment-card${extra}" id="cc-${c.id}">
                 <div class="comment-top">
                     <span class="comment-author">${escapeHtml(c.author || 'Anonym')}</span>
                     <div class="comment-stars">${starsHtml}</div>
@@ -4008,8 +3522,6 @@ function renderCommentsList(comments) {
             </div>
         `;
     }).join('');
-
-    setTimeout(observeRevealElements, 50);
 }
 
 // ── Comment rating stars (interactive) ──
@@ -4059,33 +3571,20 @@ async function submitComment() {
         return;
     }
 
+    // Clear form
     document.getElementById('c-author').value = '';
     document.getElementById('c-body').value   = '';
     selectedRating = 5;
     highlightRatingStars(selectedRating);
 
     await loadComments();
-    showToast('Kommentar abgeschickt!');
 }
 
 async function deleteComment(cid) {
-    const ok = await confirmDialog('Diesen Kommentar löschen?', 'Kommentar löschen?', '💬');
-    if (!ok) return;
-
+    if (!confirm('Kommentar löschen?')) return;
     await fetch('/api/comments/' + cid, { method: 'DELETE' });
-
-    const card = document.getElementById('cc-' + cid);
-    if (card) {
-        card.style.transition = 'opacity 0.3s, transform 0.3s';
-        card.style.opacity = '0';
-        card.style.transform = 'translateX(16px)';
-        setTimeout(async () => {
-            await loadComments();
-        }, 300);
-    } else {
-        await loadComments();
-    }
-    showToast('Kommentar gelöscht');
+    await loadComments();
+    showToast();
 }
 
 
@@ -4135,204 +3634,7 @@ window.addEventListener('scroll', () => {
     navLinks.forEach(a => {
         a.classList.toggle('active', a.getAttribute('href') === '#' + current);
     });
-}, { passive: true });
-
-
-// ════════════════════════════════════════════
-// BACK-TO-TOP BUTTON
-// ════════════════════════════════════════════
-
-(function () {
-    const btn = document.getElementById('back-to-top');
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 400) {
-            btn.classList.add('visible');
-        } else {
-            btn.classList.remove('visible');
-        }
-    }, { passive: true });
-})();
-
-
-// ════════════════════════════════════════════
-// RIPPLE EFFECT
-// ════════════════════════════════════════════
-
-function addRipple(e) {
-    const btn  = e.currentTarget;
-    const rect = btn.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height) * 1.4;
-    const x    = e.clientX - rect.left - size / 2;
-    const y    = e.clientY - rect.top  - size / 2;
-
-    const wave = document.createElement('span');
-    wave.className = 'ripple-wave';
-    wave.style.cssText = `width:${size}px; height:${size}px; left:${x}px; top:${y}px`;
-    btn.appendChild(wave);
-    wave.addEventListener('animationend', () => wave.remove());
-}
-
-function applyRippleToButtons() {
-    document.querySelectorAll(
-        '.btn-login, .btn-submit, .ab-btn, .action-btn, .add-btn, #back-to-top, #img-confirm, #img-cancel, #confirm-ok, #confirm-cancel'
-    ).forEach(btn => {
-        if (!btn.dataset.ripple) {
-            btn.classList.add('ripple-host');
-            btn.addEventListener('click', addRipple);
-            btn.dataset.ripple = '1';
-        }
-    });
-}
-
-// Run on init and after dynamic renders
-const _origRenderAll = typeof renderAll === 'function' ? renderAll : null;
-document.addEventListener('DOMContentLoaded', applyRippleToButtons);
-setTimeout(applyRippleToButtons, 800);
-
-// Re-apply whenever admin bar becomes visible (buttons appear)
-new MutationObserver(applyRippleToButtons).observe(document.body, {
-    childList: true, subtree: true
 });
-
-
-// ════════════════════════════════════════════
-// SLIDING NAV INDICATOR
-// ════════════════════════════════════════════
-
-function moveNavIndicator(linkEl) {
-    const indicator = document.getElementById('nav-indicator');
-    if (!indicator || !linkEl) { indicator && indicator.classList.remove('visible'); return; }
-
-    const listRect = document.getElementById('nav-list').getBoundingClientRect();
-    const linkRect = linkEl.getBoundingClientRect();
-
-    indicator.style.left  = (linkRect.left - listRect.left + document.getElementById('nav-list').scrollLeft) + 'px';
-    indicator.style.width = linkRect.width + 'px';
-    indicator.classList.add('visible');
-}
-
-// Patch renderNav to hook indicator after nav is rebuilt
-const _origRenderNav = window.renderNav;
-window.renderNav = function (...args) {
-    _origRenderNav && _origRenderNav.apply(this, args);
-    setTimeout(() => {
-        const active = document.querySelector('nav a.active');
-        moveNavIndicator(active);
-    }, 20);
-};
-
-// Update on scroll via navLinks change detection
-window.addEventListener('scroll', () => {
-    setTimeout(() => {
-        const active = document.querySelector('nav a.active');
-        moveNavIndicator(active);
-    }, 60);
-}, { passive: true });
-
-// Hover preview
-document.addEventListener('mouseover', (e) => {
-    const a = e.target.closest('nav a');
-    if (a) moveNavIndicator(a);
-});
-document.addEventListener('mouseout', (e) => {
-    const a = e.target.closest('nav a');
-    if (a) {
-        const active = document.querySelector('nav a.active');
-        moveNavIndicator(active);
-    }
-});
-
-
-// ════════════════════════════════════════════
-// COPY QUOTE BUTTON
-// ════════════════════════════════════════════
-
-function addCopyBtn(zitatCard, textKey) {
-    if (zitatCard.querySelector('.zitat-copy')) return;
-
-    const btn = document.createElement('button');
-    btn.className = 'zitat-copy';
-    btn.title = 'Zitat kopieren';
-    btn.textContent = '📋';
-
-    btn.addEventListener('click', () => {
-        const textEl = zitatCard.querySelector(`[data-key="${textKey}"]`);
-        const raw    = textEl ? textEl.innerText : '';
-        navigator.clipboard.writeText(raw).then(() => {
-            btn.textContent = '✓';
-            btn.classList.add('copied');
-            setTimeout(() => {
-                btn.textContent = '📋';
-                btn.classList.remove('copied');
-            }, 1600);
-        });
-    });
-
-    zitatCard.style.position = 'relative';
-    zitatCard.appendChild(btn);
-}
-
-// Hook into existing buildZitatEl to add copy button
-const _origBuildZitatEl = window.buildZitatEl;
-window.buildZitatEl = function (z) {
-    const el = _origBuildZitatEl(z);
-    addCopyBtn(el, `ztext-${z.id}`);
-    return el;
-};
-
-// Also add to already-rendered zitate on init
-setTimeout(() => {
-    document.querySelectorAll('.zitat-card').forEach(card => {
-        const keyEl = card.querySelector('[data-key^="ztext-"]');
-        if (keyEl) addCopyBtn(card, keyEl.dataset.key);
-    });
-}, 600);
-
-
-// ════════════════════════════════════════════
-// ANIMATED COUNT-UP for avg rating
-// ════════════════════════════════════════════
-
-function animateCountUp(el, target, duration = 900) {
-    if (!el || isNaN(target)) return;
-    const start = performance.now();
-    const startVal = 0;
-
-    function tick(now) {
-        const t = Math.min((now - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
-        const cur  = startVal + (target - startVal) * ease;
-        el.textContent = cur.toFixed(1);
-        if (t < 1) requestAnimationFrame(tick);
-        else el.textContent = target.toFixed(1);
-    }
-
-    requestAnimationFrame(tick);
-}
-
-// Patch renderAvgRating to animate the number
-const _origRenderAvgRating = window.renderAvgRating;
-window.renderAvgRating = function (avg, count) {
-    _origRenderAvgRating(avg, count);
-    if (avg) {
-        const el = document.getElementById('avg-number');
-        animateCountUp(el, avg, 900);
-    }
-};
-
-
-// ════════════════════════════════════════════
-// KEYBOARD SHORTCUT: press Alt+A → open login
-// ════════════════════════════════════════════
-
-document.addEventListener('keydown', (e) => {
-    if (e.altKey && e.key === 'a' && !isAdmin) {
-        e.preventDefault();
-        openLogin();
-    }
-});
-
 
 </script>
 </body>
