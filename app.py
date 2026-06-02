@@ -293,22 +293,24 @@ def get_all_data():
     avg_rating = round(row['avg'], 1) if row['avg'] else 0
     comment_count = row['cnt']
 
+    standalone_images = [
+        dict(r)
+        for r in db.execute(
+            "SELECT * FROM standalone_images ORDER BY sort_order"
+        ).fetchall()
+    ]
+
     db.close()
 
     return {
-        'kv':            kv,
-        'zitate':        zitate,
-        'themen':        themen,
-        'interviews':    interviews,
-        'comments':      comments,
-        'avg_rating':    avg_rating,
-        'comment_count': comment_count,
-        'standalone_images': [
-            dict(r)
-            for r in db.execute(
-                "SELECT * FROM standalone_images ORDER BY sort_order"
-            ).fetchall()
-        ],
+        'kv':                kv,
+        'zitate':            zitate,
+        'themen':            themen,
+        'interviews':        interviews,
+        'comments':          comments,
+        'avg_rating':        avg_rating,
+        'comment_count':     comment_count,
+        'standalone_images': standalone_images,
     }
 
 
