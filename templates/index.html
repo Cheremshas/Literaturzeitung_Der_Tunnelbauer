@@ -2155,6 +2155,8 @@ async function init() {
     await loadComments();
     buildEmojiGrid(ALL_EMOJIS);
     buildSwatches();
+    // Run collapsible AFTER data is rendered
+    setTimeout(initCollapsible, 200);
 }
 
 async function loadData() {
@@ -3930,11 +3932,8 @@ function initCollapsible() {
     });
 }
 
-// Run after page data is loaded — hook into existing renderAll or use MutationObserver
-document.addEventListener('DOMContentLoaded', () => {
-    // Wait a moment for dynamic content to render
-    setTimeout(initCollapsible, 600);
-});
+// Run after page data is loaded
+
 
 
     return String(str)
