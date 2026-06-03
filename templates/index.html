@@ -52,6 +52,253 @@
 
 
     /* ═══════════════════════════════════════════
+       COVER PAGE
+    ═══════════════════════════════════════════ */
+    #cover-page {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    #cover-page.hidden { display: none; }
+
+    /* Gold stripes top/bottom */
+    .cover-gold-stripe,
+    .cover-gold-stripe-bottom {
+        position: absolute;
+        left: 0; right: 0;
+        height: 5px;
+        background: var(--gold);
+        z-index: 2;
+    }
+    .cover-gold-stripe        { top: 0; }
+    .cover-gold-stripe-bottom { bottom: 0; }
+
+    /* ── Layout: left panel (info) + right panel (tunnel) ── */
+    .cover-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(2rem, 6vw, 6rem);
+        width: 100%;
+        max-width: 1100px;
+        padding: 2rem 3rem;
+        position: relative;
+        z-index: 3;
+    }
+
+    /* Left: book cover */
+    .cover-book-wrap {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+
+    .cover-book-img {
+        width: clamp(110px, 16vw, 190px);
+        height: auto;
+        border-radius: 3px;
+        box-shadow: 6px 10px 40px rgba(0,0,0,0.8), 2px 2px 0 rgba(232,160,32,0.15);
+        display: block;
+    }
+
+    /* Centre: text info */
+    .cover-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0;
+        min-width: 0;
+    }
+
+    .cover-kicker {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .cover-kicker::before,
+    .cover-kicker::after {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 1px;
+        background: var(--border2);
+    }
+
+    .cover-zeitung-logo {
+        display: block;
+        width: min(360px, 72vw);
+        height: auto;
+        filter: drop-shadow(0 6px 16px rgba(0,0,0,0.7));
+        margin-bottom: 0.9rem;
+    }
+
+    .cover-rule {
+        width: 100%;
+        height: 1px;
+        background: var(--border2);
+        margin: 0.6rem 0 0.9rem;
+        position: relative;
+    }
+
+    .cover-rule::before,
+    .cover-rule::after {
+        content: '◆';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold);
+        font-size: 7px;
+    }
+    .cover-rule::before { left: 0; }
+    .cover-rule::after  { right: 0; }
+
+    .cover-book-title-text {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.1rem, 3vw, 1.55rem);
+        font-weight: 700;
+        color: var(--white);
+        letter-spacing: 0.02em;
+        margin-bottom: 0.2rem;
+    }
+
+    .cover-author {
+        font-family: 'Lora', serif;
+        font-style: italic;
+        font-size: clamp(0.85rem, 2vw, 1rem);
+        color: var(--gold);
+        letter-spacing: 0.05em;
+        margin-bottom: 1.1rem;
+    }
+
+    .cover-editors-label {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+    }
+
+    .cover-editors {
+        font-family: 'Lora', serif;
+        font-style: italic;
+        font-size: 0.82rem;
+        color: var(--silver);
+        line-height: 1.8;
+    }
+
+    /* Right: tunnel portal */
+    .cover-tunnel-col {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+    }
+
+    .cover-tunnel-label {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        transition: color 0.25s;
+    }
+
+    .cover-tunnel-col:hover .cover-tunnel-label { color: var(--gold); }
+
+    /* The tunnel: concentric rings perspective illusion */
+    .tunnel-portal {
+        width: clamp(110px, 15vw, 170px);
+        height: clamp(110px, 15vw, 170px);
+        border-radius: 50%;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .cover-tunnel-col:hover .tunnel-portal { transform: scale(1.05); }
+
+    /* SVG tunnel inside portal */
+    .tunnel-portal svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    /* "Enter" text label below portal */
+    .tunnel-enter-hint {
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--border2);
+        transition: color 0.25s;
+    }
+
+    .cover-tunnel-col:hover .tunnel-enter-hint { color: var(--gold); }
+
+    /* ── Suck-in animation on click ── */
+    @keyframes suckIn {
+        0%   { transform: scale(1);    opacity: 1; }
+        40%  { transform: scale(0.85); opacity: 1; }
+        100% { transform: scale(18);   opacity: 0; }
+    }
+
+    @keyframes coverFade {
+        0%   { opacity: 1; }
+        60%  { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    #cover-page.sucking {
+        animation: coverFade 0.85s ease-in forwards;
+        pointer-events: none;
+    }
+
+    #cover-page.sucking .tunnel-portal {
+        animation: suckIn 0.85s ease-in forwards;
+    }
+
+    /* Pulse glow on tunnel */
+    @keyframes tunnelGlow {
+        0%, 100% { filter: drop-shadow(0 0 0px rgba(232,160,32,0)); }
+        50%       { filter: drop-shadow(0 0 14px rgba(232,160,32,0.35)); }
+    }
+
+    .tunnel-portal { animation: tunnelGlow 2.6s ease-in-out infinite; }
+
+    /* Responsive: stack vertically on small screens */
+    @media (max-width: 600px) {
+        .cover-layout {
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 1.5rem 1.2rem;
+        }
+        .cover-book-wrap { display: none; }
+        .cover-tunnel-col { flex-direction: row; gap: 1.2rem; align-items: center; }
+        .tunnel-portal { width: 80px; height: 80px; }
+    }
+
+    /* ═══════════════════════════════════════════
        ADMIN BAR
     ═══════════════════════════════════════════ */
     #admin-bar {
@@ -586,9 +833,115 @@
 
 
     /* ═══════════════════════════════════════════
-       NEWSPAPER HEADER
+       SCROLL-TO-TOP BUTTON
     ═══════════════════════════════════════════ */
-    .paper-header {
+    #scroll-top-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 1.5rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 8000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s, background 0.2s;
+        pointer-events: none;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    #scroll-top-btn.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    #scroll-top-btn:hover {
+        background: var(--gold);
+        color: var(--black);
+    }
+
+    /* ═══════════════════════════════════════════
+       COLLAPSIBLE PROSE
+    ═══════════════════════════════════════════ */
+    .prose-collapsible {
+        position: relative;
+    }
+
+    .prose-collapsible .prose-preview {
+        display: block;
+    }
+
+    .prose-collapsible .prose-full {
+        display: none;
+    }
+
+    .prose-collapsible.expanded .prose-preview {
+        display: none;
+    }
+
+    .prose-collapsible.expanded .prose-full {
+        display: block;
+    }
+
+    .prose-fade {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .prose-fade::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 60px;
+        background: linear-gradient(transparent, var(--dark));
+        pointer-events: none;
+        transition: opacity 0.3s;
+    }
+
+    .prose-collapsible.expanded .prose-fade::after {
+        opacity: 0;
+    }
+
+    .read-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: none;
+        border: none;
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 6px 0;
+        margin-top: 6px;
+        font-family: inherit;
+        transition: opacity 0.15s;
+    }
+
+    .read-more-btn:hover { opacity: 0.75; }
+
+    .read-more-btn .rm-arrow {
+        font-size: 10px;
+        transition: transform 0.2s;
+        display: inline-block;
+    }
+
+    .prose-collapsible.expanded .read-more-btn .rm-arrow {
+        transform: rotate(180deg);
+    }
+
+
         background: var(--dark);
         border-bottom: 2px solid var(--gold);
     }
@@ -1679,6 +2032,84 @@
         </div>
     </div>
 </div>
+
+
+<!-- ════════════════════════════════════════
+     COVER PAGE
+════════════════════════════════════════ -->
+<div id="cover-page">
+    <div class="cover-gold-stripe"></div>
+    <div class="cover-gold-stripe-bottom"></div>
+
+    <div class="cover-layout">
+
+        <!-- Left: book cover -->
+        <div class="cover-book-wrap">
+            <img class="cover-book-img" src="/static/book_cover.png" alt="Der Tunnelbauer – Buchcover">
+        </div>
+
+        <!-- Centre: info -->
+        <div class="cover-info">
+            <div class="cover-kicker">Literaturzeitung · Schulprojekt</div>
+
+            <img class="cover-zeitung-logo" src="/static/page-logo.png" alt="LiteraturZeitung – Der Tunnelbauer">
+
+            <div class="cover-rule"></div>
+
+            <div class="cover-book-title-text">Der Tunnelbauer</div>
+            <div class="cover-author">Maja Nielsen</div>
+
+            <div class="cover-editors-label">Redaktion</div>
+            <div class="cover-editors">
+                Denis Maximov
+            </div>
+        </div>
+
+        <!-- Right: tunnel portal -->
+        <div class="cover-tunnel-col" onclick="enterSite()">
+            <div class="cover-tunnel-label">Eintreten</div>
+
+            <!-- SVG tunnel: concentric ellipses fading to black centre -->
+            <div class="tunnel-portal" id="tunnel-portal">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="wallGrad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%"   stop-color="#000000"/>
+                            <stop offset="100%" stop-color="#1a1208"/>
+                        </radialGradient>
+                    </defs>
+                    <!-- Dark background -->
+                    <circle cx="100" cy="100" r="100" fill="url(#wallGrad)"/>
+                    <!-- Tunnel rings — largest to smallest, getting lighter at edges -->
+                    <ellipse cx="100" cy="100" rx="96" ry="96" fill="none" stroke="#2a1f0a" stroke-width="1.2"/>
+                    <ellipse cx="100" cy="100" rx="88" ry="84" fill="none" stroke="#3a2c10" stroke-width="1.1"/>
+                    <ellipse cx="100" cy="100" rx="78" ry="72" fill="none" stroke="#4a3815" stroke-width="1.1"/>
+                    <ellipse cx="100" cy="100" rx="67" ry="61" fill="none" stroke="#5a4519" stroke-width="1"/>
+                    <ellipse cx="100" cy="100" rx="56" ry="50" fill="none" stroke="#6b521e" stroke-width="1"/>
+                    <ellipse cx="100" cy="100" rx="46" ry="40" fill="none" stroke="#7c6023" stroke-width="0.9"/>
+                    <ellipse cx="100" cy="100" rx="36" ry="31" fill="none" stroke="#8d6e28" stroke-width="0.9"/>
+                    <ellipse cx="100" cy="100" rx="27" ry="22" fill="none" stroke="#a07c2e" stroke-width="0.8"/>
+                    <ellipse cx="100" cy="100" rx="18" ry="14" fill="none" stroke="#b88c34" stroke-width="0.8"/>
+                    <ellipse cx="100" cy="100" rx="11" ry="8"  fill="none" stroke="#d4a23c" stroke-width="0.7"/>
+                    <ellipse cx="100" cy="100" rx="5"  ry="3.5" fill="none" stroke="#e8a020" stroke-width="0.6"/>
+                    <!-- Pure black centre -->
+                    <ellipse cx="100" cy="100" rx="2.5" ry="1.5" fill="#000"/>
+                    <!-- Subtle light sheen on top edge of tunnel -->
+                    <ellipse cx="100" cy="100" rx="96" ry="96" fill="none"
+                             stroke="rgba(232,160,32,0.18)" stroke-width="1.5"
+                             stroke-dasharray="60 240" stroke-dashoffset="150"/>
+                </svg>
+            </div>
+
+            <div class="tunnel-enter-hint">↓ klicken</div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Scroll-to-top button -->
+<button id="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Nach oben">▲</button>
 
 
 <!-- ════════════════════════════════════════
@@ -3742,7 +4173,95 @@ async function deleteComment(cid) {
 // UTILITIES
 // ════════════════════════════════════════════
 
-function escapeHtml(str) {
+// ════════════════════════════════════════════
+// COVER PAGE
+// ════════════════════════════════════════════
+
+function enterSite() {
+    const cover = document.getElementById('cover-page');
+    cover.classList.add('sucking');
+    cover.addEventListener('animationend', () => {
+        cover.classList.add('hidden');
+    }, { once: true });
+}
+
+// ════════════════════════════════════════════
+// SCROLL-TO-TOP BUTTON
+// ════════════════════════════════════════════
+
+(function () {
+    const btn = document.getElementById('scroll-top-btn');
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+})();
+
+// ════════════════════════════════════════════
+// COLLAPSIBLE PROSE SECTIONS
+// ════════════════════════════════════════════
+
+function initCollapsible() {
+    // Target all .prose elements that are NOT inside admin-only areas
+    document.querySelectorAll('.prose[data-key]').forEach(el => {
+        // Skip if already wrapped
+        if (el.closest('.prose-collapsible')) return;
+
+        const text = el.innerText.trim();
+        // Only collapse if the text is long enough (> 300 chars)
+        if (text.length < 300) return;
+
+        // Get first ~2 sentences for preview
+        const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+        const previewText = sentences.slice(0, 2).join(' ').trim();
+
+        if (!previewText) return;
+
+        // Clone the full content
+        const fullHTML = el.innerHTML;
+
+        // Build collapsible wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'prose-collapsible';
+
+        // Preview element
+        const preview = document.createElement('div');
+        preview.className = 'prose prose-preview prose-fade';
+        preview.setAttribute('data-key', el.getAttribute('data-key') + '-preview');
+        preview.innerHTML = '<p>' + escapeHtml(previewText) + '…</p>';
+
+        // Full content element
+        const full = document.createElement('div');
+        full.className = 'prose prose-full';
+        full.setAttribute('contenteditable', el.getAttribute('contenteditable') || 'false');
+        full.setAttribute('data-key', el.getAttribute('data-key'));
+        full.innerHTML = fullHTML;
+
+        // Button
+        const btn = document.createElement('button');
+        btn.className = 'read-more-btn';
+        btn.innerHTML = 'Weiterlesen <span class="rm-arrow">▼</span>';
+        btn.onclick = function () {
+            wrapper.classList.toggle('expanded');
+            btn.innerHTML = wrapper.classList.contains('expanded')
+                ? 'Zuklappen <span class="rm-arrow">▼</span>'
+                : 'Weiterlesen <span class="rm-arrow">▼</span>';
+        };
+
+        wrapper.appendChild(preview);
+        wrapper.appendChild(full);
+        wrapper.appendChild(btn);
+
+        el.replaceWith(wrapper);
+    });
+}
+
+// Run after page data is loaded — hook into existing renderAll or use MutationObserver
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait a moment for dynamic content to render
+    setTimeout(initCollapsible, 600);
+});
+
+
     return String(str)
         .replace(/&/g,  '&amp;')
         .replace(/</g,  '&lt;')
