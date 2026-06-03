@@ -1669,6 +1669,8 @@
     <span class="ab-label">Admin</span>
     <div class="ab-sep"></div>
     <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
+    <button class="ab-btn" onclick="downloadBackup('json')">⬇ База JSON</button>
+    <button class="ab-btn" onclick="downloadBackup('db')">⬇ data.db</button>
     <button class="ab-btn" onclick="addStandaloneImage()">🖼 Freies Bild</button>
     <button class="ab-btn" onclick="openInlineImageUpload()">🖼 Bild</button>
     <button class="ab-btn" onclick="openSectionsModal()">☰ Abschnitte</button>
@@ -2155,6 +2157,7 @@ async function init() {
     await loadComments();
     buildEmojiGrid(ALL_EMOJIS);
     buildSwatches();
+    if (!isAdmin) initCollapsible();
 }
 
 async function loadData() {
@@ -2189,7 +2192,10 @@ function renderAll() {
     renderSectionVisibility();
 }
 
-init();
+init().catch(err => {
+    console.error('Fehler beim Laden der Zeitung:', err);
+    alert('Die Zeitung konnte nicht geladen werden. Bitte /api/data prüfen.');
+});
 
 
 // ════════════════════════════════════════════
@@ -2595,6 +2601,44 @@ function deactivateAdmin() {
 /** Only runs fn if admin is logged in */
 function adminAction(fn) {
     if (isAdmin) fn();
+}
+
+async function downloadBackup(type) {
+    if (!isAdmin) return;
+
+    const password = prompt('Admin-Passwort für den Download eingeben:');
+    if (!password) return;
+
+    const endpoint = type === 'db' ? '/api/export/db' : '/api/export/json';
+    const filename = type === 'db'
+        ? 'literaturzeitung-data.db'
+        : 'literaturzeitung-backup.json';
+
+    const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+    });
+
+    if (!res.ok) {
+        let message = 'Download fehlgeschlagen.';
+        try {
+            const data = await res.json();
+            message = data.error || message;
+        } catch {}
+        alert(message);
+        return;
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
 }
 
 function findEditableByKey(key) {
@@ -3940,16 +3984,6 @@ function initCollapsible() {
 }
 
 // Run after page data is loaded
-
-
-
-    return String(str)
-        .replace(/&/g,  '&amp;')
-        .replace(/</g,  '&lt;')
-        .replace(/>/g,  '&gt;')
-        .replace(/"/g,  '&quot;')
-        .replace(/'/g,  '&#39;');
-}
 
 function formatDate(iso) {
     if (!iso) return '';
