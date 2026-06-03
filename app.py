@@ -319,6 +319,11 @@ def get_all_data():
 # ─────────────────────────────────────────────
 
 @app.route('/')
+def cover():
+    return render_template('cover.html')
+
+
+@app.route('/zeitung')
 def index():
     return render_template('index.html')
 
