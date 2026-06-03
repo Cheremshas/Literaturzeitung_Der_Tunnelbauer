@@ -2155,8 +2155,6 @@ async function init() {
     await loadComments();
     buildEmojiGrid(ALL_EMOJIS);
     buildSwatches();
-    // Run collapsible AFTER data is rendered
-    setTimeout(initCollapsible, 200);
 }
 
 async function loadData() {
