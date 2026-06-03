@@ -2066,7 +2066,7 @@
         </div>
 
         <!-- Right: tunnel portal -->
-        <div class="cover-tunnel-col" onclick="enterSite()">
+        <div class="cover-tunnel-col" id="tunnel-col">
             <div class="cover-tunnel-label">Eintreten</div>
 
             <!-- SVG tunnel: concentric ellipses fading to black centre -->
@@ -4177,13 +4177,36 @@ async function deleteComment(cid) {
 // COVER PAGE
 // ════════════════════════════════════════════
 
-function enterSite() {
-    const cover = document.getElementById('cover-page');
-    cover.classList.add('sucking');
-    cover.addEventListener('animationend', () => {
-        cover.classList.add('hidden');
-    }, { once: true });
-}
+// ════════════════════════════════════════════
+// COVER PAGE
+// ════════════════════════════════════════════
+
+(function () {
+    let entered = false;
+
+    function enterSite(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (entered) return;
+        entered = true;
+
+        const cover = document.getElementById('cover-page');
+        if (!cover) return;
+
+        cover.classList.add('sucking');
+        setTimeout(() => {
+            cover.classList.add('hidden');
+        }, 900);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const cover  = document.getElementById('cover-page');
+        if (!cover) return;
+
+        // Works on desktop (click) and mobile (touchend)
+        cover.addEventListener('click',    enterSite);
+        cover.addEventListener('touchend', enterSite, { passive: false });
+    });
+})();
 
 // ════════════════════════════════════════════
 // SCROLL-TO-TOP BUTTON
