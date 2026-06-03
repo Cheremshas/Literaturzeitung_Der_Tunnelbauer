@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Der Tunnelbauer – LiteraturZeitung</title>
+    <link rel="icon" type="image/png" href="/static/site-icon.png">
+    <link rel="apple-touch-icon" href="/static/site-icon.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black:  #0a0a0a;
+            --gold:   #E8A020;
+            --gold2:  #F5C842;
+            --silver: #A8A8A8;
+            --white:  #F5F0E8;
+            --text:   #C8C0B0;
+            --muted:  #777777;
+            --border: #2a2a2a;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--black);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        /* Gold stripes */
+        .stripe {
+            position: fixed;
+            left: 0; right: 0;
+            height: 5px;
+            background: var(--gold);
+            z-index: 10;
+        }
+        .stripe-top    { top: 0; }
+        .stripe-bottom { bottom: 0; }
+
+        /* Full-screen layout */
+        .cover-layout {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(2rem, 5vw, 6rem);
+            padding: 3rem clamp(1.5rem, 5vw, 4rem);
+        }
+
+        /* Book cover */
+        .cover-book-img {
+            width: clamp(100px, 14vw, 180px);
+            height: auto;
+            border-radius: 3px;
+            box-shadow: 6px 10px 40px rgba(0,0,0,0.85);
+            flex-shrink: 0;
+            display: block;
+        }
+
+        /* Centre info */
+        .cover-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0;
+        }
+
+        .cover-kicker {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cover-kicker::before,
+        .cover-kicker::after {
+            content: '';
+            display: block;
+            width: 36px;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .cover-logo {
+            display: block;
+            width: min(340px, 70vw);
+            height: auto;
+            filter: drop-shadow(0 6px 16px rgba(0,0,0,0.7));
+            margin-bottom: 0.9rem;
+        }
+
+        .cover-rule {
+            width: 100%;
+            height: 1px;
+            background: var(--border);
+            margin: 0.6rem 0 0.9rem;
+            position: relative;
+        }
+        .cover-rule::before,
+        .cover-rule::after {
+            content: '◆';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 7px;
+        }
+        .cover-rule::before { left: 0; }
+        .cover-rule::after  { right: 0; }
+
+        .cover-book-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1rem, 2.8vw, 1.5rem);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.2rem;
+        }
+
+        .cover-author {
+            font-family: 'Lora', serif;
+            font-style: italic;
+            font-size: clamp(0.82rem, 1.8vw, 0.98rem);
+            color: var(--gold);
+            letter-spacing: 0.05em;
+            margin-bottom: 1.1rem;
+        }
+
+        .cover-editors-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .cover-editors {
+            font-family: 'Lora', serif;
+            font-style: italic;
+            font-size: 0.82rem;
+            color: var(--silver);
+            line-height: 1.8;
+        }
+
+        /* Tunnel column */
+        .tunnel-col {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.85rem;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .tunnel-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--muted);
+            transition: color 0.25s;
+        }
+
+        .tunnel-col:hover .tunnel-label,
+        .tunnel-col:active .tunnel-label { color: var(--gold); }
+
+        /* SVG tunnel portal */
+        .tunnel-portal {
+            width: clamp(100px, 14vw, 160px);
+            height: clamp(100px, 14vw, 160px);
+            border-radius: 50%;
+            display: block;
+            transition: transform 0.2s;
+        }
+
+        .tunnel-col:hover .tunnel-portal  { transform: scale(1.07); }
+        .tunnel-col:active .tunnel-portal { transform: scale(0.97); }
+
+        .tunnel-portal svg { width: 100%; height: 100%; display: block; }
+
+        .tunnel-hint {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--border);
+            transition: color 0.25s;
+        }
+        .tunnel-col:hover .tunnel-hint { color: var(--gold); }
+
+        /* Glow pulse */
+        @keyframes tunnelGlow {
+            0%, 100% { filter: drop-shadow(0 0 0px rgba(232,160,32,0)); }
+            50%       { filter: drop-shadow(0 0 16px rgba(232,160,32,0.4)); }
+        }
+        .tunnel-portal { animation: tunnelGlow 2.8s ease-in-out infinite; }
+
+        /* Click animation */
+        @keyframes zoomIn {
+            0%   { transform: scale(1); }
+            30%  { transform: scale(0.88); }
+            100% { transform: scale(22); opacity: 0; }
+        }
+        @keyframes pageFade {
+            0%   { opacity: 1; }
+            55%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        body.entering {
+            animation: pageFade 0.75s ease-in forwards;
+            pointer-events: none;
+        }
+        body.entering .tunnel-portal {
+            animation: zoomIn 0.75s ease-in forwards !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 580px) {
+            .cover-layout {
+                flex-direction: column;
+                gap: 1.4rem;
+                overflow-y: auto;
+                padding: 2rem 1.2rem;
+            }
+            html, body { overflow: auto; }
+            .cover-book-img { width: 90px; }
+            .tunnel-portal  { width: 100px; height: 100px; }
+            .tunnel-col { flex-direction: row; gap: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="stripe stripe-top"></div>
+<div class="stripe stripe-bottom"></div>
+
+<div class="cover-layout">
+
+    <!-- Book cover -->
+    <img class="cover-book-img" src="/static/book_cover.png" alt="Der Tunnelbauer – Buchcover">
+
+    <!-- Info -->
+    <div class="cover-info">
+        <div class="cover-kicker">Literaturzeitung · Schulprojekt</div>
+
+        <img class="cover-logo" src="/static/page-logo.png" alt="LiteraturZeitung – Der Tunnelbauer">
+
+        <div class="cover-rule"></div>
+
+        <div class="cover-book-title">Der Tunnelbauer</div>
+        <div class="cover-author">Maja Nielsen</div>
+
+        <div class="cover-editors-label">Redaktion</div>
+        <div class="cover-editors">
+            Denis Maximov
+        </div>
+    </div>
+
+    <!-- Tunnel -->
+    <div class="tunnel-col" id="tunnel-col">
+        <div class="tunnel-label">Eintreten</div>
+
+        <div class="tunnel-portal">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%"   stop-color="#000000"/>
+                        <stop offset="100%" stop-color="#1a1208"/>
+                    </radialGradient>
+                </defs>
+                <circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+                <ellipse cx="100" cy="100" rx="96" ry="96"  fill="none" stroke="#2a1f0a" stroke-width="1.2"/>
+                <ellipse cx="100" cy="100" rx="88" ry="84"  fill="none" stroke="#3a2c10" stroke-width="1.1"/>
+                <ellipse cx="100" cy="100" rx="78" ry="72"  fill="none" stroke="#4a3815" stroke-width="1.1"/>
+                <ellipse cx="100" cy="100" rx="67" ry="61"  fill="none" stroke="#5a4519" stroke-width="1"/>
+                <ellipse cx="100" cy="100" rx="56" ry="50"  fill="none" stroke="#6b521e" stroke-width="1"/>
+                <ellipse cx="100" cy="100" rx="46" ry="40"  fill="none" stroke="#7c6023" stroke-width="0.9"/>
+                <ellipse cx="100" cy="100" rx="36" ry="31"  fill="none" stroke="#8d6e28" stroke-width="0.9"/>
+                <ellipse cx="100" cy="100" rx="27" ry="22"  fill="none" stroke="#a07c2e" stroke-width="0.8"/>
+                <ellipse cx="100" cy="100" rx="18" ry="14"  fill="none" stroke="#b88c34" stroke-width="0.8"/>
+                <ellipse cx="100" cy="100" rx="11" ry="8"   fill="none" stroke="#d4a23c" stroke-width="0.7"/>
+                <ellipse cx="100" cy="100" rx="5"  ry="3.5" fill="none" stroke="#e8a020" stroke-width="0.6"/>
+                <ellipse cx="100" cy="100" rx="2.5" ry="1.5" fill="#000"/>
+                <ellipse cx="100" cy="100" rx="96" ry="96" fill="none"
+                         stroke="rgba(232,160,32,0.18)" stroke-width="1.5"
+                         stroke-dasharray="60 240" stroke-dashoffset="150"/>
+            </svg>
+        </div>
+
+        <div class="tunnel-hint">↓ tippen</div>
+    </div>
+
+</div>
+
+<script>
+    var tunnelCol = document.getElementById('tunnel-col');
+    var clicked   = false;
+
+    function enter() {
+        if (clicked) return;
+        clicked = true;
+        document.body.classList.add('entering');
+        setTimeout(function () {
+            window.location.href = '/zeitung';
+        }, 700);
+    }
+
+    tunnelCol.addEventListener('click',    enter);
+    tunnelCol.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        enter();
+    });
+</script>
+
+</body>
+</html>
