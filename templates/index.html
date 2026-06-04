@@ -492,6 +492,18 @@
         background: rgba(232, 160, 32, 0.04);
     }
 
+    /* Reset any inline styles pasted from Word / Google Docs */
+    [contenteditable] * {
+        font-family: inherit !important;
+        font-size:   inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        color:       inherit !important;
+        background:  transparent !important;
+        letter-spacing: inherit !important;
+        word-spacing:   inherit !important;
+    }
+
     .edit-hint {
         display: none;
         font-size: 10px;
@@ -3912,6 +3924,35 @@ function escapeHtml(str) {
 // COVER PAGE
 // ════════════════════════════════════════════
 
+
+// ════════════════════════════════════════════
+// CLEAN PASTE — strip formatting on paste
+// ════════════════════════════════════════════
+
+document.addEventListener('paste', function (e) {
+    const target = e.target.closest('[contenteditable="true"]');
+    if (!target) return;
+
+    e.preventDefault();
+
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    const sel  = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+
+    const lines = text.split(/\r?\n/);
+    const frag  = document.createDocumentFragment();
+    lines.forEach(function (line, i) {
+        if (i > 0) frag.appendChild(document.createElement('br'));
+        if (line)  frag.appendChild(document.createTextNode(line));
+    });
+    range.insertNode(frag);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+}, true);
 
 // ════════════════════════════════════════════
 // SCROLL-TO-TOP BUTTON
