@@ -43,23 +43,50 @@
         .stripe-top    { top: 0; }
         .stripe-bottom { bottom: 0; }
 
-        /* Full-screen layout */
-        .cover-layout {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(2rem, 5vw, 6rem);
-            padding: 3rem clamp(1.5rem, 5vw, 4rem);
+        /* Background wrapper for immersive 3D zoom effect */
+        .tunnel-bg-wrapper {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0a0a url('tunnel-bg.png') no-repeat center center;
+            background-size: cover;
+            z-index: 1;
+            transform-origin: 50% 54%; /* Centered precisely on the tunnel hole */
+            transition: transform 0.8s cubic-bezier(0.55, 0.06, 0.68, 0.19), opacity 0.8s ease-in;
         }
 
-        /* Book cover */
+        /* Full-screen layout container */
+        .cover-layout {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            z-index: 2;
+        }
+
+        /* Side panels for theatrical layout */
+        .cover-side {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            z-index: 3;
+        }
+
+        .cover-book-side {
+            left: 6vw;
+        }
+
+        .cover-info-side {
+            right: 6vw;
+            width: 28vw;
+            max-width: 360px;
+        }
+
+        /* Book cover image */
         .cover-book-img {
-            width: clamp(100px, 14vw, 180px);
+            width: clamp(110px, 13vw, 180px);
             height: auto;
             border-radius: 3px;
             box-shadow: 6px 10px 40px rgba(0,0,0,0.85);
-            flex-shrink: 0;
             display: block;
         }
 
@@ -94,7 +121,7 @@
 
         .cover-logo {
             display: block;
-            width: min(340px, 70vw);
+            width: 100%;
             height: auto;
             filter: drop-shadow(0 6px 16px rgba(0,0,0,0.7));
             margin-bottom: 0.9rem;
@@ -121,7 +148,7 @@
 
         .cover-book-title {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1rem, 2.8vw, 1.5rem);
+            font-size: clamp(1.1rem, 2.5vw, 1.6rem);
             font-weight: 700;
             color: var(--white);
             margin-bottom: 0.2rem;
@@ -130,7 +157,7 @@
         .cover-author {
             font-family: 'Lora', serif;
             font-style: italic;
-            font-size: clamp(0.82rem, 1.8vw, 0.98rem);
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
             color: var(--gold);
             letter-spacing: 0.05em;
             margin-bottom: 1.1rem;
@@ -153,9 +180,13 @@
             line-height: 1.8;
         }
 
-        /* Tunnel column */
+        /* Tunnel column positioned precisely over the background hole */
         .tunnel-col {
-            flex-shrink: 0;
+            position: absolute;
+            left: 50%;
+            top: 54%; /* Aligned with the center of the tunnel hole in tunnel-bg.png */
+            transform: translate(-50%, -50%);
+            z-index: 5;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -171,22 +202,22 @@
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--muted);
-            transition: color 0.25s;
+            transition: color 0.25s, opacity 0.3s;
         }
 
         .tunnel-col:hover .tunnel-label,
         .tunnel-col:active .tunnel-label { color: var(--gold); }
 
-        /* SVG tunnel portal */
+        /* SVG tunnel portal overlay */
         .tunnel-portal {
-            width: clamp(100px, 14vw, 160px);
-            height: clamp(100px, 14vw, 160px);
+            width: clamp(120px, 15vw, 180px);
+            height: clamp(120px, 15vw, 180px);
             border-radius: 50%;
             display: block;
             transition: transform 0.2s;
         }
 
-        .tunnel-col:hover .tunnel-portal  { transform: scale(1.07); }
+        .tunnel-col:hover .tunnel-portal  { transform: scale(1.05); }
         .tunnel-col:active .tunnel-portal { transform: scale(0.97); }
 
         .tunnel-portal svg { width: 100%; height: 100%; display: block; }
@@ -197,7 +228,7 @@
             letter-spacing: 0.14em;
             text-transform: uppercase;
             color: var(--border);
-            transition: color 0.25s;
+            transition: color 0.25s, opacity 0.3s;
         }
         .tunnel-col:hover .tunnel-hint { color: var(--gold); }
 
@@ -208,38 +239,85 @@
         }
         .tunnel-portal { animation: tunnelGlow 2.8s ease-in-out infinite; }
 
-        /* Click animation */
-        @keyframes zoomIn {
-            0%   { transform: scale(1); }
-            30%  { transform: scale(0.88); }
-            100% { transform: scale(22); opacity: 0; }
+        /* Immersive Enter Animations */
+        body.entering .tunnel-bg-wrapper {
+            transform: scale(12);
+            opacity: 0;
         }
-        @keyframes pageFade {
-            0%   { opacity: 1; }
-            55%  { opacity: 1; }
-            100% { opacity: 0; }
+        
+        body.entering .cover-book-side {
+            opacity: 0;
+            transform: translateY(-50%) scale(0.85);
         }
 
-        body.entering {
-            animation: pageFade 0.75s ease-in forwards;
-            pointer-events: none;
+        body.entering .cover-info-side {
+            opacity: 0;
+            transform: translateY(-50%) scale(0.85);
         }
+
+        body.entering .tunnel-label,
+        body.entering .tunnel-hint {
+            opacity: 0;
+        }
+
         body.entering .tunnel-portal {
-            animation: zoomIn 0.75s ease-in forwards !important;
+            transform: scale(15);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.55, 0.06, 0.68, 0.19), opacity 0.6s ease-in;
         }
 
-        /* Responsive */
-        @media (max-width: 580px) {
-            .cover-layout {
-                flex-direction: column;
-                gap: 1.4rem;
-                overflow-y: auto;
-                padding: 2rem 1.2rem;
-            }
+        /* Responsive Mobile Layout */
+        @media (max-width: 768px) {
             html, body { overflow: auto; }
-            .cover-book-img { width: 90px; }
-            .tunnel-portal  { width: 100px; height: 100px; }
-            .tunnel-col { flex-direction: row; gap: 1.2rem; }
+            
+            .cover-book-side {
+                position: absolute;
+                top: 4vh;
+                left: 50%;
+                transform: translateX(-50%);
+                text-align: center;
+            }
+            
+            .cover-book-img {
+                width: 75px;
+            }
+
+            .cover-info-side {
+                position: absolute;
+                bottom: 4vh;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 320px;
+            }
+
+            .cover-logo {
+                width: 220px;
+                margin: 0 auto 0.4rem;
+            }
+
+            .cover-rule {
+                margin: 0.4rem 0 0.6rem;
+            }
+
+            .tunnel-col {
+                top: 54%; /* Keeps it precisely on the background image tunnel hole */
+            }
+
+            .tunnel-portal {
+                width: 110px;
+                height: 110px;
+            }
+
+            /* Zoom adjustment for mobile transitions */
+            body.entering .cover-book-side {
+                transform: translateX(-50%) scale(0.8);
+                opacity: 0;
+            }
+            body.entering .cover-info-side {
+                transform: translateX(-50%) scale(0.8);
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -248,30 +326,17 @@
 <div class="stripe stripe-top"></div>
 <div class="stripe stripe-bottom"></div>
 
+<!-- Background image layer -->
+<div class="tunnel-bg-wrapper"></div>
+
 <div class="cover-layout">
 
-    <!-- Book cover -->
-    <img class="cover-book-img" src="/static/book_cover.png" alt="Der Tunnelbauer – Buchcover">
-
-    <!-- Info -->
-    <div class="cover-info">
-        <div class="cover-kicker">Literaturzeitung</div>
-
-        <img class="cover-logo" src="/static/page-logo.png" alt="LiteraturZeitung – Der Tunnelbauer">
-
-        <div class="cover-rule"></div>
-
-        <div class="cover-book-title">Der Tunnelbauer</div>
-        <div class="cover-author">Maja Nielsen</div>
-
-        <div class="cover-editors-label">Redaktion</div>
-        <div class="cover-editors">
-            ......
-            
-        </div>
+    <!-- Left Panel: Book Cover -->
+    <div class="cover-side cover-book-side">
+        <img class="cover-book-img" src="/static/book_cover.png" alt="Der Tunnelbauer – Buchcover">
     </div>
 
-    <!-- Tunnel -->
+    <!-- Center: Interactive Tunnel Portal -->
     <div class="tunnel-col" id="tunnel-col">
         <div class="tunnel-label">Eintreten</div>
 
@@ -305,6 +370,25 @@
         <div class="tunnel-hint">↓ tippen</div>
     </div>
 
+    <!-- Right Panel: Information -->
+    <div class="cover-side cover-info-side">
+        <div class="cover-info">
+            <div class="cover-kicker">Literaturzeitung</div>
+
+            <img class="cover-logo" src="/static/page-logo.png" alt="LiteraturZeitung – Der Tunnelbauer">
+
+            <div class="cover-rule"></div>
+
+            <div class="cover-book-title">Der Tunnelbauer</div>
+            <div class="cover-author">Maja Nielsen</div>
+
+            <div class="cover-editors-label">Redaktion</div>
+            <div class="cover-editors">
+                ......
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -317,7 +401,7 @@
         document.body.classList.add('entering');
         setTimeout(function () {
             window.location.href = '/zeitung';
-        }, 700);
+        }, 800);
     }
 
     tunnelCol.addEventListener('click',    enter);
