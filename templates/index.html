@@ -1674,7 +1674,7 @@
     }
 
     .text-collapse-wrap.is-collapsed .text-collapse-inner {
-        max-height: 6.5em;
+        max-height: 7.2rem;
         overflow: hidden;
     }
 
@@ -4135,12 +4135,12 @@ async function deleteQuelle(id) {
 // AUTO TEXT COLLAPSE (≤300 chars visible)
 // ════════════════════════════════════════════
 
-const COLLAPSE_LIMIT = 300; // characters
-
+// Wrap an entire CONTAINER block (not individual paragraphs)
+// Show first ~300 chars worth, hide the rest behind "Weiterlesen"
 function applyTextCollapse() {
-    // Target all prose/editable text blocks that aren't already wrapped
+    // Each selector is a WHOLE block — we collapse the block, not its children
     const selectors = [
-        '.prose p',
+        '.prose',
         '.zitat-text',
         '.thema-body',
         '.section-body',
@@ -4148,15 +4148,12 @@ function applyTextCollapse() {
 
     selectors.forEach(sel => {
         document.querySelectorAll(sel).forEach(el => {
-            // Skip if already wrapped, inside admin toolbar, or too short
             if (el.closest('.text-collapse-wrap')) return;
             if (el.closest('.admin-bar, .ab-bar, .section-admin-actions')) return;
-            if (el.dataset.collapseSkip) return;
 
-            const text = el.textContent || '';
-            if (text.trim().length <= COLLAPSE_LIMIT) return;
+            const text = (el.textContent || '').trim();
+            if (text.length <= 300) return;
 
-            // Wrap element
             const wrap = document.createElement('div');
             wrap.className = 'text-collapse-wrap is-collapsed';
 
@@ -4179,9 +4176,6 @@ function applyTextCollapse() {
         });
     });
 }
-
-// Re-apply after any render (since content is dynamic)
-const _origRenderAll = typeof renderAll === 'function' ? renderAll : null;
 
 // ════════════════════════════════════════════
 // STANDALONE IMAGES
