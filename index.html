@@ -1553,25 +1553,42 @@
     ═══════════════════════════════════════════ */
     .iv-toggle-row {
         display: flex;
-        justify-content: flex-end;
-        margin-bottom: 0.5rem;
+        justify-content: center;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border2);
     }
+
     .iv-toggle-btn {
-        background: none;
-        border: 1px solid var(--border2);
-        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: linear-gradient(135deg, rgba(232,160,32,0.08), rgba(232,160,32,0.03));
+        border: 1px solid rgba(232,160,32,0.3);
+        color: var(--gold);
         font-size: 11px;
+        font-weight: 700;
         font-family: inherit;
-        padding: 3px 10px;
-        border-radius: 3px;
+        padding: 7px 24px;
+        border-radius: 20px;
         cursor: pointer;
-        letter-spacing: 0.04em;
-        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
     }
-    .iv-toggle-btn:hover { color: var(--gold); border-color: var(--gold); }
+
+    .iv-toggle-btn:hover {
+        background: rgba(232,160,32,0.14);
+        border-color: var(--gold);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(232,160,32,0.15);
+    }
+
+    .iv-toggle-btn:active { transform: translateY(0); }
+
     .iv-collapsible {
         overflow: hidden;
-        transition: max-height 0.35s ease, opacity 0.25s ease;
+        transition: max-height 0.4s ease, opacity 0.3s ease;
         max-height: 9999px;
         opacity: 1;
     }
@@ -1579,7 +1596,6 @@
 
     /* Clickable header hint */
     .iv-header-click:hover .interviewee-info h3 { color: var(--gold); }
-    .iv-expand-btn { min-width: 80px; text-align: center; }
 
     /* Fix: no ghost space below collapsed Weiterlesen */
     .rez-grid > div:first-child { align-self: start; min-height: 0; }
@@ -1671,21 +1687,34 @@
     ═══════════════════════════════════════════ */
     .text-collapse-wrap {
         position: relative;
+        /* no extra margin/padding — inherits from the wrapped element */
+    }
+
+    .text-collapse-inner {
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        /* expanded: no limit */
+        max-height: none;
     }
 
     .text-collapse-wrap.is-collapsed .text-collapse-inner {
-        max-height: 7.2rem;
-        overflow: hidden;
+        max-height: 7rem;
     }
 
-    /* Gradient fade at the bottom edge */
+    /* Gradient fade — only when collapsed */
     .text-collapse-wrap.is-collapsed::after {
         content: '';
         position: absolute;
-        left: 0; right: 0; bottom: 28px;
+        left: 0; right: 0;
+        bottom: 22px;   /* just above the button */
         height: 2.5em;
-        background: linear-gradient(to bottom, transparent, var(--dark));
+        background: linear-gradient(to bottom, transparent, var(--dark2, #111));
         pointer-events: none;
+    }
+
+    /* No pseudo-element when expanded */
+    .text-collapse-wrap:not(.is-collapsed)::after {
+        display: none;
     }
 
     .text-collapse-btn {
@@ -1698,8 +1727,9 @@
         letter-spacing: 0.1em;
         text-transform: uppercase;
         cursor: pointer;
-        padding: 4px 0 0;
+        padding: 4px 0 2px;
         font-family: inherit;
+        line-height: 1;
         transition: opacity 0.15s;
     }
     .text-collapse-btn:hover { opacity: 0.75; }
@@ -2018,9 +2048,6 @@
             <button class="action-btn del" onclick="toggleSection('autor-interview', false)">Abschnitt ausblenden</button>
         </div>
 
-        <div class="iv-toggle-row">
-            <button class="iv-toggle-btn iv-expand-btn" onclick="toggleAuthorInterview(this)">▶ Öffnen</button>
-        </div>
         <div class="iv-collapsible collapsed" id="ivc-author">
             <ul class="qa-list" id="author-qa-list"></ul>
             <button
@@ -3625,10 +3652,6 @@ function buildInterviewEl(iv) {
                 </div>
             </div>
 
-            <div class="iv-toggle-row">
-                <button class="iv-toggle-btn iv-expand-btn" onclick="toggleInterview('${iv.id}', this)">▶ Öffnen</button>
-            </div>
-
             <div class="iv-collapsible collapsed" id="ivc-${iv.id}">
                 <ul class="qa-list" id="qal-${iv.id}">
                     ${(iv.qa || []).map(q => buildQAHtml(q)).join('')}
@@ -4018,6 +4041,7 @@ function toggleInterview(id, btn) {
     if (!panel) return;
     const collapsed = panel.classList.toggle('collapsed');
     btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
+    btn.style.borderColor = collapsed ? '' : 'var(--gold)';
 }
 
 function toggleAuthorInterview(btn) {
@@ -4025,6 +4049,7 @@ function toggleAuthorInterview(btn) {
     if (!panel) return;
     const collapsed = panel.classList.toggle('collapsed');
     btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
+    btn.style.borderColor = collapsed ? '' : 'var(--gold)';
 }
 
 
