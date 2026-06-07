@@ -1577,6 +1577,10 @@
     }
     .iv-collapsible.collapsed { max-height: 0; opacity: 0; }
 
+    /* Clickable header hint */
+    .iv-header-click:hover .interviewee-info h3 { color: var(--gold); }
+    .iv-expand-btn { min-width: 80px; text-align: center; }
+
     /* Fix: no ghost space below collapsed Weiterlesen */
     .rez-grid > div:first-child { align-self: start; min-height: 0; }
 
@@ -1628,47 +1632,38 @@
         max-width: 520px;
         margin: 0.5rem auto 0;
     }
-    .discord-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 1.2rem;
-        background: #5865F2;
-        color: #fff;
-        text-decoration: none;
-        padding: 8px 20px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-        font-family: inherit;
-        transition: background 0.15s, transform 0.1s;
-    }
-    .discord-btn:hover { background: #4752c4; transform: translateY(-1px); }
     /* Footer links row */
     .footer-links {
         display: flex;
         justify-content: center;
+        align-items: center;
         gap: 1rem;
         margin-top: 1.2rem;
         flex-wrap: wrap;
     }
 
+    .discord-btn,
     .github-btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
-        background: #24292e;
-        color: #fff;
-        text-decoration: none;
-        padding: 8px 20px;
+        width: 160px;
+        padding: 9px 0;
         border-radius: 6px;
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.03em;
         font-family: inherit;
+        color: #fff;
+        text-decoration: none;
         transition: background 0.15s, transform 0.1s;
     }
+
+    .discord-btn { background: #5865F2; }
+    .discord-btn:hover { background: #4752c4; transform: translateY(-1px); }
+
+    .github-btn { background: #24292e; }
     .github-btn:hover { background: #3a3f44; transform: translateY(-1px); }
 
     /* ═══════════════════════════════════════════
@@ -2024,9 +2019,9 @@
         </div>
 
         <div class="iv-toggle-row">
-            <button class="iv-toggle-btn" onclick="toggleAuthorInterview(this)">▼ Ausblenden</button>
+            <button class="iv-toggle-btn iv-expand-btn" onclick="toggleAuthorInterview(this)">▶ Öffnen</button>
         </div>
-        <div class="iv-collapsible" id="ivc-author">
+        <div class="iv-collapsible collapsed" id="ivc-author">
             <ul class="qa-list" id="author-qa-list"></ul>
             <button
                 class="add-btn"
@@ -3612,7 +3607,7 @@ function buildInterviewEl(iv) {
                 <button class="action-btn del" data-action="delete">✕ Löschen</button>
             </div>
 
-            <div class="interviewee">
+            <div class="interviewee iv-header-click" onclick="toggleInterview('${iv.id}', this.closest('.interview-body').querySelector('.iv-expand-btn'))" style="cursor:pointer;" title="Klicken zum Öffnen">
                 <div class="avatar-wrap">
                     <div
                         class="avatar"
@@ -3631,10 +3626,10 @@ function buildInterviewEl(iv) {
             </div>
 
             <div class="iv-toggle-row">
-                <button class="iv-toggle-btn" onclick="toggleInterview('${iv.id}', this)">▼ Ausblenden</button>
+                <button class="iv-toggle-btn iv-expand-btn" onclick="toggleInterview('${iv.id}', this)">▶ Öffnen</button>
             </div>
 
-            <div class="iv-collapsible" id="ivc-${iv.id}">
+            <div class="iv-collapsible collapsed" id="ivc-${iv.id}">
                 <ul class="qa-list" id="qal-${iv.id}">
                     ${(iv.qa || []).map(q => buildQAHtml(q)).join('')}
                 </ul>
@@ -4022,14 +4017,14 @@ function toggleInterview(id, btn) {
     const panel = document.getElementById('ivc-' + id);
     if (!panel) return;
     const collapsed = panel.classList.toggle('collapsed');
-    btn.textContent = collapsed ? '▶ Einblenden' : '▼ Ausblenden';
+    btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
 }
 
 function toggleAuthorInterview(btn) {
     const panel = document.getElementById('ivc-author');
     if (!panel) return;
     const collapsed = panel.classList.toggle('collapsed');
-    btn.textContent = collapsed ? '▶ Einblenden' : '▼ Ausblenden';
+    btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
 }
 
 
@@ -4145,10 +4140,7 @@ const COLLAPSE_LIMIT = 300; // characters
 function applyTextCollapse() {
     // Target all prose/editable text blocks that aren't already wrapped
     const selectors = [
-        '.prose',
-        '[data-key]',
-        '.qa-answer',
-        '.qa-question',
+        '.prose p',
         '.zitat-text',
         '.thema-body',
         '.section-body',
