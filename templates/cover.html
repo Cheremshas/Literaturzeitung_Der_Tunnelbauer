@@ -184,7 +184,7 @@
         .tunnel-col {
             position: absolute;
             left: 50%;
-            top: 51%; /* Realignment with visual tunnel center */
+            top: 46%;
             transform: translate(-50%, -50%);
             z-index: 5;
             display: flex;
@@ -301,7 +301,7 @@
             }
 
             .tunnel-col {
-                top: 54%; /* Keeps it precisely on the background image tunnel hole */
+                top: 49%;
             }
 
             .tunnel-portal {
@@ -343,11 +343,35 @@
             opacity: 0;
             pointer-events: none;
             z-index: 100;
-            transition: opacity 0.9s ease-in 0.25s;
+            transition: opacity 0.7s ease-in 0.55s;
         }
 
         body.entering .enter-overlay {
             opacity: 1;
+        }
+
+        /* Light flash from the tunnel */
+        .tunnel-flash {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 40% 50% at 50% 46%,
+                rgba(255, 220, 140, 0.95) 0%,
+                rgba(255, 180, 60, 0.6) 30%,
+                rgba(200, 120, 20, 0.2) 60%,
+                transparent 80%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 99;
+            transition: opacity 0.08s ease-out;
+        }
+
+        body.flashing .tunnel-flash {
+            opacity: 1;
+        }
+
+        body.flash-out .tunnel-flash {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
         }
 
         /* Background zooms into tunnel */
@@ -402,6 +426,7 @@
 <body>
 
 <div class="enter-overlay"></div>
+<div class="tunnel-flash"></div>
 <div class="stripe stripe-top"></div>
 <div class="stripe stripe-bottom"></div>
 
@@ -458,13 +483,20 @@
         if (clicked) return;
         clicked = true;
 
-        // Trigger suck-in: everything collapses to tunnel centre
-        document.body.classList.add('entering');
+        // Step 1: flash of light from the tunnel
+        document.body.classList.add('flashing');
 
-        // Navigate after animation completes (overlay finishes fading at ~1.15s)
+        setTimeout(function () {
+            // Step 2: flash fades out + suck-in starts
+            document.body.classList.remove('flashing');
+            document.body.classList.add('flash-out');
+            document.body.classList.add('entering');
+        }, 120);
+
+        // Step 3: navigate after full animation
         setTimeout(function () {
             window.location.href = '/zeitung';
-        }, 1150);
+        }, 1250);
     }
 
     tunnelCol.addEventListener('click',    enter);
