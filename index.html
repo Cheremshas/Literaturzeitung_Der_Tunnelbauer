@@ -1,0 +1,4355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiteraturZeitung – Der Tunnelbauer</title>
+    <link rel="icon" type="image/png" href="/static/site-icon.png">
+    <link rel="apple-touch-icon" href="/static/site-icon.png">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+    /* ═══════════════════════════════════════════
+       ROOT & RESET
+    ═══════════════════════════════════════════ */
+    :root {
+        --black:    #0a0a0a;
+        --dark:     #111111;
+        --dark2:    #1a1a1a;
+        --dark3:    #222222;
+        --gold:     #E8A020;
+        --gold2:    #F5C842;
+        --silver:   #A8A8A8;
+        --white:    #F5F0E8;
+        --white2:   #EDE8DC;
+        --border:   #2a2a2a;
+        --border2:  #333333;
+        --text:     #C8C0B0;
+        --muted:    #777777;
+        --red:      #C0392B;
+        --abar-h:   50px;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--black);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       ADMIN BAR
+    ═══════════════════════════════════════════ */
+    #admin-bar {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--abar-h);
+        background: #0d0d0d;
+        border-bottom: 1px solid var(--gold);
+        align-items: center;
+        gap: 8px;
+        padding: 0 1.25rem;
+        z-index: 9000;
+        font-size: 12px;
+        overflow-x: auto;
+    }
+
+    #admin-bar.visible { display: flex; }
+
+    body.admin-mode         { padding-top: var(--abar-h); }
+    body.admin-mode nav     { top: var(--abar-h); }
+
+    .ab-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--gold);
+        border-radius: 50%;
+        flex-shrink: 0;
+        animation: blink 1.6s infinite;
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.3; }
+    }
+
+    .ab-label {
+        color: var(--gold);
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+        margin-right: 4px;
+    }
+
+    .ab-sep {
+        width: 1px;
+        height: 18px;
+        background: var(--border2);
+        flex-shrink: 0;
+    }
+
+    .ab-btn {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        padding: 4px 12px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+        font-family: inherit;
+        transition: border-color 0.15s, color 0.15s;
+    }
+
+    .ab-btn:hover          { border-color: var(--gold); color: var(--gold); }
+    .ab-btn.danger         { border-color: #5a1a1a; color: #cc6666; }
+    .ab-btn.danger:hover   { border-color: var(--red); color: var(--red); }
+
+
+    /* ═══════════════════════════════════════════
+       LOGIN OVERLAY
+    ═══════════════════════════════════════════ */
+    #login-overlay,
+    #sections-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.88);
+        z-index: 9500;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(6px);
+    }
+
+    #login-overlay.visible { display: flex; }
+    #sections-modal.visible { display: flex; }
+
+    #login-box,
+    #sections-box {
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        border-radius: 4px;
+        padding: 2.5rem;
+        width: 360px;
+        box-shadow: 0 0 60px rgba(232, 160, 32, 0.15);
+    }
+
+    #sections-box { width: 420px; max-width: calc(100vw - 32px); }
+
+    #login-box h2,
+    #sections-box h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--gold);
+        margin-bottom: 0.25rem;
+    }
+
+    #login-box p,
+    #sections-box p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 1.5rem;
+    }
+
+    #login-box input {
+        width: 100%;
+        padding: 10px 14px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--white);
+        font-size: 14px;
+        font-family: inherit;
+        margin-bottom: 12px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    #login-box input:focus { border-color: var(--gold); }
+
+    .btn-login {
+        width: 100%;
+        padding: 11px;
+        background: var(--gold);
+        color: var(--black);
+        border: none;
+        border-radius: 3px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        letter-spacing: 0.04em;
+        transition: background 0.15s;
+    }
+
+    .btn-login:hover { background: var(--gold2); }
+
+    #login-error {
+        color: #cc6666;
+        font-size: 13px;
+        margin-top: 8px;
+        display: none;
+    }
+
+    #login-close,
+    #sections-close {
+        float: right;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 22px;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    #login-close:hover,
+    #sections-close:hover { color: var(--white); }
+
+
+    /* ═══════════════════════════════════════════
+       EMOJI PICKER
+    ═══════════════════════════════════════════ */
+    #emoji-picker {
+        display: none;
+        position: fixed;
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        border-radius: 6px;
+        padding: 12px;
+        z-index: 9800;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+        width: 300px;
+    }
+
+    #emoji-picker.visible { display: block; }
+
+    .ep-search {
+        width: 100%;
+        padding: 7px 10px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--white);
+        font-size: 13px;
+        font-family: inherit;
+        margin-bottom: 8px;
+        outline: none;
+    }
+
+    .ep-search:focus { border-color: var(--gold); }
+
+    .ep-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .ep-grid::-webkit-scrollbar          { width: 4px; }
+    .ep-grid::-webkit-scrollbar-track    { background: var(--dark3); }
+    .ep-grid::-webkit-scrollbar-thumb    { background: var(--border2); border-radius: 2px; }
+
+    .ep-btn {
+        width: 34px;
+        height: 34px;
+        border: none;
+        background: none;
+        border-radius: 4px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.1s;
+    }
+
+    .ep-btn:hover { background: var(--dark3); }
+
+
+    /* ═══════════════════════════════════════════
+       COLOR PICKER
+    ═══════════════════════════════════════════ */
+    #color-picker {
+        display: none;
+        position: fixed;
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        border-radius: 6px;
+        padding: 14px;
+        z-index: 9800;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+        width: 230px;
+    }
+
+    #color-picker.visible { display: block; }
+
+    #color-picker h4 {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+    }
+
+    .cp-swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .cp-swatch {
+        width: 26px;
+        height: 26px;
+        border-radius: 3px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: transform 0.1s, border-color 0.15s;
+    }
+
+    .cp-swatch:hover           { transform: scale(1.15); }
+    .cp-swatch.selected        { border-color: var(--white); }
+
+    .cp-custom-label {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+    #cp-custom-input {
+        width: 100%;
+        height: 34px;
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        cursor: pointer;
+        padding: 2px;
+        background: var(--dark3);
+    }
+
+    .cp-preview {
+        width: 100%;
+        height: 22px;
+        border-radius: 3px;
+        margin-top: 10px;
+        border: 1px solid var(--border2);
+        transition: background 0.15s;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       IMAGE UPLOAD MODAL
+    ═══════════════════════════════════════════ */
+    #img-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.88);
+        z-index: 9500;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+
+    #img-modal.visible { display: flex; }
+
+    #img-box {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-radius: 6px;
+        padding: 2rem;
+        width: 420px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    }
+
+    #img-box h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+
+    .dropzone {
+        border: 2px dashed var(--border2);
+        border-radius: 4px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 1rem;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragging {
+        border-color: var(--gold);
+        background: rgba(232, 160, 32, 0.05);
+    }
+
+    .dropzone .dz-icon { font-size: 2.5rem; }
+
+    .dropzone p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 0.5rem;
+    }
+
+    #img-file-input { display: none; }
+
+    #img-preview {
+        display: none;
+        max-width: 100%;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        max-height: 200px;
+        object-fit: contain;
+    }
+
+    .img-actions { display: flex; gap: 8px; }
+
+    .img-actions button {
+        flex: 1;
+        padding: 9px;
+        border-radius: 3px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        transition: background 0.15s;
+    }
+
+    #img-confirm { background: var(--gold); color: var(--black); }
+    #img-confirm:hover { background: var(--gold2); }
+
+    #img-cancel {
+        background: var(--dark3);
+        color: var(--text);
+        border: 1px solid var(--border2);
+    }
+
+
+    /* ═══════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════ */
+    #toast {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        background: var(--dark2);
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        padding: 10px 20px;
+        border-radius: 3px;
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    #toast.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+
+    /* ═══════════════════════════════════════════
+       ADMIN EDIT INDICATORS
+    ═══════════════════════════════════════════ */
+    body.admin-mode [contenteditable="true"] {
+        outline: 1px dashed rgba(232, 160, 32, 0.45);
+        outline-offset: 2px;
+        border-radius: 2px;
+        cursor: text;
+    }
+
+    body.admin-mode [contenteditable="true"]:focus {
+        outline: 1px solid var(--gold);
+        background: rgba(232, 160, 32, 0.04);
+    }
+
+    .edit-hint {
+        display: none;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gold);
+        opacity: 0.7;
+        margin-bottom: 5px;
+    }
+
+    body.admin-mode .edit-hint { display: block; }
+
+    /* Reusable action button */
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        color: var(--muted);
+        padding: 4px 10px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+        transition: border-color 0.15s, color 0.15s;
+    }
+
+    .action-btn:hover      { border-color: var(--gold); color: var(--gold); }
+    .action-btn.del:hover  { border-color: var(--red);  color: var(--red);  }
+
+    /* Action row — hidden for readers, shown for admins */
+    .action-row {
+        display: none;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+        align-items: center;
+    }
+
+    body.admin-mode .action-row { display: flex; }
+
+    .inline-image-block {
+        display: block;
+        width: min(100%, 560px);
+        margin: 1rem auto;
+        position: relative;
+        text-align: center;
+    }
+
+    .inline-image-block img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        border: 1px solid var(--border2);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    .inline-image-actions {
+        display: none;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    body.admin-mode .inline-image-actions { display: flex; }
+
+    /* Dashed "add" button — hidden for readers */
+    .add-btn {
+        display: none;
+        background: transparent;
+        border: 1px dashed rgba(232, 160, 32, 0.5);
+        color: var(--gold);
+        padding: 7px 18px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 1rem;
+        letter-spacing: 0.05em;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .add-btn:hover {
+        background: rgba(232, 160, 32, 0.08);
+        border-color: var(--gold);
+    }
+
+    body.admin-mode .add-btn { display: inline-block; }
+
+
+    /* ═══════════════════════════════════════════
+       NEWSPAPER HEADER
+    ═══════════════════════════════════════════ */
+    .paper-header {
+        background: var(--dark);
+        border-bottom: 2px solid var(--gold);
+    }
+
+    /* Gold spine stripe — like on the book */
+    .gold-stripe { height: 6px; background: var(--gold); }
+
+    .paper-masthead {
+        padding: 2rem 2rem 1.25rem;
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.4rem;
+        position: relative;
+    }
+
+    .paper-kicker {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .paper-kicker::before,
+    .paper-kicker::after {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 1px;
+        background: var(--border2);
+    }
+
+    /* Header mark */
+    .paper-logo-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        font-family: inherit;
+    }
+
+    .paper-logo-button:focus-visible {
+        outline: 1px solid var(--gold);
+        outline-offset: 8px;
+        border-radius: 3px;
+    }
+
+    .paper-name {
+        display: block;
+        width: min(620px, 84vw);
+        height: auto;
+        filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.55));
+    }
+
+    /* Horizontal rule with diamond ornaments */
+    .paper-rule {
+        width: 100%;
+        height: 1px;
+        background: var(--border2);
+        margin: 0.25rem 0;
+        position: relative;
+    }
+
+    .paper-rule::before,
+    .paper-rule::after {
+        content: '◆';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold);
+        font-size: 9px;
+    }
+
+    .paper-rule::before { left: 0; }
+    .paper-rule::after  { right: 0; }
+
+    .paper-tagline {
+        font-family: 'Lora', serif;
+        font-style: italic;
+        font-size: 13px;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+    }
+
+    .paper-meta-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        font-size: 11px;
+        color: var(--muted);
+        border-top: 1px solid var(--border2);
+        padding-top: 0.7rem;
+        margin-top: 0.15rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════════ */
+    nav {
+        background: var(--dark);
+        border-bottom: 1px solid var(--border2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    nav ul {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        list-style: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+    }
+
+    nav ul::-webkit-scrollbar { display: none; }
+
+    nav a {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: color 0.15s, border-color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+        color: var(--gold);
+        border-color: var(--gold);
+    }
+
+    .section-admin-actions {
+        display: none;
+        justify-content: flex-end;
+        margin-top: -1rem;
+        margin-bottom: 1rem;
+    }
+
+    body.admin-mode .section-admin-actions { display: flex; }
+
+    .section-manage-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 1rem 0;
+    }
+
+    .section-manage-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--border2);
+        color: var(--text);
+        font-size: 13px;
+    }
+
+    .section-manage-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .section-manage-item:last-child { border-bottom: none; }
+
+    .section-manage-item input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--gold);
+        cursor: pointer;
+    }
+
+    .section-manage-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 1rem;
+    }
+
+    .custom-section {
+        border-top: 2px solid var(--gold);
+        padding-top: 0.65rem;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       MAIN LAYOUT
+    ═══════════════════════════════════════════ */
+    main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2.5rem 2rem;
+    }
+
+    section { margin-bottom: 4rem; }
+
+    /* Newspaper-style section header */
+    .section-head {
+        border-top: 2px solid var(--gold);
+        padding-top: 0.65rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .section-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 3px;
+    }
+
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.4rem, 3.5vw, 2rem);
+        color: var(--white);
+        line-height: 1.2;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       REZENSION
+    ═══════════════════════════════════════════ */
+    .rez-grid {
+        display: grid;
+        grid-template-columns: 1fr 230px;
+        gap: 3rem;
+        align-items: start;
+    }
+
+    /* Fix: no ghost space below collapsed Weiterlesen text */
+    .rez-grid > div:first-child { align-self: start; min-height: 0; }
+
+    @media (max-width: 640px) {
+        .rez-grid { grid-template-columns: 1fr; }
+    }
+
+    .rez-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.2rem, 2.8vw, 1.65rem);
+        color: var(--white2);
+        line-height: 1.25;
+        margin-bottom: 0.75rem;
+    }
+
+    .stars-row {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 1.25rem;
+        cursor: default;
+    }
+
+    body.admin-mode .stars-row { cursor: pointer; }
+
+    .star-glyph {
+        font-size: 20px;
+        color: var(--gold);
+        line-height: 1;
+        transition: transform 0.1s;
+        user-select: none;
+    }
+
+    .star-glyph.empty            { color: var(--border2); }
+    body.admin-mode .star-glyph:hover { transform: scale(1.2); }
+
+    .prose {
+        font-family: 'Lora', serif;
+        font-size: 14.5px;
+        line-height: 1.9;
+        color: var(--text);
+    }
+
+    .prose p              { margin-bottom: 1em; }
+    .prose p:last-child   { margin-bottom: 0; }
+
+    /* Book info card */
+    .book-card {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-top: 3px solid var(--gold);
+    }
+
+    .book-cover-wrap {
+        position: relative;
+        aspect-ratio: 2 / 3;
+        background: var(--dark3);
+        overflow: hidden;
+        cursor: default;
+    }
+
+    body.admin-mode .book-cover-wrap { cursor: pointer; }
+
+    .book-cover-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .book-cover-overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    body.admin-mode .book-cover-wrap:hover .book-cover-overlay {
+        display: flex;
+    }
+
+    .book-info { padding: 1.25rem; }
+
+    .book-info h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: var(--white);
+        margin-bottom: 2px;
+    }
+
+    .book-author-line {
+        font-size: 12px;
+        color: var(--gold);
+        margin-bottom: 1rem;
+        font-style: italic;
+    }
+
+    .book-meta-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .book-meta-table td {
+        padding: 5px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .book-meta-table tr:last-child td { border-bottom: none; }
+    .book-meta-table td:first-child    { color: var(--muted); }
+
+    .book-meta-table td:last-child {
+        color: var(--white2);
+        text-align: right;
+        font-weight: 500;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       ZITATE
+    ═══════════════════════════════════════════ */
+    .zitate-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .zitat-card {
+        background: var(--dark2);
+        border-left: 3px solid var(--gold);
+        padding: 1.5rem 1.75rem;
+        position: relative;
+    }
+
+    /* Large decorative opening quote */
+    .zitat-card::before {
+        content: '\201C';
+        font-family: 'Playfair Display', serif;
+        font-size: 6rem;
+        line-height: 1;
+        position: absolute;
+        top: -12px;
+        left: 14px;
+        opacity: 0.07;
+        pointer-events: none;
+        color: var(--gold);
+    }
+
+    .zitat-tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 2px 10px;
+        border-radius: 2px;
+        margin-bottom: 0.75rem;
+    }
+
+    .zitat-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        font-style: italic;
+        line-height: 1.65;
+        color: var(--white2);
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .zitat-source {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+
+    /* ═══════════════════════════════════════════
+       THEMEN
+    ═══════════════════════════════════════════ */
+    .themen-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .thema-card {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-top: 2px solid var(--gold);
+        padding: 1.5rem;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .thema-card:hover {
+        border-color: var(--card-accent, var(--gold));
+        transform: translateY(-2px);
+    }
+
+    .thema-icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .thema-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: var(--white2);
+        margin-bottom: 0.4rem;
+    }
+
+    .thema-card p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       INTERVIEWS
+    ═══════════════════════════════════════════ */
+    .interviews-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .interview-card {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        display: grid;
+        grid-template-columns: 4px 1fr;
+    }
+
+    .interview-body { padding: 1.75rem 2rem; }
+
+    .interviewee {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .avatar-wrap { position: relative; flex-shrink: 0; }
+
+    .avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--black);
+        overflow: hidden;
+    }
+
+    .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-edit-overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    body.admin-mode .avatar-wrap:hover .avatar-edit-overlay {
+        display: flex;
+    }
+
+    .interviewee-info h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        color: var(--white);
+        margin-bottom: 2px;
+    }
+
+    .interviewee-info p {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+    }
+
+    .qa-list       { list-style: none; }
+    .qa-item       { margin-bottom: 1.25rem; }
+    .qa-item:last-child { margin-bottom: 0; }
+
+    .qa-q {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gold);
+        margin-bottom: 0.4rem;
+        display: flex;
+        gap: 8px;
+    }
+
+    .qa-q::before  { content: 'F:'; flex-shrink: 0; opacity: 0.7; }
+
+    .qa-a {
+        font-family: 'Lora', serif;
+        font-size: 13.5px;
+        font-style: italic;
+        line-height: 1.75;
+        color: var(--text);
+        padding-left: 24px;
+        border-left: 2px solid var(--border2);
+        margin-left: 2px;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       COMMENTS
+    ═══════════════════════════════════════════ */
+    .avg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--gold);
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .avg-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--gold);
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .avg-stars { display: flex; gap: 3px; }
+    .avg-star  { font-size: 18px; color: var(--gold); }
+    .avg-star.empty { color: var(--border2); }
+
+    .avg-count {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        letter-spacing: 0.04em;
+    }
+
+    /* Comment submission form */
+    .comment-form {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-top: 2px solid var(--gold);
+        padding: 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .comment-form h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: var(--white);
+        margin-bottom: 1rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    @media (max-width: 500px) {
+        .form-row { grid-template-columns: 1fr; }
+    }
+
+    .field-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 9px 12px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        border-radius: 3px;
+        color: var(--white);
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+
+    .form-input:focus  { border-color: var(--gold); }
+    .form-textarea     { resize: vertical; min-height: 90px; }
+
+    /* Interactive star rating in the form */
+    .rating-input {
+        display: flex;
+        gap: 4px;
+        margin-top: 2px;
+    }
+
+    .rating-star {
+        font-size: 26px;
+        cursor: pointer;
+        color: var(--border2);
+        transition: color 0.1s, transform 0.1s;
+        line-height: 1;
+        user-select: none;
+    }
+
+    .rating-star.active    { color: var(--gold); }
+    .rating-star:hover     { transform: scale(1.15); }
+
+    .btn-submit {
+        background: var(--gold);
+        border: none;
+        color: var(--black);
+        padding: 10px 24px;
+        border-radius: 3px;
+        font-size: 13px;
+        font-weight: 700;
+        font-family: inherit;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: background 0.15s;
+    }
+
+    .btn-submit:hover { background: var(--gold2); }
+
+    /* Divider ornament */
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.25rem;
+        color: var(--border2);
+        font-size: 11px;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border2);
+    }
+
+    /* Comment cards */
+    .comments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .comment-card {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--border2);
+        padding: 1.25rem 1.5rem;
+    }
+
+    /* 5-star comments get gold accent */
+    .comment-card.top-rated { border-left-color: var(--gold); }
+
+    .comment-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 3px;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--white2);
+    }
+
+    .comment-stars { display: flex; gap: 2px; }
+    .c-star        { font-size: 13px; color: var(--gold); }
+    .c-star.empty  { color: var(--border2); }
+
+    .comment-date {
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-body {
+        font-family: 'Lora', serif;
+        font-style: italic;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--text);
+    }
+
+    .comment-del {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 11px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 0.5rem;
+        padding: 0;
+        transition: color 0.15s;
+    }
+
+    .comment-del:hover          { color: var(--red); }
+    body.admin-mode .comment-del { display: inline-block; }
+
+    .no-comments {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+        font-style: italic;
+        border: 1px dashed var(--border2);
+    }
+
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    footer {
+        background: var(--dark);
+        border-top: 2px solid var(--gold);
+        color: var(--muted);
+        text-align: center;
+        padding: 2rem;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+    }
+
+    footer strong  { color: var(--gold); }
+
+    .footer-rule {
+        width: 60px;
+        height: 1px;
+        background: var(--border2);
+        margin: 0.6rem auto;
+    }
+    /* ═══════════════════════════════════════════
+       STANDALONE IMAGES
+    ═══════════════════════════════════════════ */
+    #standalone-images-section {
+        margin-bottom: 4rem;
+    }
+
+    .standalone-img-block {
+        position: relative;
+        margin: 0 auto 1.5rem;
+        display: block;
+    }
+
+    .standalone-img-block.align-left   { margin-left: 0; margin-right: auto; }
+    .standalone-img-block.align-center { margin-left: auto; margin-right: auto; }
+    .standalone-img-block.align-right  { margin-left: auto; margin-right: 0; }
+
+    .standalone-img-block img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        border: 1px solid var(--border2);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    .standalone-img-caption {
+        text-align: center;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 0.5em;
+        font-style: italic;
+        font-family: 'Lora', serif;
+    }
+
+    /* Admin overlay — shown only on hover in admin mode */
+    .simg-admin-bar {
+        display: none;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(10, 10, 10, 0.82);
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        padding: 4px 6px;
+        gap: 4px;
+        align-items: center;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+    }
+
+    body.admin-mode .standalone-img-block:hover .simg-admin-bar {
+        display: flex;
+    }
+
+    .simg-admin-bar button {
+        background: none;
+        border: none;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-family: inherit;
+        white-space: nowrap;
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .simg-admin-bar button:hover            { background: rgba(255,255,255,0.12); color: var(--gold); }
+    .simg-admin-bar button.del:hover        { color: var(--red); }
+    .simg-admin-bar .simg-sep              { width: 1px; height: 14px; background: var(--border2); flex-shrink: 0; }
+
+    /* Resize/align panel */
+    .simg-resize-panel {
+        display: none;
+        position: absolute;
+        bottom: -54px;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 10, 0.88);
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        padding: 7px 12px;
+        z-index: 20;
+        align-items: center;
+        gap: 10px;
+        color: var(--text);
+        font-size: 12px;
+        backdrop-filter: blur(4px);
+    }
+
+    .simg-resize-panel.open { display: flex; }
+
+    .simg-resize-panel input[type=range] {
+        flex: 1;
+        accent-color: var(--gold);
+    }
+
+    .simg-resize-panel select {
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        border-radius: 3px;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-family: inherit;
+        cursor: pointer;
+    }
+
+    .simg-width-label {
+        color: var(--gold);
+        font-weight: 600;
+        min-width: 44px;
+        text-align: right;
+        font-size: 11px;
+    }
+
+    /* Add image button */
+    .simg-add-btn {
+        display: none;
+        background: transparent;
+        border: 1px dashed rgba(232, 160, 32, 0.5);
+        color: var(--gold);
+        padding: 7px 18px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 0.5rem;
+        letter-spacing: 0.05em;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .simg-add-btn:hover {
+        background: rgba(232, 160, 32, 0.08);
+        border-color: var(--gold);
+    }
+
+    body.admin-mode .simg-add-btn { display: inline-block; }
+
+    /* ═══════════════════════════════════════════
+       INTERVIEW COLLAPSE
+    ═══════════════════════════════════════════ */
+    .iv-toggle-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 0.5rem;
+    }
+    .iv-toggle-btn {
+        background: none;
+        border: 1px solid var(--border2);
+        color: var(--muted);
+        font-size: 11px;
+        font-family: inherit;
+        padding: 3px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        letter-spacing: 0.04em;
+        transition: color 0.15s, border-color 0.15s;
+    }
+    .iv-toggle-btn:hover { color: var(--gold); border-color: var(--gold); }
+    .iv-collapsible {
+        overflow: hidden;
+        transition: max-height 0.35s ease, opacity 0.25s ease;
+        max-height: 9999px;
+        opacity: 1;
+    }
+    .iv-collapsible.collapsed { max-height: 0; opacity: 0; }
+
+    /* Clickable header hint */
+    .iv-header-click:hover .interviewee-info h3 { color: var(--gold); }
+    .iv-expand-btn { min-width: 80px; text-align: center; }
+
+    /* Fix: no ghost space below collapsed Weiterlesen */
+    .rez-grid > div:first-child { align-self: start; min-height: 0; }
+
+    /* ═══════════════════════════════════════════
+       QUELLEN
+    ═══════════════════════════════════════════ */
+    .quellen-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .quelle-item {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--gold);
+        padding: 0.75rem 1rem;
+        border-radius: 0 4px 4px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    .quelle-title {
+        font-weight: 600;
+        font-size: 13.5px;
+        color: var(--white2);
+        font-family: 'Playfair Display', serif;
+    }
+    .quelle-url {
+        font-size: 12px;
+        color: var(--gold);
+        word-break: break-all;
+        text-decoration: none;
+    }
+    .quelle-url:hover { text-decoration: underline; }
+    .quelle-note {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER EXTRAS
+    ═══════════════════════════════════════════ */
+    .footer-copyright {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 520px;
+        margin: 0.5rem auto 0;
+    }
+    /* Footer links row */
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.2rem;
+        flex-wrap: wrap;
+    }
+
+    .discord-btn,
+    .github-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 160px;
+        padding: 9px 0;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        font-family: inherit;
+        color: #fff;
+        text-decoration: none;
+        transition: background 0.15s, transform 0.1s;
+    }
+
+    .discord-btn { background: #5865F2; }
+    .discord-btn:hover { background: #4752c4; transform: translateY(-1px); }
+
+    .github-btn { background: #24292e; }
+    .github-btn:hover { background: #3a3f44; transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════════════
+       AUTO TEXT COLLAPSE (300 chars)
+    ═══════════════════════════════════════════ */
+    .text-collapse-wrap {
+        position: relative;
+    }
+
+    .text-collapse-wrap.is-collapsed .text-collapse-inner {
+        max-height: 7.2rem;
+        overflow: hidden;
+    }
+
+    /* Gradient fade at the bottom edge */
+    .text-collapse-wrap.is-collapsed::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0; bottom: 28px;
+        height: 2.5em;
+        background: linear-gradient(to bottom, transparent, var(--dark));
+        pointer-events: none;
+    }
+
+    .text-collapse-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--gold);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 4px 0 0;
+        font-family: inherit;
+        transition: opacity 0.15s;
+    }
+    .text-collapse-btn:hover { opacity: 0.75; }
+
+
+    
+    </style>
+<body>
+
+<!-- ════════════════════════════════════════
+     TOAST
+════════════════════════════════════════ -->
+<div id="toast">✓ Gespeichert</div>
+
+
+<!-- ════════════════════════════════════════
+     ADMIN BAR
+════════════════════════════════════════ -->
+<div id="admin-bar">
+    <div class="ab-dot"></div>
+    <span class="ab-label">Admin</span>
+    <div class="ab-sep"></div>
+    <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
+    <button class="ab-btn" onclick="addStandaloneImage()">🖼 Freies Bild</button>
+    <button class="ab-btn" onclick="openInlineImageUpload()">🖼 Bild</button>
+    <button class="ab-btn" onclick="openSectionsModal()">☰ Abschnitte</button>
+    <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
+    <button class="ab-btn" onclick="addThema()">+ Thema</button>
+    <button class="ab-btn" onclick="addInterview()">+ Interview</button>
+    <div class="ab-sep"></div>
+    <button class="ab-btn danger" onclick="logout()">Abmelden</button>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SECTION MANAGER
+════════════════════════════════════════ -->
+<div id="sections-modal">
+    <div id="sections-box">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <h2>Abschnitte</h2>
+                <p>Bereiche ein- oder ausblenden.</p>
+            </div>
+            <button id="sections-close" onclick="closeSectionsModal()">×</button>
+        </div>
+        <div class="section-manage-list" id="section-manage-list"></div>
+        <div class="section-manage-actions">
+            <button class="ab-btn" onclick="addCustomSection()">+ Neuer Abschnitt</button>
+            <button class="btn-login" onclick="closeSectionsModal()">Fertig</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     LOGIN OVERLAY
+════════════════════════════════════════ -->
+<div id="login-overlay">
+    <div id="login-box">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <h2>Admin‑Login</h2>
+                <p>Passwort eingeben, um Inhalte zu bearbeiten.</p>
+            </div>
+            <button id="login-close" onclick="closeLogin()">×</button>
+        </div>
+        <input
+            type="password"
+            id="pw-input"
+            placeholder="Passwort"
+            onkeydown="if (event.key === 'Enter') doLogin()"
+        >
+        <button class="btn-login" onclick="doLogin()">Anmelden</button>
+        <div id="login-error">Falsches Passwort. Bitte erneut versuchen.</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     EMOJI PICKER (portal, positioned by JS)
+════════════════════════════════════════ -->
+<div id="emoji-picker">
+    <input
+        class="ep-search"
+        type="text"
+        placeholder="Emoji suchen…"
+        oninput="filterEmoji(this.value)"
+    >
+    <div class="ep-grid" id="ep-grid"></div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     COLOR PICKER (portal, positioned by JS)
+════════════════════════════════════════ -->
+<div id="color-picker">
+    <h4>Farbe wählen</h4>
+    <div class="cp-swatches" id="cp-swatches"></div>
+    <span class="cp-custom-label">Eigene Farbe</span>
+    <input type="color" id="cp-custom-input" oninput="onCustomColor(this.value)">
+    <div class="cp-preview" id="cp-preview"></div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     IMAGE UPLOAD MODAL
+════════════════════════════════════════ -->
+<div id="img-modal">
+    <div id="img-box">
+        <h3>📷 Bild hochladen</h3>
+
+        <div
+            class="dropzone"
+            id="dropzone"
+            onclick="document.getElementById('img-file-input').click()"
+            ondragover="event.preventDefault(); this.classList.add('dragging')"
+            ondragleave="this.classList.remove('dragging')"
+            ondrop="handleDrop(event)"
+        >
+            <div class="dz-icon">📁</div>
+            <p>
+                Klicken oder Datei hierher ziehen<br>
+                <small>PNG, JPG, GIF, WebP – max. 16 MB</small>
+            </p>
+        </div>
+
+        <input
+            type="file"
+            id="img-file-input"
+            accept="image/*"
+            onchange="previewFile(this)"
+        >
+        <img id="img-preview" src="" alt="Vorschau">
+
+        <div class="img-actions">
+            <button id="img-confirm" onclick="confirmUpload()">Hochladen &amp; Einfügen</button>
+            <button id="img-cancel"  onclick="closeImgModal()">Abbrechen</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     NEWSPAPER HEADER
+════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     TUNNEL HERO
+════════════════════════════════════════ -->
+<header class="paper-header">
+    <div class="gold-stripe"></div>
+
+    <div class="paper-masthead">
+        <div class="paper-kicker">Schulprojekt · Literaturanalyse</div>
+
+        <button
+            class="paper-logo-button"
+            type="button"
+            onclick="openLogin()"
+            title="Admin-Login"
+        >
+            <img
+                class="paper-name"
+                src="/static/page-logo.png"
+                alt="Der Tunnelbauer"
+            >
+        </button>
+
+        <div class="paper-rule"></div>
+
+        <div
+            class="paper-tagline"
+            contenteditable="false"
+            data-key="header-sub"
+        >Buchanalyse · Charaktere &amp; Motive · Zitate &amp; Interviews</div>
+
+        <div class="paper-meta-row">
+            <span>Maja Nielsen · Der Tunnelbauer · Gerstenberg Verlag</span>
+        </div>
+    </div>
+</header>
+
+
+<!-- ════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════ -->
+<nav>
+    <ul id="nav-list"></ul>
+</nav>
+
+
+<!-- ════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════ -->
+<main>
+
+    <!-- ── ZUSAMMENFASSUNG ───────────────── -->
+    <section id="zusammenfassung" data-section-id="zusammenfassung">
+        <div class="section-head">
+            <div class="section-label">Zusammenfassung des Buches</div>
+            <div class="section-title" contenteditable="false" data-key="summary-title">
+                Worum es in „Der Tunnelbauer" geht
+            </div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('zusammenfassung', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="edit-hint">✏ Zusammenfassung bearbeiten</div>
+        <div class="prose" contenteditable="false" data-key="summary-text">
+            <p>Hier kannst du die Handlung des Buches knapp zusammenfassen.</p>
+        </div>
+    </section>
+
+
+    <!-- ── REZENSION ──────────────────────── -->
+    <section id="rezension" data-section-id="rezension">
+        <div class="section-head">
+            <div class="section-label">Buchrezension</div>
+            <div class="section-title">Analyse &amp; Bewertung</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('rezension', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="rez-grid">
+
+            <div>
+                <div class="edit-hint">✏ Titel bearbeiten</div>
+                <h2
+                    class="rez-title"
+                    contenteditable="false"
+                    data-key="rez-title"
+                >Der Tunnelbauer – eine Reise in die Tiefe</h2>
+
+                <div class="stars-row" id="stars-row" title="Im Admin-Modus: Bewertung ändern">
+                    <span class="star-glyph"       data-v="1">★</span>
+                    <span class="star-glyph"       data-v="2">★</span>
+                    <span class="star-glyph"       data-v="3">★</span>
+                    <span class="star-glyph"       data-v="4">★</span>
+                    <span class="star-glyph empty" data-v="5">★</span>
+                </div>
+
+                <div class="edit-hint">✏ Text bearbeiten</div>
+                <div
+                    class="prose"
+                    contenteditable="false"
+                    data-key="rez-text"
+                >
+                    <p>Maja Nielsens Roman <em>„Der Tunnelbauer"</em> ist ein
+                    eindrucksvolles Werk, das auf mehreren Ebenen funktioniert.</p>
+                    <p>Im Mittelpunkt steht ein Junge, der sich buchstäblich
+                    aus seiner Situation herausgräbt.</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="book-card">
+                    <div
+                        class="book-cover-wrap"
+                        id="book-cover-wrap"
+                        onclick="adminAction(() => openImgModal('book-cover'))"
+                        title="Im Admin-Modus: Bild ändern"
+                    >
+                        <img
+                            id="book-cover-img"
+                            src="/static/book_cover.png"
+                            alt="Der Tunnelbauer – Buchcover"
+                        >
+                        <div class="book-cover-overlay">📷</div>
+                    </div>
+
+                    <div class="book-info">
+                        <h3 contenteditable="false" data-key="book-title">Der Tunnelbauer</h3>
+                        <div
+                            class="book-author-line"
+                            contenteditable="false"
+                            data-key="book-author"
+                        >Maja Nielsen</div>
+
+                        <table class="book-meta-table">
+                            <tr>
+                                <td>Verlag</td>
+                                <td contenteditable="false" data-key="book-verlag">Gerstenberg Verlag</td>
+                            </tr>
+                            <tr>
+                                <td>Erschienen</td>
+                                <td contenteditable="false" data-key="book-year">2022</td>
+                            </tr>
+                            <tr>
+                                <td>Seiten</td>
+                                <td contenteditable="false" data-key="book-pages">224</td>
+                            </tr>
+                            <tr>
+                                <td>Genre</td>
+                                <td contenteditable="false" data-key="book-genre">Jugendroman</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- ── INTERVIEWS ──────────────────────── -->
+    <section id="autor-interview" data-section-id="autor-interview">
+        <div class="section-head">
+            <div class="section-label">Interview mit der Autorin</div>
+            <div class="section-title" contenteditable="false" data-key="author-interview-title">
+                Fragen an Maja Nielsen
+            </div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('autor-interview', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="iv-toggle-row">
+            <button class="iv-toggle-btn iv-expand-btn" onclick="toggleAuthorInterview(this)">▶ Öffnen</button>
+        </div>
+        <div class="iv-collapsible collapsed" id="ivc-author">
+            <ul class="qa-list" id="author-qa-list"></ul>
+            <button
+                class="add-btn"
+                style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
+                onclick="addAuthorQA()"
+            >+ Frage &amp; Antwort</button>
+        </div>
+    </section>
+
+
+    <!-- ── INTERVIEWS MIT CHARAKTEREN ─────── -->
+    <section id="interviews" data-section-id="interviews">
+        <div class="section-head">
+            <div class="section-label">Interviews mit Charakteren aus dem Buch</div>
+            <div class="section-title">Im Gespräch mit den Figuren</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('interviews', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="interviews-list" id="interviews-container"></div>
+
+        <button class="add-btn" onclick="addInterview()">+ Neues Interview hinzufügen</button>
+    </section>
+
+
+    <!-- ── ZITATE ──────────────────────────── -->
+    <section id="zitate" data-section-id="zitate">
+        <div class="section-head">
+            <div class="section-label">Zitate / bedeutsame Stellen</div>
+            <div class="section-title">Wichtige Stellen aus dem Buch</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('zitate', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="zitate-list" id="zitate-container"></div>
+
+        <button class="add-btn" onclick="addZitat()">+ Neues Zitat hinzufügen</button>
+    </section>
+
+
+    <!-- ── THEMEN ──────────────────────────── -->
+    <section id="themen" data-section-id="themen">
+        <div class="section-head">
+            <div class="section-label">Analyse</div>
+            <div class="section-title">Themen &amp; Motive</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('themen', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="themen-grid" id="themen-container"></div>
+
+        <button class="add-btn" onclick="addThema()">+ Neues Thema hinzufügen</button>
+    </section>
+
+
+    <!-- ── STANDALONE IMAGES ─────────────────── -->
+    <section id="standalone-images" data-section-id="standalone-images">
+        <div class="section-head">
+            <div class="section-label">Galerie</div>
+            <div class="section-title">Bilder</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('standalone-images', false)">Abschnitt ausblenden</button>
+        </div>
+        <div id="standalone-images-container"></div>
+        <button class="simg-add-btn" onclick="addStandaloneImage()">+ Bild hinzufügen</button>
+    </section>
+
+
+    <!-- ── KOMMENTARE ──────────────────────── -->
+    <section id="kommentare" data-section-id="kommentare">
+        <div class="section-head">
+            <div class="section-label">Leserstimmen</div>
+            <div class="section-title">Kommentare &amp; Bewertungen</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('kommentare', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <!-- Average rating display -->
+        <div class="avg-badge">
+            <div class="avg-number" id="avg-number">–</div>
+            <div>
+                <div class="avg-stars" id="avg-stars"></div>
+                <div class="avg-count" id="avg-count">0 Bewertungen</div>
+            </div>
+        </div>
+
+        <!-- Submission form -->
+        <div class="comment-form">
+            <h3>Kommentar hinterlassen</h3>
+
+            <div class="form-row">
+                <div>
+                    <label class="field-label" for="c-author">Dein Name</label>
+                    <input
+                        class="form-input"
+                        type="text"
+                        id="c-author"
+                        placeholder="optional"
+                        maxlength="80"
+                    >
+                </div>
+                <div>
+                    <label class="field-label">Bewertung</label>
+                    <div class="rating-input" id="rating-input">
+                        <span class="rating-star" data-v="1">★</span>
+                        <span class="rating-star" data-v="2">★</span>
+                        <span class="rating-star" data-v="3">★</span>
+                        <span class="rating-star" data-v="4">★</span>
+                        <span class="rating-star" data-v="5">★</span>
+                    </div>
+                </div>
+            </div>
+
+            <label class="field-label" for="c-body">Kommentar</label>
+            <textarea
+                class="form-input form-textarea"
+                id="c-body"
+                placeholder="Dein Kommentar zum Buch…"
+                maxlength="1000"
+            ></textarea>
+
+            <button class="btn-submit" onclick="submitComment()">
+                Kommentar abschicken
+            </button>
+        </div>
+
+        <div class="divider">◆</div>
+
+        <div class="comments-list" id="comments-list">
+            <div class="no-comments">Noch keine Kommentare. Sei der Erste!</div>
+        </div>
+    </section>
+
+
+    <!-- ── QUELLEN ───────────────────────────── -->
+    <section id="quellen" data-section-id="quellen">
+        <div class="section-head">
+            <div class="section-label">Literaturverzeichnis</div>
+            <div class="section-title" contenteditable="false" data-key="quellen-title">Quellen &amp; Referenzen</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('quellen', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="quellen-list" id="quellen-container"></div>
+        <button class="add-btn" onclick="addQuelle()">+ Quelle hinzufügen</button>
+    </section>
+
+</main>
+
+
+<footer>
+    <strong>LiteraturZeitung – Der Tunnelbauer</strong>
+    <div class="footer-rule"></div>
+    <p>Schulprojekt · Maja Nielsen · Gerstenberg Verlag · © 2025</p>
+    <div class="footer-rule"></div>
+    <p class="footer-copyright">
+        Alle Texte auf dieser Seite wurden von Menschen verfasst und sind deren geistiges Eigentum.<br>
+        Eine Nutzung zu kommerziellen Zwecken ist ohne ausdrückliche Genehmigung der jeweiligen Autor·innen nicht gestattet.
+    </p>
+    <div class="footer-links">
+        <a class="discord-btn" href="https://discord.com/users/ciganismo" target="_blank" rel="noopener">
+            <!-- Full Discord logo with eyes -->
+            <svg width="22" height="22" viewBox="0 0 127.14 96.36" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+            </svg>
+            ciganismo
+        </a>
+        <a class="github-btn" href="https://github.com/Cheremshas/Literaturzeitung_Der_Tunnelbauer" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            GitHub
+        </a>
+    </div>
+</footer>
+
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+
+let isAdmin       = false;
+let myStars       = 4;    // admin's book rating
+let selectedRating = 5;  // rating picked in comment form
+
+let imgTarget = null;    // 'book-cover' | { type:'avatar', id:'...' }
+let imgFile   = null;    // pending File for upload
+let lastEditableEl = null;
+let lastEditableRange = null;
+
+let cpCallback = null;   // called with chosen color
+let epCallback = null;   // called with chosen emoji
+
+let DATA = { kv: {}, zitate: [], themen: [], interviews: [] };
+let navLinks = [];
+let customSections = [];
+let authorQA = [];
+
+const DEFAULT_SECTIONS = [
+    { id: 'zusammenfassung', label: 'Zusammenfassung' },
+    { id: 'rezension', label: 'Rezension' },
+    { id: 'autor-interview', label: 'Interview mit der Autorin' },
+    { id: 'interviews', label: 'Interviews mit Charakteren' },
+    { id: 'zitate', label: 'Zitate / bedeutsame Stellen' },
+    { id: 'themen', label: 'Themen & Motive' },
+    { id: 'standalone-images', label: 'Bilder' },
+    { id: 'kommentare', label: 'Kommentare' },
+    { id: 'quellen', label: 'Quellen' },
+];
+
+
+// ════════════════════════════════════════════
+// BOOTSTRAP
+// ════════════════════════════════════════════
+
+async function init() {
+    await loadData();
+    renderAll();
+    await loadComments();
+    buildEmojiGrid(ALL_EMOJIS);
+    buildSwatches();
+}
+
+async function loadData() {
+    const res = await fetch('/api/data');
+    DATA = await res.json();
+    standaloneImages = DATA.standalone_images || [];
+    if (!DATA.quellen) DATA.quellen = [];
+}
+
+function renderAll() {
+    // Fill all key-value fields
+    Object.entries(DATA.kv).forEach(([key, val]) => {
+        const el = document.querySelector('[data-key="' + key + '"]');
+        if (el) el.innerHTML = val;
+    });
+
+    // Book rating
+    myStars = parseInt(DATA.kv['stars'] || '4', 10);
+    renderBookStars();
+
+    // Book cover
+    const coverUrl = DATA.kv['book-cover-img'];
+    if (coverUrl) {
+        document.getElementById('book-cover-img').src = coverUrl;
+    }
+
+    renderZitate();
+    renderThemen();
+    renderInterviews();
+    renderAuthorQA();
+    renderCustomSections();
+    renderStandaloneImages();
+    renderQuellen();
+    renderSectionVisibility();
+    // Auto-collapse long texts after DOM is updated
+    setTimeout(applyTextCollapse, 50);
+}
+
+init();
+
+
+// ════════════════════════════════════════════
+// SECTION VISIBILITY
+// ════════════════════════════════════════════
+
+function getCustomSections() {
+    try {
+        return JSON.parse(DATA.kv['custom-sections'] || '[]');
+    } catch {
+        return [];
+    }
+}
+
+function getAllSections() {
+    customSections = getCustomSections();
+    return [
+        ...DEFAULT_SECTIONS,
+        ...customSections.map(s => ({
+            id: s.id,
+            label: DATA.kv[`${s.id}-label`] || s.label || 'Neuer Abschnitt',
+            custom: true,
+        })),
+    ];
+}
+
+function getSectionSettings() {
+    const defaults = Object.fromEntries(getAllSections().map(s => [s.id, true]));
+
+    try {
+        return { ...defaults, ...JSON.parse(DATA.kv['sections-enabled'] || '{}') };
+    } catch {
+        return defaults;
+    }
+}
+
+function saveSectionSettings(settings) {
+    DATA.kv['sections-enabled'] = JSON.stringify(settings);
+    return saveKV({ 'sections-enabled': DATA.kv['sections-enabled'] });
+}
+
+function renderSectionVisibility() {
+    const settings = getSectionSettings();
+
+    getAllSections().forEach(section => {
+        const el = document.querySelector('[data-section-id="' + section.id + '"]');
+        if (el) el.hidden = !settings[section.id];
+    });
+
+    renderNav(settings);
+    renderSectionManager(settings);
+}
+
+function renderNav(settings = getSectionSettings()) {
+    const list = document.getElementById('nav-list');
+    const visibleSections = getAllSections().filter(section => settings[section.id]);
+
+    list.innerHTML = visibleSections.map((section, index) => `
+        <li>
+            <a href="#${section.id}" class="${index === 0 ? 'active' : ''}">
+                ${section.label}
+            </a>
+        </li>
+    `).join('');
+
+    navLinks = document.querySelectorAll('nav a');
+}
+
+function renderSectionManager(settings = getSectionSettings()) {
+    const list = document.getElementById('section-manage-list');
+    if (!list) return;
+
+    list.innerHTML = getAllSections().map(section => `
+        <div class="section-manage-item">
+            <span>${section.label}</span>
+            <span class="section-manage-controls">
+                ${section.custom
+                    ? `<button type="button" class="action-btn del" onclick="deleteCustomSection('${section.id}')">Löschen</button>`
+                    : `<button type="button" class="action-btn del" onclick="toggleSection('${section.id}', false)">Ausblenden</button>`
+                }
+                <input
+                    type="checkbox"
+                    ${settings[section.id] ? 'checked' : ''}
+                    onchange="toggleSection('${section.id}', this.checked)"
+                    aria-label="${section.label}"
+                >
+            </span>
+        </div>
+    `).join('');
+}
+
+function openSectionsModal() {
+    renderSectionManager();
+    document.getElementById('sections-modal').classList.add('visible');
+}
+
+function closeSectionsModal() {
+    document.getElementById('sections-modal').classList.remove('visible');
+}
+
+async function toggleSection(sectionId, enabled) {
+    const settings = getSectionSettings();
+
+    settings[sectionId] = enabled;
+
+    if (!Object.values(settings).some(Boolean)) {
+        settings[sectionId] = true;
+    }
+
+    await saveSectionSettings(settings);
+    renderSectionVisibility();
+}
+
+function renderCustomSections() {
+    document.querySelectorAll('.custom-section').forEach(section => section.remove());
+
+    customSections = getCustomSections();
+    const main = document.querySelector('main');
+    const comments = document.getElementById('kommentare');
+
+    customSections.forEach(section => {
+        const label = DATA.kv[`${section.id}-label`] || section.label || 'Neuer Abschnitt';
+        const title = DATA.kv[`${section.id}-title`] || section.title || 'Neuer Abschnitt';
+        const body = DATA.kv[`${section.id}-body`] || section.body || '<p>Text hier eingeben…</p>';
+
+        const el = document.createElement('section');
+        el.id = section.id;
+        el.className = 'custom-section';
+        el.dataset.sectionId = section.id;
+        el.innerHTML = `
+            <div class="section-head">
+                <div class="section-label" contenteditable="false" data-key="${section.id}-label">${label}</div>
+                <div class="section-title" contenteditable="false" data-key="${section.id}-title">${title}</div>
+            </div>
+            <div class="section-admin-actions">
+                <button class="action-btn del" onclick="toggleSection('${section.id}', false)">Abschnitt ausblenden</button>
+                <button class="action-btn del" onclick="deleteCustomSection('${section.id}')">Abschnitt löschen</button>
+            </div>
+            <div class="edit-hint">✏ Abschnitt bearbeiten</div>
+            <div class="prose" contenteditable="false" data-key="${section.id}-body">${body}</div>
+        `;
+
+        if (comments) {
+            main.insertBefore(el, comments);
+        } else {
+            main.appendChild(el);
+        }
+    });
+
+    if (isAdmin) {
+        document.querySelectorAll('.custom-section [contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
+    }
+}
+
+async function saveCustomSections() {
+    DATA.kv['custom-sections'] = JSON.stringify(customSections);
+    await saveKV({ 'custom-sections': DATA.kv['custom-sections'] });
+}
+
+async function addCustomSection() {
+    const id = 'custom-' + Date.now().toString(36);
+    const section = {
+        id,
+        label: 'Neuer Abschnitt',
+        title: 'Neuer Abschnitt',
+        body: '<p>Text hier eingeben…</p>',
+    };
+
+    customSections = [...getCustomSections(), section];
+    DATA.kv['custom-sections'] = JSON.stringify(customSections);
+    DATA.kv[`${id}-label`] = section.label;
+    DATA.kv[`${id}-title`] = section.title;
+    DATA.kv[`${id}-body`] = section.body;
+
+    const settings = getSectionSettings();
+    settings[id] = true;
+
+    await saveKV({
+        'custom-sections': DATA.kv['custom-sections'],
+        'sections-enabled': JSON.stringify(settings),
+        [`${id}-label`]: section.label,
+        [`${id}-title`]: section.title,
+        [`${id}-body`]: section.body,
+    });
+
+    renderCustomSections();
+    renderSectionVisibility();
+    setTimeout(() => document.querySelector(`[data-key="${id}-title"]`)?.focus(), 50);
+}
+
+async function syncCustomSectionsFromDOM() {
+    let changed = false;
+
+    customSections = getCustomSections().map(section => {
+        const label = document.querySelector(`[data-key="${section.id}-label"]`)?.innerHTML;
+        const title = document.querySelector(`[data-key="${section.id}-title"]`)?.innerHTML;
+        const body = document.querySelector(`[data-key="${section.id}-body"]`)?.innerHTML;
+        const next = {
+            ...section,
+            label: label || section.label,
+            title: title || section.title,
+            body: body || section.body,
+        };
+
+        changed = changed
+            || next.label !== section.label
+            || next.title !== section.title
+            || next.body !== section.body;
+
+        return next;
+    });
+
+    if (changed) {
+        DATA.kv['custom-sections'] = JSON.stringify(customSections);
+        await fetch('/api/kv', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'custom-sections': DATA.kv['custom-sections'] }),
+        });
+        renderSectionVisibility();
+    }
+}
+
+async function deleteCustomSection(sectionId) {
+    if (!confirm('Diesen Abschnitt wirklich löschen?')) return;
+
+    customSections = getCustomSections().filter(section => section.id !== sectionId);
+    const settings = getSectionSettings();
+    delete settings[sectionId];
+
+    const removedKeys = [
+        `${sectionId}-label`,
+        `${sectionId}-title`,
+        `${sectionId}-body`,
+    ];
+
+    delete DATA.kv[`${sectionId}-label`];
+    delete DATA.kv[`${sectionId}-title`];
+    delete DATA.kv[`${sectionId}-body`];
+
+    await saveKV({
+        'custom-sections': JSON.stringify(customSections),
+        'sections-enabled': JSON.stringify(settings),
+    });
+
+    await fetch('/api/kv/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keys: removedKeys }),
+    });
+
+    renderCustomSections();
+    renderSectionVisibility();
+}
+
+
+// ════════════════════════════════════════════
+// AUTHOR INTERVIEW
+// ════════════════════════════════════════════
+
+function getAuthorQA() {
+    try {
+        if (Object.prototype.hasOwnProperty.call(DATA.kv, 'author-qa')) {
+            const saved = JSON.parse(DATA.kv['author-qa'] || '[]');
+            if (Array.isArray(saved)) return saved;
+        }
+    } catch {
+        // Fall back to the original two questions below.
+    }
+
+    return [
+        { id: 'author-qa-1', qKey: 'author-q1', aKey: 'author-a1' },
+        { id: 'author-qa-2', qKey: 'author-q2', aKey: 'author-a2' },
+    ];
+}
+
+function renderAuthorQA() {
+    authorQA = getAuthorQA();
+
+    const list = document.getElementById('author-qa-list');
+    if (!list) return;
+
+    list.innerHTML = authorQA.map(item => `
+        <li class="qa-item author-qa-item" id="${item.id}">
+            <div class="qa-q" contenteditable="false" data-key="${item.qKey}">
+                ${DATA.kv[item.qKey] || 'Neue Frage?'}
+            </div>
+            <div class="qa-a" contenteditable="false" data-key="${item.aKey}">
+                ${DATA.kv[item.aKey] || 'Antwort hier eingeben…'}
+            </div>
+            <div class="action-row" style="margin-top:0.4rem;">
+                <button class="action-btn del" onclick="deleteAuthorQA('${item.id}')">✕ Löschen</button>
+            </div>
+        </li>
+    `).join('');
+
+    if (isAdmin) {
+        list.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
+    }
+}
+
+async function saveAuthorQAList() {
+    DATA.kv['author-qa'] = JSON.stringify(authorQA);
+    await saveKV({ 'author-qa': DATA.kv['author-qa'] });
+}
+
+async function addAuthorQA() {
+    const id = 'author-qa-' + Date.now().toString(36);
+    const item = {
+        id,
+        qKey: id + '-q',
+        aKey: id + '-a',
+    };
+
+    authorQA = [...getAuthorQA(), item];
+    DATA.kv[item.qKey] = 'Neue Frage?';
+    DATA.kv[item.aKey] = 'Antwort hier eingeben…';
+
+    await saveKV({
+        'author-qa': JSON.stringify(authorQA),
+        [item.qKey]: DATA.kv[item.qKey],
+        [item.aKey]: DATA.kv[item.aKey],
+    });
+
+    renderAuthorQA();
+    setTimeout(() => document.querySelector(`[data-key="${item.qKey}"]`)?.focus(), 50);
+}
+
+async function deleteAuthorQA(id) {
+    if (!confirm('Diese Frage wirklich löschen?')) return;
+
+    authorQA = getAuthorQA().filter(item => item.id !== id);
+    await saveAuthorQAList();
+    renderAuthorQA();
+}
+
+
+// ════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════
+
+function openLogin() {
+    document.getElementById('login-overlay').classList.add('visible');
+    setTimeout(() => document.getElementById('pw-input').focus(), 80);
+}
+
+function closeLogin() {
+    document.getElementById('login-overlay').classList.remove('visible');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('login-error').style.display = 'none';
+}
+
+async function doLogin() {
+    const pw = document.getElementById('pw-input').value;
+
+    const res = await fetch('/api/auth', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ password: pw }),
+    });
+
+    if (res.ok) {
+        isAdmin = true;
+        closeLogin();
+        activateAdmin();
+    } else {
+        document.getElementById('login-error').style.display = 'block';
+        document.getElementById('pw-input').value = '';
+        document.getElementById('pw-input').focus();
+    }
+}
+
+function logout() {
+    isAdmin = false;
+    deactivateAdmin();
+}
+
+function activateAdmin() {
+    document.body.classList.add('admin-mode');
+    document.getElementById('admin-bar').classList.add('visible');
+
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+        el.contentEditable = 'true';
+    });
+}
+
+function deactivateAdmin() {
+    document.body.classList.remove('admin-mode');
+    document.getElementById('admin-bar').classList.remove('visible');
+
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+        el.contentEditable = 'false';
+    });
+
+    closeAllPickers();
+    closeSectionsModal();
+}
+
+/** Only runs fn if admin is logged in */
+function adminAction(fn) {
+    if (isAdmin) fn();
+}
+
+function findEditableByKey(key) {
+    return [...document.querySelectorAll('[data-key]')]
+        .find(el => el.dataset.key === key) || null;
+}
+
+function getEditableRoot(node) {
+    return node?.nodeType === Node.ELEMENT_NODE
+        ? node.closest('[data-key][contenteditable="true"]')
+        : node?.parentElement?.closest('[data-key][contenteditable="true"]');
+}
+
+function rememberEditableSelection() {
+    if (!isAdmin) return;
+
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    const range = sel.getRangeAt(0);
+    const editable = getEditableRoot(range.commonAncestorContainer);
+    if (!editable) return;
+
+    lastEditableEl = editable;
+    lastEditableRange = range.cloneRange();
+}
+
+document.addEventListener('focusin', (e) => {
+    const editable = e.target.closest?.('[data-key][contenteditable="true"]');
+    if (editable) {
+        lastEditableEl = editable;
+    }
+});
+
+document.addEventListener('keyup', rememberEditableSelection);
+document.addEventListener('mouseup', rememberEditableSelection);
+document.addEventListener('selectionchange', rememberEditableSelection);
+
+
+// ════════════════════════════════════════════
+// SAVING
+// ════════════════════════════════════════════
+
+async function saveKV(obj) {
+    await fetch('/api/kv', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(obj),
+    });
+    Object.assign(DATA.kv, obj);
+    showToast();
+}
+
+async function saveEditableElement(el) {
+    if (!el?.dataset?.key) return;
+
+    const key = el.dataset.key;
+
+    if (key.startsWith('ztag-') || key.startsWith('ztext-') || key.startsWith('zsrc-')) {
+        saveZitatFromDOM(key.replace(/^(ztag|ztext|zsrc)-/, ''));
+        showToast();
+        return;
+    }
+
+    if (key.startsWith('ttitle-') || key.startsWith('tbody-')) {
+        saveThemaFromDOM(key.replace(/^(ttitle|tbody)-/, ''));
+        showToast();
+        return;
+    }
+
+    if (key.startsWith('iname-') || key.startsWith('irole-')) {
+        saveInterviewFromDOM(key.replace(/^(iname|irole)-/, ''));
+        showToast();
+        return;
+    }
+
+    if (key.startsWith('qq-') || key.startsWith('qa-')) {
+        saveQAFromDOM(key.replace(/^(qq|qa)-/, ''));
+        showToast();
+        return;
+    }
+
+    await saveKV({ [key]: el.innerHTML });
+
+    if (el.closest('.custom-section')) {
+        await syncCustomSectionsFromDOM();
+    }
+}
+
+async function saveAll() {
+    const kv = { stars: String(myStars) };
+
+    document.querySelectorAll('[data-key]').forEach(el => {
+        kv[el.dataset.key] = el.innerHTML;
+    });
+
+    await saveKV(kv);
+}
+
+// Auto-save each field when the user leaves it
+document.addEventListener('blur', async (e) => {
+    if (!isAdmin) return;
+    const el = e.target;
+    if (!el.dataset.key) return;
+    await saveEditableElement(el);
+}, true);
+
+function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('visible');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('visible'), 2200);
+}
+
+
+// ════════════════════════════════════════════
+// BOOK RATING STARS (admin only)
+// ════════════════════════════════════════════
+
+function renderBookStars() {
+    document.querySelectorAll('#stars-row .star-glyph').forEach(s => {
+        const active = parseInt(s.dataset.v, 10) <= myStars;
+        s.className = 'star-glyph' + (active ? '' : ' empty');
+    });
+}
+
+document.getElementById('stars-row').addEventListener('click', (e) => {
+    if (!isAdmin) return;
+    const s = e.target.closest('.star-glyph');
+    if (!s) return;
+    myStars = parseInt(s.dataset.v, 10);
+    renderBookStars();
+    saveKV({ stars: String(myStars) });
+});
+
+
+// ════════════════════════════════════════════
+// EMOJI PICKER
+// ════════════════════════════════════════════
+
+const ALL_EMOJIS = [
+    '😀','😎','🤔','🥸','😤','😢','😡','🤩','😇','🧐',
+    '👤','👥','🧑','👨','👩','🧓','👶','🕵️','🧙','🧟',
+    '🧑‍💻','🧑‍🏫','🧑‍🔬','🧑‍🎨','🗺️','🏔️','🌋','🕳️','🌅','🌊',
+    '🌿','🌲','🌸','⚡','💥','🔥','❄️','💫','✨','🌈',
+    '🎭','🎨','🎬','🎤','🎵','🎶','📖','📚','📝','✏️',
+    '🖊️','🔍','🔬','🔭','💡','🏠','🏛️','🏗️','⛏️','🔧',
+    '🔨','⚙️','🛠️','🚇','🚂','🚀','✈️','🤝','💪','🧠',
+    '👁️','💬','❤️','💙','💚','💛','🧡','💜','🖤','🤍',
+    '💯','✅','❌','⚠️','❓','❗','🎯','🏆','🥇','⭐',
+    '🌟','💎','👑','🎁','🎊','🎉','🌍','🌏','🌐','👦',
+    '👧','🧒','🕶️','🌙','☀️','⛅','🌧️','🏕️','🗻','⛏️',
+];
+
+function buildEmojiGrid(list) {
+    const grid = document.getElementById('ep-grid');
+    grid.innerHTML = '';
+
+    list.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ep-btn';
+        btn.textContent = emoji;
+        btn.addEventListener('click', () => pickEmoji(emoji));
+        grid.appendChild(btn);
+    });
+}
+
+function filterEmoji(query) {
+    if (!query.trim()) {
+        buildEmojiGrid(ALL_EMOJIS);
+        return;
+    }
+    // Show emojis that include the typed character(s)
+    buildEmojiGrid(ALL_EMOJIS.filter(e => e.includes(query.trim())));
+}
+
+function positionPicker(picker, triggerEl, width, height) {
+    const rect = triggerEl.getBoundingClientRect();
+    const gap = 6;
+    const margin = 10;
+    const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+    const maxTop = Math.max(margin, window.innerHeight - height - margin);
+
+    let left = Math.min(Math.max(rect.left, margin), maxLeft);
+    let top = rect.bottom + gap;
+
+    if (top > maxTop) {
+        top = rect.top - height - gap;
+    }
+
+    picker.style.left = left + 'px';
+    picker.style.top = Math.min(Math.max(top, margin), maxTop) + 'px';
+}
+
+function openEmojiPicker(triggerEl, callback) {
+    epCallback = callback;
+
+    const picker = document.getElementById('emoji-picker');
+
+    // Close color picker if open
+    document.getElementById('color-picker').classList.remove('visible');
+
+    picker.querySelector('.ep-search').value = '';
+    buildEmojiGrid(ALL_EMOJIS);
+    positionPicker(picker, triggerEl, 300, 270);
+
+    // Show AFTER positioning, and stop this open-click from
+    // immediately re-triggering the outside-click handler
+    picker.classList.add('visible');
+    picker.querySelector('.ep-search').focus();
+}
+
+function pickEmoji(emoji) {
+    if (epCallback) epCallback(emoji);
+    document.getElementById('emoji-picker').classList.remove('visible');
+    epCallback = null;
+}
+
+
+// ════════════════════════════════════════════
+// COLOR PICKER
+// ════════════════════════════════════════════
+
+const SWATCHES = [
+    '#E8A020','#F5C842','#FFFFFF','#A8A8A8','#666666',
+    '#FF6B35','#C0392B','#E91E63','#9B59B6','#3498DB',
+    '#2D4A7A','#2ECC71','#3D9970','#16A085','#1ABC9C',
+    '#27AE60','#F39C12','#D35400','#E67E22','#34495E',
+];
+
+function normalizeColor(value, fallback = '#E8A020') {
+    if (!value) return fallback;
+
+    const raw = String(value).trim();
+    const hex = raw.match(/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i);
+
+    if (hex) {
+        let h = hex[1];
+        if (h.length === 3) {
+            h = h.split('').map(ch => ch + ch).join('');
+        }
+        return '#' + h.slice(0, 6).toUpperCase();
+    }
+
+    const rgb = raw.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (rgb) {
+        return '#' + [rgb[1], rgb[2], rgb[3]]
+            .map(n => Math.max(0, Math.min(255, parseInt(n, 10)))
+                .toString(16)
+                .padStart(2, '0'))
+            .join('')
+            .toUpperCase();
+    }
+
+    return fallback;
+}
+
+function colorWithAlpha(color, alphaHex = '30') {
+    return normalizeColor(color) + alphaHex;
+}
+
+function buildSwatches(currentColor) {
+    const normalized = normalizeColor(currentColor);
+    document.getElementById('cp-swatches').innerHTML =
+        SWATCHES.map(c => `
+            <div
+                class="cp-swatch ${c.toUpperCase() === normalized ? 'selected' : ''}"
+                style="background: ${c}"
+                onclick="pickColor('${c}')"
+                title="${c}"
+            ></div>
+        `).join('');
+}
+
+function openColorPicker(triggerEl, currentColor, callback) {
+    cpCallback = callback;
+
+    const picker = document.getElementById('color-picker');
+    const normalized = normalizeColor(currentColor);
+
+    // Close emoji picker if it is open
+    document.getElementById('emoji-picker').classList.remove('visible');
+
+    buildSwatches(normalized);
+    document.getElementById('cp-custom-input').value       = normalized;
+    document.getElementById('cp-preview').style.background = normalized;
+    positionPicker(picker, triggerEl, 230, 235);
+
+    // Show AFTER positioning
+    picker.classList.add('visible');
+}
+
+function pickColor(color) {
+    const normalized = normalizeColor(color);
+
+    document.getElementById('cp-preview').style.background = normalized;
+    document.getElementById('cp-custom-input').value       = normalized;
+
+    document.querySelectorAll('.cp-swatch').forEach(s => {
+        s.classList.toggle('selected', normalizeColor(s.title) === normalized);
+    });
+
+    if (cpCallback) cpCallback(normalized);
+    cpCallback = null;
+
+    document.getElementById('color-picker').classList.remove('visible');
+}
+
+function onCustomColor(color) {
+    const normalized = normalizeColor(color);
+
+    document.getElementById('cp-preview').style.background = normalized;
+    document.querySelectorAll('.cp-swatch').forEach(s => s.classList.remove('selected'));
+    if (cpCallback) cpCallback(normalized);
+}
+
+function closeAllPickers() {
+    document.getElementById('emoji-picker').classList.remove('visible');
+    document.getElementById('color-picker').classList.remove('visible');
+}
+
+// Close pickers when clicking outside them AND outside their trigger buttons
+document.addEventListener('click', (e) => {
+    const ep = document.getElementById('emoji-picker');
+    const cp = document.getElementById('color-picker');
+
+    // A click that opened the picker will also bubble here immediately.
+    // We ignore it by checking if the target is a trigger button
+    // (action-btn) — those are handled by openXxxPicker directly.
+    const isActionBtn = e.target.closest('.action-btn');
+
+    if (!isActionBtn) {
+        if (ep.classList.contains('visible') && !ep.contains(e.target)) {
+            ep.classList.remove('visible');
+        }
+        if (cp.classList.contains('visible') && !cp.contains(e.target)) {
+            cp.classList.remove('visible');
+        }
+    }
+});
+
+
+// ════════════════════════════════════════════
+// IMAGE UPLOAD
+// ════════════════════════════════════════════
+
+function openImgModal(target) {
+    imgTarget = target;
+    imgFile   = null;
+    document.getElementById('img-file-input').value = '';
+    document.getElementById('img-preview').style.display = 'none';
+    document.getElementById('img-preview').src = '';
+    document.getElementById('img-modal').classList.add('visible');
+}
+
+function closeImgModal() {
+    document.getElementById('img-modal').classList.remove('visible');
+    imgTarget = null;
+    imgFile   = null;
+}
+
+function openInlineImageUpload() {
+    if (!isAdmin) return;
+
+    rememberEditableSelection();
+
+    if (!lastEditableEl?.dataset?.key) {
+        alert('Bitte zuerst in den Text klicken, wo das Bild erscheinen soll.');
+        return;
+    }
+
+    openImgModal({ type: 'inline', key: lastEditableEl.dataset.key });
+}
+
+function previewFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    imgFile = file;
+    const prev = document.getElementById('img-preview');
+    prev.src = URL.createObjectURL(file);
+    prev.style.display = 'block';
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropzone').classList.remove('dragging');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    imgFile = file;
+    const prev = document.getElementById('img-preview');
+    prev.src = URL.createObjectURL(file);
+    prev.style.display = 'block';
+}
+
+function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        if (!file.type.startsWith('image/')) {
+            reject(new Error('Bitte eine Bilddatei auswählen.'));
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const img = new Image();
+
+            img.onload = () => {
+                const maxSize = 900;
+                const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.max(1, Math.round(img.width * scale));
+                canvas.height = Math.max(1, Math.round(img.height * scale));
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const mime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                resolve(canvas.toDataURL(mime, 0.86));
+            };
+
+            img.onerror = () => reject(new Error('Bild konnte nicht gelesen werden.'));
+            img.src = reader.result;
+        };
+
+        reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden.'));
+        reader.readAsDataURL(file);
+    });
+}
+
+async function confirmUpload() {
+    if (!imgFile) {
+        alert('Bitte zuerst eine Datei auswählen.');
+        return;
+    }
+
+    let url = '';
+    try {
+        url = await fileToDataUrl(imgFile);
+    } catch (err) {
+        alert(err.message || 'Bild konnte nicht gespeichert werden.');
+        return;
+    }
+
+    if (imgTarget === 'book-cover') {
+        document.getElementById('book-cover-img').src = url;
+        await saveKV({ 'book-cover-img': url });
+
+    } else if (imgTarget && imgTarget.type === 'avatar') {
+        applyAvatarImage(imgTarget.id, url);
+
+        const iv = DATA.interviews.find(i => i.id === imgTarget.id) || {};
+        await fetch('/api/interview/' + imgTarget.id, {
+            method:  'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ ...iv, avatar_img: url }),
+        });
+        iv.avatar_img = url;
+    } else if (imgTarget && imgTarget.type === 'inline') {
+        const target = findEditableByKey(imgTarget.key);
+        if (!target) {
+            alert('Textstelle wurde nicht gefunden. Bitte erneut in den Text klicken.');
+            return;
+        }
+
+        insertInlineImage(target, url);
+        await saveEditableElement(target);
+    }
+
+    closeImgModal();
+    showToast();
+}
+
+function buildInlineImage(url) {
+    const figure = document.createElement('figure');
+    figure.className = 'inline-image-block';
+    figure.contentEditable = 'false';
+    figure.innerHTML = `
+        <img src="${url}" alt="">
+        <div class="inline-image-actions">
+            <button type="button" class="action-btn" onclick="moveInlineImage(this, -1)">↑ Vor Text</button>
+            <button type="button" class="action-btn" onclick="moveInlineImage(this, 1)">↓ Nach Text</button>
+            <button type="button" class="action-btn del" onclick="deleteInlineImage(this)">✕ Löschen</button>
+        </div>
+    `;
+    return figure;
+}
+
+function insertInlineImage(target, url) {
+    const figure = buildInlineImage(url);
+
+    if (lastEditableRange && target.contains(lastEditableRange.commonAncestorContainer)) {
+        const range = lastEditableRange.cloneRange();
+        range.deleteContents();
+        range.insertNode(figure);
+        range.setStartAfter(figure);
+        range.collapse(true);
+
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else {
+        target.appendChild(figure);
+    }
+
+    lastEditableEl = target;
+}
+
+function findEditableForInlineButton(btn) {
+    return btn.closest('[data-key]');
+}
+
+async function moveInlineImage(btn, direction) {
+    const figure = btn.closest('.inline-image-block');
+    const editable = findEditableForInlineButton(btn);
+    if (!figure || !editable) return;
+
+    if (direction < 0) {
+        const previous = figure.previousSibling;
+        if (previous) editable.insertBefore(figure, previous);
+    } else {
+        const next = figure.nextSibling;
+        if (next) editable.insertBefore(next, figure);
+    }
+
+    await saveEditableElement(editable);
+}
+
+async function deleteInlineImage(btn) {
+    const figure = btn.closest('.inline-image-block');
+    const editable = findEditableForInlineButton(btn);
+    if (!figure || !editable) return;
+
+    figure.remove();
+    await saveEditableElement(editable);
+}
+
+function applyAvatarImage(iid, url) {
+    const av = document.querySelector('#iv-' + iid + ' .avatar');
+    if (!av) return;
+
+    let img = av.querySelector('img');
+    if (!img) {
+        img = document.createElement('img');
+        av.insertBefore(img, av.firstChild);
+    }
+    img.src = url;
+
+    // Hide text initials
+    const initSpan = av.querySelector('.av-initials');
+    if (initSpan) initSpan.style.display = 'none';
+}
+
+
+// ════════════════════════════════════════════
+// ZITATE
+// ════════════════════════════════════════════
+
+function renderZitate() {
+    const container = document.getElementById('zitate-container');
+    container.innerHTML = '';
+    DATA.zitate.forEach(z => container.appendChild(buildZitatEl(z)));
+}
+
+function buildZitatEl(z) {
+    const color    = z.border_color || '#E8A020';
+    const tagColor = z.tag_color    || color;
+
+    const div = document.createElement('div');
+    div.className = 'zitat-card';
+    div.id        = 'zc-' + z.id;
+    div.style.borderLeftColor = color;
+
+    div.innerHTML = `
+        <div
+            class="zitat-tag"
+            contenteditable="false"
+            data-key="ztag-${z.id}"
+            style="color:${tagColor}; background:${tagColor}20;"
+        >${z.tag || 'Thema'}</div>
+
+        <div
+            class="zitat-text"
+            contenteditable="false"
+            data-key="ztext-${z.id}"
+        >${z.text || ''}</div>
+
+        <div
+            class="zitat-source"
+            contenteditable="false"
+            data-key="zsrc-${z.id}"
+        >${z.source || ''}</div>
+
+        <div class="action-row">
+            <button class="action-btn" data-picker="color">🎨 Farbe</button>
+            <button class="action-btn del" data-action="delete">✕ Löschen</button>
+        </div>
+    `;
+
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
+    }
+
+    // Auto-save when user leaves any editable field
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveZitatFromDOM(z.id));
+    });
+
+    // Wire buttons via addEventListener — avoids stale color in inline onclick
+    div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cur = div.style.borderLeftColor || color;
+        openColorPicker(e.currentTarget, cur, (c) => setZitatColor(z.id, c));
+    });
+    div.querySelector('[data-action="delete"]').addEventListener('click', () => {
+        deleteZitat(z.id);
+    });
+
+    return div;
+}
+
+function saveZitatFromDOM(zid) {
+    const tag    = document.querySelector('[data-key="ztag-'  + zid + '"]');
+    const text   = document.querySelector('[data-key="ztext-' + zid + '"]');
+    const source = document.querySelector('[data-key="zsrc-'  + zid + '"]');
+    const cur    = DATA.zitate.find(z => z.id === zid) || {};
+
+    fetch('/api/zitat/' + zid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            ...cur,
+            tag:    tag    ? tag.innerHTML    : cur.tag,
+            text:   text   ? text.innerHTML   : cur.text,
+            source: source ? source.innerHTML : cur.source,
+        }),
+    });
+}
+
+function setZitatColor(zid, color) {
+    const card = document.getElementById('zc-' + zid);
+    if (!card) return;
+
+    card.style.borderLeftColor = color;
+
+    const tagEl = card.querySelector('.zitat-tag');
+    if (tagEl) {
+        tagEl.style.color      = color;
+        tagEl.style.background = color + '20';
+    }
+
+    const cur = DATA.zitate.find(z => z.id === zid) || {};
+    cur.border_color = color;
+    cur.tag_color    = color;
+
+    fetch('/api/zitat/' + zid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...cur }),
+    });
+
+    showToast();
+}
+
+async function addZitat() {
+    const palette = ['#E8A020','#C0C0C0','#A8A8A8','#FFFFFF','#F5C842'];
+    const color   = palette[DATA.zitate.length % palette.length];
+
+    const res = await fetch('/api/zitat', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            tag:          'Thema',
+            text:         '„Neues Zitat eingeben…"',
+            source:       '— Kapitel X, S. XX',
+            border_color: color,
+            tag_color:    color,
+        }),
+    });
+
+    const d   = await res.json();
+    const newZ = {
+        id: d.id, tag: 'Thema',
+        text: '„Neues Zitat eingeben…"', source: '— Kapitel X, S. XX',
+        border_color: color, tag_color: color,
+    };
+
+    DATA.zitate.push(newZ);
+
+    const el = buildZitatEl(newZ);
+    document.getElementById('zitate-container').appendChild(el);
+
+    if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+    }
+}
+
+async function deleteZitat(zid) {
+    if (!confirm('Dieses Zitat wirklich löschen?')) return;
+    await fetch('/api/zitat/' + zid, { method: 'DELETE' });
+    DATA.zitate = DATA.zitate.filter(z => z.id !== zid);
+    document.getElementById('zc-' + zid)?.remove();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// THEMEN
+// ════════════════════════════════════════════
+
+function renderThemen() {
+    const container = document.getElementById('themen-container');
+    container.innerHTML = '';
+    DATA.themen.forEach(t => container.appendChild(buildThemaEl(t)));
+}
+
+function buildThemaEl(t) {
+    const accent = normalizeColor(t.icon_bg, '#E8A020');
+    const iconBg = colorWithAlpha(accent, '30');
+
+    const div = document.createElement('div');
+    div.className = 'thema-card';
+    div.id        = 'tc-' + t.id;
+    applyThemaCardColor(div, accent);
+
+    div.innerHTML = `
+        <div
+            class="thema-icon-wrap"
+            id="ticon-wrap-${t.id}"
+            style="background:${iconBg}"
+        ><span id="ticon-${t.id}">${t.icon || '💡'}</span></div>
+
+        <h3 contenteditable="false" data-key="ttitle-${t.id}">${t.title || ''}</h3>
+        <p  contenteditable="false" data-key="tbody-${t.id}">${t.body  || ''}</p>
+
+        <div class="action-row">
+            <button class="action-btn" data-picker="emoji">😀 Emoji</button>
+            <button class="action-btn" data-picker="color">🎨 Hintergrund</button>
+            <button class="action-btn del" data-action="delete">✕ Löschen</button>
+        </div>
+    `;
+
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
+    }
+
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveThemaFromDOM(t.id));
+    });
+
+    // Wire buttons — closures capture t.id reliably
+    div.querySelector('[data-picker="emoji"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEmojiPicker(e.currentTarget, (emoji) => setThemaIcon(t.id, emoji));
+    });
+    div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cur = div.dataset.accentColor || accent;
+        openColorPicker(e.currentTarget, cur, (c) => setThemaBg(t.id, c));
+    });
+    div.querySelector('[data-action="delete"]').addEventListener('click', () => {
+        deleteThema(t.id);
+    });
+
+    return div;
+}
+
+function applyThemaCardColor(card, color) {
+    const accent = normalizeColor(color);
+
+    card.dataset.accentColor = accent;
+    card.style.setProperty('--card-accent', accent);
+    card.style.borderColor = colorWithAlpha(accent, '66');
+    card.style.borderTopColor = accent;
+    card.style.background =
+        `linear-gradient(135deg, ${colorWithAlpha(accent, '18')}, var(--dark2) 42%)`;
+}
+
+function saveThemaFromDOM(tid) {
+    const titleEl = document.querySelector('[data-key="ttitle-' + tid + '"]');
+    const bodyEl  = document.querySelector('[data-key="tbody-'  + tid + '"]');
+    const cur     = DATA.themen.find(t => t.id === tid) || {};
+
+    fetch('/api/thema/' + tid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            ...cur,
+            title: titleEl ? titleEl.innerHTML : cur.title,
+            body:  bodyEl  ? bodyEl.innerHTML  : cur.body,
+        }),
+    });
+}
+
+function setThemaIcon(tid, emoji) {
+    const iconEl = document.getElementById('ticon-' + tid);
+    if (iconEl) iconEl.textContent = emoji;
+
+    const cur = DATA.themen.find(t => t.id === tid) || {};
+    cur.icon  = emoji;
+
+    fetch('/api/thema/' + tid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...cur }),
+    });
+
+    showToast();
+}
+
+function setThemaBg(tid, color) {
+    const accent = normalizeColor(color);
+    const card = document.getElementById('tc-' + tid);
+    if (card) applyThemaCardColor(card, accent);
+
+    const wrap = document.getElementById('ticon-wrap-' + tid);
+    if (wrap) wrap.style.background = colorWithAlpha(accent, '30');
+
+    const cur   = DATA.themen.find(t => t.id === tid) || {};
+    cur.icon_bg = colorWithAlpha(accent, '30');
+
+    fetch('/api/thema/' + tid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...cur }),
+    });
+
+    showToast();
+}
+
+async function addThema() {
+    const icons   = ['💡','🔍','⚡','🌊','🏔️','🌿','🎭','🧠','👦','🌙'];
+    const palette = ['#E8A020','#C0C0C0','#888888','#FFFFFF'];
+    const icon    = icons  [DATA.themen.length % icons.length];
+    const color   = palette[DATA.themen.length % palette.length];
+
+    const res = await fetch('/api/thema', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            icon:    icon,
+            icon_bg: color + '20',
+            title:   'Neues Thema',
+            body:    'Beschreibung hier eingeben…',
+        }),
+    });
+
+    const d   = await res.json();
+    const newT = {
+        id: d.id, icon, icon_bg: color + '20',
+        title: 'Neues Thema', body: 'Beschreibung hier eingeben…',
+    };
+
+    DATA.themen.push(newT);
+
+    const el = buildThemaEl(newT);
+    document.getElementById('themen-container').appendChild(el);
+
+    if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+    }
+}
+
+async function deleteThema(tid) {
+    if (!confirm('Dieses Thema wirklich löschen?')) return;
+    await fetch('/api/thema/' + tid, { method: 'DELETE' });
+    DATA.themen = DATA.themen.filter(t => t.id !== tid);
+    document.getElementById('tc-' + tid)?.remove();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// INTERVIEWS
+// ════════════════════════════════════════════
+
+function renderInterviews() {
+    const container = document.getElementById('interviews-container');
+    container.innerHTML = '';
+    DATA.interviews.forEach(iv => container.appendChild(buildInterviewEl(iv)));
+}
+
+function buildInterviewEl(iv) {
+    const accentColor = iv.accent_color || '#E8A020';
+    const avatarColor = iv.avatar_color || accentColor;
+
+    const avatarContent = iv.avatar_img
+        ? `<img src="${iv.avatar_img}" alt="${iv.initials || '??'}">`
+        : `<span class="av-initials">${iv.initials || '??'}</span>`;
+
+    const div = document.createElement('div');
+    div.className = 'interview-card';
+    div.id        = 'iv-' + iv.id;
+
+    div.innerHTML = `
+        <div style="background:${accentColor}"></div>
+
+        <div class="interview-body">
+
+            <div class="action-row" style="margin-top:0; margin-bottom:1rem;">
+                <button class="action-btn" data-picker="color">🎨 Akzentfarbe</button>
+                <button class="action-btn" data-picker="img">📷 Profilbild</button>
+                <button class="action-btn del" data-action="delete">✕ Löschen</button>
+            </div>
+
+            <div class="interviewee iv-header-click" onclick="toggleInterview('${iv.id}', this.closest('.interview-body').querySelector('.iv-expand-btn'))" style="cursor:pointer;" title="Klicken zum Öffnen">
+                <div class="avatar-wrap">
+                    <div
+                        class="avatar"
+                        id="av-${iv.id}"
+                        style="background:${avatarColor}"
+                    >${avatarContent}</div>
+                    <div
+                        class="avatar-edit-overlay"
+                        onclick="adminAction(() => openImgModal({ type:'avatar', id:'${iv.id}' }))"
+                    >📷</div>
+                </div>
+                <div class="interviewee-info">
+                    <h3 contenteditable="false" data-key="iname-${iv.id}">${iv.name || ''}</h3>
+                    <p  contenteditable="false" data-key="irole-${iv.id}">${iv.role || ''}</p>
+                </div>
+            </div>
+
+            <div class="iv-toggle-row">
+                <button class="iv-toggle-btn iv-expand-btn" onclick="toggleInterview('${iv.id}', this)">▶ Öffnen</button>
+            </div>
+
+            <div class="iv-collapsible collapsed" id="ivc-${iv.id}">
+                <ul class="qa-list" id="qal-${iv.id}">
+                    ${(iv.qa || []).map(q => buildQAHtml(q)).join('')}
+                </ul>
+
+                <button
+                    class="add-btn"
+                    style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
+                    onclick="addQA('${iv.id}')"
+                >+ Frage &amp; Antwort</button>
+            </div>
+
+        </div>
+    `;
+
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = 'true';
+        });
+    }
+
+    // Auto-save name and role
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveInterviewFromDOM(iv.id));
+    });
+
+    // Wire up Q&A auto-save
+    (iv.qa || []).forEach(q => setTimeout(() => attachQABlur(q.id), 0));
+
+    // Wire action buttons — closures capture iv.id reliably
+    div.querySelector('[data-picker="color"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cur = div.querySelector('.interview-body').previousElementSibling.style.background || accentColor;
+        openColorPicker(e.currentTarget, cur, (c) => setInterviewColor(iv.id, c));
+    });
+    div.querySelector('[data-picker="img"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        adminAction(() => openImgModal({ type: 'avatar', id: iv.id }));
+    });
+    div.querySelector('[data-action="delete"]').addEventListener('click', () => {
+        deleteInterview(iv.id);
+    });
+
+    return div;
+}
+
+function buildQAHtml(q) {
+    return `
+        <li class="qa-item" id="qi-${q.id}">
+            <div class="qa-q" contenteditable="false" data-key="qq-${q.id}">
+                ${q.question || ''}
+            </div>
+            <div class="qa-a" contenteditable="false" data-key="qa-${q.id}">
+                ${q.answer || ''}
+            </div>
+            <div class="action-row" style="margin-top:0.4rem;">
+                <button class="action-btn del" onclick="deleteQA('${q.id}')">✕ Löschen</button>
+            </div>
+        </li>
+    `;
+}
+
+function attachQABlur(qid) {
+    const qEl = document.querySelector('[data-key="qq-' + qid + '"]');
+    const aEl = document.querySelector('[data-key="qa-' + qid + '"]');
+    if (qEl) qEl.addEventListener('blur', () => saveQAFromDOM(qid));
+    if (aEl) aEl.addEventListener('blur', () => saveQAFromDOM(qid));
+}
+
+function saveInterviewFromDOM(iid) {
+    const nameEl = document.querySelector('[data-key="iname-' + iid + '"]');
+    const roleEl = document.querySelector('[data-key="irole-' + iid + '"]');
+    const iv     = DATA.interviews.find(i => i.id === iid) || {};
+
+    fetch('/api/interview/' + iid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            ...iv,
+            name: nameEl ? nameEl.innerHTML : iv.name,
+            role: roleEl ? roleEl.innerHTML : iv.role,
+        }),
+    });
+}
+
+function saveQAFromDOM(qid) {
+    const qEl = document.querySelector('[data-key="qq-' + qid + '"]');
+    const aEl = document.querySelector('[data-key="qa-' + qid + '"]');
+
+    fetch('/api/qa/' + qid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            question: qEl ? qEl.innerHTML : '',
+            answer:   aEl ? aEl.innerHTML : '',
+        }),
+    });
+}
+
+function setInterviewColor(iid, color) {
+    const card = document.getElementById('iv-' + iid);
+    if (!card) return;
+
+    // The first div inside the card is the accent stripe
+    card.firstElementChild.style.background = color;
+
+    const av = document.getElementById('av-' + iid);
+    if (av) av.style.background = color;
+
+    const iv = DATA.interviews.find(i => i.id === iid) || {};
+    iv.accent_color = color;
+    iv.avatar_color = color;
+
+    fetch('/api/interview/' + iid, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...iv }),
+    });
+
+    showToast();
+}
+
+async function addInterview() {
+    const palette = ['#E8A020','#A8A8A8','#888888','#FFFFFF'];
+    const color   = palette[DATA.interviews.length % palette.length];
+
+    const res = await fetch('/api/interview', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            name:         'Name der Figur',
+            role:         'Rolle im Buch',
+            initials:     '??',
+            avatar_color: color,
+            accent_color: color,
+        }),
+    });
+
+    const d   = await res.json();
+    const newIV = {
+        id:           d.id,
+        name:         'Name der Figur',
+        role:         'Rolle im Buch',
+        initials:     '??',
+        avatar_color: color,
+        accent_color: color,
+        avatar_img:   '',
+        qa:           [],
+    };
+
+    DATA.interviews.push(newIV);
+
+    const el = buildInterviewEl(newIV);
+    document.getElementById('interviews-container').appendChild(el);
+
+    if (isAdmin) {
+        el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+    }
+}
+
+async function deleteInterview(iid) {
+    if (!confirm('Dieses Interview wirklich löschen?')) return;
+    await fetch('/api/interview/' + iid, { method: 'DELETE' });
+    DATA.interviews = DATA.interviews.filter(i => i.id !== iid);
+    document.getElementById('iv-' + iid)?.remove();
+    showToast();
+}
+
+async function addQA(iid) {
+    const res = await fetch('/api/qa', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            interview_id: iid,
+            question:     'Neue Frage?',
+            answer:       '„Antwort hier eingeben…"',
+        }),
+    });
+
+    const d    = await res.json();
+    const newQ  = { id: d.id, question: 'Neue Frage?', answer: '„Antwort hier eingeben…"' };
+
+    const iv = DATA.interviews.find(i => i.id === iid);
+    if (iv) iv.qa.push(newQ);
+
+    const list = document.getElementById('qal-' + iid);
+    if (list) {
+        list.insertAdjacentHTML('beforeend', buildQAHtml(newQ));
+
+        const li = document.getElementById('qi-' + newQ.id);
+        if (isAdmin && li) {
+            li.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+        }
+
+        attachQABlur(newQ.id);
+    }
+}
+
+async function deleteQA(qid) {
+    await fetch('/api/qa/' + qid, { method: 'DELETE' });
+    document.getElementById('qi-' + qid)?.remove();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// COMMENTS
+// ════════════════════════════════════════════
+
+async function loadComments() {
+    const res  = await fetch('/api/comments');
+    const data = await res.json();
+
+    renderAvgRating(data.avg_rating, data.comment_count);
+    renderCommentsList(data.comments);
+}
+
+function renderAvgRating(avg, count) {
+    document.getElementById('avg-number').textContent =
+        avg ? avg.toFixed(1) : '–';
+
+    document.getElementById('avg-count').textContent =
+        count + (count === 1 ? ' Bewertung' : ' Bewertungen');
+
+    const starsEl = document.getElementById('avg-stars');
+    starsEl.innerHTML = '';
+
+    for (let i = 1; i <= 5; i++) {
+        const span = document.createElement('span');
+        span.className   = 'avg-star' + (i <= Math.round(avg) ? '' : ' empty');
+        span.textContent = '★';
+        starsEl.appendChild(span);
+    }
+}
+
+function renderCommentsList(comments) {
+    const list = document.getElementById('comments-list');
+
+    if (!comments || comments.length === 0) {
+        list.innerHTML = '<div class="no-comments">Noch keine Kommentare. Sei der Erste!</div>';
+        return;
+    }
+
+    list.innerHTML = comments.map(c => {
+        const starsHtml = [1,2,3,4,5]
+            .map(i => `<span class="c-star${i <= c.rating ? '' : ' empty'}">★</span>`)
+            .join('');
+
+        // Top-rated comments (5 stars) get a gold accent
+        const extra = c.rating === 5 ? ' top-rated' : '';
+
+        return `
+            <div class="comment-card${extra}" id="cc-${c.id}">
+                <div class="comment-top">
+                    <span class="comment-author">${escapeHtml(c.author || 'Anonym')}</span>
+                    <div class="comment-stars">${starsHtml}</div>
+                </div>
+                <div class="comment-date">${formatDate(c.created_at)}</div>
+                <div class="comment-body">${escapeHtml(c.body)}</div>
+                <button class="comment-del" onclick="deleteComment('${c.id}')">
+                    ✕ Löschen (Admin)
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+// ── Comment rating stars (interactive) ──
+
+document.querySelectorAll('.rating-star').forEach(star => {
+    star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.v, 10);
+        highlightRatingStars(selectedRating);
+    });
+
+    star.addEventListener('mouseenter', () => {
+        highlightRatingStars(parseInt(star.dataset.v, 10));
+    });
+});
+
+document.getElementById('rating-input').addEventListener('mouseleave', () => {
+    highlightRatingStars(selectedRating);
+});
+
+function highlightRatingStars(upTo) {
+    document.querySelectorAll('.rating-star').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.v, 10) <= upTo);
+    });
+}
+
+// Initialise to 5 stars
+highlightRatingStars(selectedRating);
+
+async function submitComment() {
+    const author = document.getElementById('c-author').value.trim();
+    const body   = document.getElementById('c-body').value.trim();
+
+    if (!body) {
+        alert('Bitte einen Kommentar eingeben.');
+        document.getElementById('c-body').focus();
+        return;
+    }
+
+    const res = await fetch('/api/comments', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ author, body, rating: selectedRating }),
+    });
+
+    if (!res.ok) {
+        alert('Fehler beim Absenden. Bitte erneut versuchen.');
+        return;
+    }
+
+    // Clear form
+    document.getElementById('c-author').value = '';
+    document.getElementById('c-body').value   = '';
+    selectedRating = 5;
+    highlightRatingStars(selectedRating);
+
+    await loadComments();
+}
+
+async function deleteComment(cid) {
+    if (!confirm('Kommentar löschen?')) return;
+    await fetch('/api/comments/' + cid, { method: 'DELETE' });
+    await loadComments();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g,  '&amp;')
+        .replace(/</g,  '&lt;')
+        .replace(/>/g,  '&gt;')
+        .replace(/"/g,  '&quot;')
+        .replace(/'/g,  '&#39;');
+}
+
+function formatDate(iso) {
+    if (!iso) return '';
+    try {
+        return new Date(iso).toLocaleDateString('de-DE', {
+            day:    '2-digit',
+            month:  '2-digit',
+            year:   'numeric',
+            hour:   '2-digit',
+            minute: '2-digit',
+        });
+    } catch {
+        return iso;
+    }
+}
+
+
+// ════════════════════════════════════════════
+// NAV ACTIVE HIGHLIGHT ON SCROLL
+// ════════════════════════════════════════════
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    const sections = document.querySelectorAll('main section:not([hidden])');
+
+    sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 150) {
+            current = s.id;
+        }
+    });
+
+    navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+});
+
+
+// ════════════════════════════════════════════
+// INTERVIEW COLLAPSE
+// ════════════════════════════════════════════
+
+function toggleInterview(id, btn) {
+    const panel = document.getElementById('ivc-' + id);
+    if (!panel) return;
+    const collapsed = panel.classList.toggle('collapsed');
+    btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
+}
+
+function toggleAuthorInterview(btn) {
+    const panel = document.getElementById('ivc-author');
+    if (!panel) return;
+    const collapsed = panel.classList.toggle('collapsed');
+    btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
+}
+
+
+// ════════════════════════════════════════════
+// QUELLEN (Источники)
+// ════════════════════════════════════════════
+
+function renderQuellen() {
+    const container = document.getElementById('quellen-container');
+    if (!container) return;
+    const quellen = DATA.quellen || [];
+    container.innerHTML = '';
+    quellen.forEach(q => container.appendChild(buildQuelleEl(q)));
+}
+
+function buildQuelleEl(q) {
+    const div = document.createElement('div');
+    div.className = 'quelle-item';
+    div.id = 'ql-' + q.id;
+
+    const urlDisplay = q.url
+        ? `<a class="quelle-url" href="${escapeHtml(q.url)}" target="_blank" rel="noopener">${escapeHtml(q.url)}</a>`
+        : '';
+    const note = q.note ? `<div class="quelle-note">${escapeHtml(q.note)}</div>` : '';
+
+    div.innerHTML = `
+        <div class="quelle-title" contenteditable="false" data-key="ql-title-${q.id}">${q.title || ''}</div>
+        ${urlDisplay}
+        ${note}
+        <div class="action-row" style="margin-top:0.3rem;">
+            <button class="action-btn" onclick="editQuelle('${q.id}')">✏ Bearbeiten</button>
+            <button class="action-btn del" onclick="deleteQuelle('${q.id}')">✕ Löschen</button>
+        </div>
+    `;
+
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = 'true');
+        div.querySelector('[data-key]')?.addEventListener('blur', () => saveQuelleTitle(q.id));
+    }
+
+    return div;
+}
+
+function saveQuelleTitle(id) {
+    const el = document.querySelector('[data-key="ql-title-' + id + '"]');
+    if (!el) return;
+    const q = (DATA.quellen || []).find(x => x.id === id);
+    if (q) q.title = el.textContent.trim();
+    fetch('/api/quelle/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(q),
+    });
+}
+
+async function addQuelle() {
+    if (!isAdmin) return;
+    const title = prompt('Titel / Bezeichnung der Quelle:');
+    if (!title) return;
+    const url  = prompt('URL (optional, leer lassen falls nicht vorhanden):') || '';
+    const note = prompt('Anmerkung (optional):') || '';
+
+    const res = await fetch('/api/quelle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, url, note }),
+    });
+    const d = await res.json();
+    const newQ = { id: d.id, title, url, note };
+    if (!DATA.quellen) DATA.quellen = [];
+    DATA.quellen.push(newQ);
+    const container = document.getElementById('quellen-container');
+    const el = buildQuelleEl(newQ);
+    container.appendChild(el);
+    if (isAdmin) el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+    showToast();
+}
+
+async function editQuelle(id) {
+    const q = (DATA.quellen || []).find(x => x.id === id);
+    if (!q) return;
+    const title = prompt('Titel:', q.title || '');
+    if (title === null) return;
+    const url   = prompt('URL:', q.url  || '');
+    if (url === null) return;
+    const note  = prompt('Anmerkung:', q.note || '');
+    if (note === null) return;
+    q.title = title; q.url = url; q.note = note;
+    await fetch('/api/quelle/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(q),
+    });
+    renderQuellen();
+    showToast();
+}
+
+async function deleteQuelle(id) {
+    if (!confirm('Quelle wirklich löschen?')) return;
+    await fetch('/api/quelle/' + id, { method: 'DELETE' });
+    DATA.quellen = (DATA.quellen || []).filter(x => x.id !== id);
+    renderQuellen();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// AUTO TEXT COLLAPSE (≤300 chars visible)
+// ════════════════════════════════════════════
+
+// Wrap an entire CONTAINER block (not individual paragraphs)
+// Show first ~300 chars worth, hide the rest behind "Weiterlesen"
+function applyTextCollapse() {
+    // Each selector is a WHOLE block — we collapse the block, not its children
+    const selectors = [
+        '.prose',
+        '.zitat-text',
+        '.thema-body',
+        '.section-body',
+    ];
+
+    selectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => {
+            if (el.closest('.text-collapse-wrap')) return;
+            if (el.closest('.admin-bar, .ab-bar, .section-admin-actions')) return;
+
+            const text = (el.textContent || '').trim();
+            if (text.length <= 300) return;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'text-collapse-wrap is-collapsed';
+
+            const inner = document.createElement('div');
+            inner.className = 'text-collapse-inner';
+
+            const btn = document.createElement('button');
+            btn.className = 'text-collapse-btn';
+            btn.textContent = '▼ Weiterlesen';
+
+            el.parentNode.insertBefore(wrap, el);
+            inner.appendChild(el);
+            wrap.appendChild(inner);
+            wrap.appendChild(btn);
+
+            btn.addEventListener('click', () => {
+                const collapsed = wrap.classList.toggle('is-collapsed');
+                btn.textContent = collapsed ? '▼ Weiterlesen' : '▲ Weniger';
+            });
+        });
+    });
+}
+
+// ════════════════════════════════════════════
+// STANDALONE IMAGES
+// ════════════════════════════════════════════
+
+let standaloneImages = [];
+
+function renderStandaloneImages() {
+    const container = document.getElementById('standalone-images-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    standaloneImages.forEach(img => {
+        const block = document.createElement('div');
+        block.className = `standalone-img-block align-${img.align || 'center'}`;
+        block.style.width = Math.min(img.width || 400, window.innerWidth - 32) + 'px';
+        block.dataset.sid = img.id;
+
+        block.innerHTML = `
+            <img src="${img.url}" alt="${img.caption ? escapeHtml(img.caption) : ''}">
+            ${img.caption ? `<div class="standalone-img-caption">${escapeHtml(img.caption)}</div>` : ''}
+            <div class="simg-admin-bar">
+                <button onclick="toggleSimgResize('${img.id}')" title="Größe &amp; Position">↔ Größe</button>
+                <div class="simg-sep"></div>
+                <button onclick="editSimgCaption('${img.id}')">✏ Beschriftung</button>
+                <div class="simg-sep"></div>
+                <button onclick="replaceSimgFile('${img.id}')">📷 Ersetzen</button>
+                <div class="simg-sep"></div>
+                <button class="del" onclick="deleteStandaloneImage('${img.id}')">✕</button>
+            </div>
+            <div class="simg-resize-panel" id="srp-${img.id}">
+                <span>Breite:</span>
+                <input
+                    type="range" min="80" max="900"
+                    value="${img.width || 400}"
+                    oninput="liveSimgWidth('${img.id}', this.value)"
+                    onchange="saveSimgSettings('${img.id}')"
+                >
+                <span class="simg-width-label" id="swl-${img.id}">${img.width || 400}px</span>
+                <select onchange="liveSimgAlign('${img.id}', this.value)">
+                    <option value="left"   ${(img.align || 'center') === 'left'   ? 'selected' : ''}>Links</option>
+                    <option value="center" ${(img.align || 'center') === 'center' ? 'selected' : ''}>Mitte</option>
+                    <option value="right"  ${(img.align || 'center') === 'right'  ? 'selected' : ''}>Rechts</option>
+                </select>
+            </div>
+        `;
+
+        container.appendChild(block);
+    });
+
+    // Show/hide section
+    const section = document.getElementById('standalone-images');
+    if (section) {
+        section.hidden = standaloneImages.length === 0 && !isAdmin;
+    }
+}
+
+function toggleSimgResize(id) {
+    const panel = document.getElementById('srp-' + id);
+    if (!panel) return;
+    panel.classList.toggle('open');
+}
+
+function liveSimgWidth(id, val) {
+    const block = document.querySelector(`.standalone-img-block[data-sid="${id}"]`);
+    if (block) block.style.width = val + 'px';
+    const label = document.getElementById('swl-' + id);
+    if (label) label.textContent = val + 'px';
+    const img = standaloneImages.find(i => i.id === id);
+    if (img) img.width = parseInt(val, 10);
+}
+
+function liveSimgAlign(id, val) {
+    const block = document.querySelector(`.standalone-img-block[data-sid="${id}"]`);
+    if (block) {
+        block.classList.remove('align-left', 'align-center', 'align-right');
+        block.classList.add('align-' + val);
+    }
+    const img = standaloneImages.find(i => i.id === id);
+    if (img) img.align = val;
+    saveSimgSettings(id);
+}
+
+async function saveSimgSettings(id) {
+    const img = standaloneImages.find(i => i.id === id);
+    if (!img) return;
+    await fetch('/api/images/' + id, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ caption: img.caption || '', width: img.width, align: img.align }),
+    });
+    showToast();
+}
+
+async function editSimgCaption(id) {
+    const img = standaloneImages.find(i => i.id === id);
+    if (!img) return;
+    const newCaption = prompt('Bildbeschriftung:', img.caption || '');
+    if (newCaption === null) return;
+    img.caption = newCaption.trim();
+    await saveSimgSettings(id);
+    renderStandaloneImages();
+}
+
+async function deleteStandaloneImage(id) {
+    if (!confirm('Dieses Bild wirklich löschen?')) return;
+    await fetch('/api/images/' + id, { method: 'DELETE' });
+    standaloneImages = standaloneImages.filter(i => i.id !== id);
+    renderStandaloneImages();
+    showToast();
+}
+
+async function replaceSimgFile(id) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        let dataUrl;
+        try { dataUrl = await fileToDataUrl(file); }
+        catch (err) { alert(err.message); return; }
+
+        const img = standaloneImages.find(i => i.id === id);
+        if (!img) return;
+        img.url = dataUrl;
+
+        await fetch('/api/images', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(img),
+        });
+        renderStandaloneImages();
+        showToast();
+    };
+    input.click();
+}
+
+async function addStandaloneImage() {
+    if (!isAdmin) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        let dataUrl;
+        try { dataUrl = await fileToDataUrl(file); }
+        catch (err) { alert(err.message); return; }
+
+        const newImg = {
+            id:         'img' + Math.random().toString(36).substr(2, 8),
+            url:        dataUrl,
+            caption:    '',
+            width:      400,
+            align:      'center',
+            sort_order: standaloneImages.length,
+        };
+
+        const res  = await fetch('/api/images', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(newImg),
+        });
+        const data = await res.json();
+        if (data.id) newImg.id = data.id;
+
+        standaloneImages.push(newImg);
+        renderStandaloneImages();
+        showToast();
+    };
+    input.click();
+}
+
+</script>
+</body>
+</html>
