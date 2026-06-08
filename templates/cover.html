@@ -252,10 +252,6 @@
         .tunnel-portal { animation: tunnelGlow 2.8s ease-in-out infinite; }
 
         /* Immersive Enter Animations */
-        body.entering .tunnel-bg-img {
-            transform: scale(10);
-            opacity: 0;
-        }
         
         body.entering .cover-book-side {
             opacity: 0;
@@ -387,12 +383,12 @@
             transition: opacity 0.45s ease-in;
         }
 
-        /* Background zooms into tunnel */
+        /* Background zooms into tunnel — starts immediately on click */
         body.entering .tunnel-bg-img {
-            transform: scale(10);
+            transform: scale(12);
             opacity: 0;
-            transition: transform 1.1s cubic-bezier(0.3, 0, 0.75, 0.5),
-                        opacity  0.9s ease-in 0.1s;
+            transition: transform 1.1s cubic-bezier(0.2, 0, 0.6, 0.5),
+                        opacity  0.8s ease-in 0.3s;
         }
 
         /* Side panels shrink & fade toward centre */
@@ -496,20 +492,20 @@
         if (clicked) return;
         clicked = true;
 
-        // Step 1: flash of light from the tunnel
+        // Flash + zoom start simultaneously
         document.body.classList.add('flashing');
+        document.body.classList.add('entering');
 
+        // Flash fades out after 100ms
         setTimeout(function () {
-            // Step 2: flash fades out + suck-in starts
             document.body.classList.remove('flashing');
             document.body.classList.add('flash-out');
-            document.body.classList.add('entering');
-        }, 120);
+        }, 100);
 
-        // Step 3: navigate after full animation
+        // Navigate after animation completes
         setTimeout(function () {
             window.location.href = '/zeitung';
-        }, 1250);
+        }, 1200);
     }
 
     tunnelCol.addEventListener('click',    enter);
