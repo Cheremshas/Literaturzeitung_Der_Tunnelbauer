@@ -1593,6 +1593,8 @@
         opacity: 1;
     }
     .iv-collapsible.collapsed { max-height: 0; opacity: 0; }
+    /* Prevent margin bleed-through when collapsed */
+    .iv-collapsible.collapsed * { margin: 0 !important; padding: 0 !important; }
 
     /* Clickable header hint */
     .iv-header-click:hover .interviewee-info h3 { color: var(--gold); }
@@ -2055,6 +2057,10 @@
                 style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
                 onclick="addAuthorQA()"
             >+ Frage &amp; Antwort</button>
+        </div>
+
+        <div class="iv-toggle-row">
+            <button class="iv-toggle-btn iv-expand-btn" onclick="toggleAuthorInterview(this)">▶ Öffnen</button>
         </div>
     </section>
 
