@@ -2986,10 +2986,8 @@ document.addEventListener('paste', function(e) {
     // — collapse multiple newlines to max two (paragraph break)
     // — trim leading/trailing whitespace
     const clean = text
-        .replace(/
-/g, '\n')
-        .replace(/
-/g, '\n')
+        .replace(/\n/g, '\n')
+        .replace(/\n/g, '\n')
         .replace(/[ \t]+/g, ' ')
         .replace(/\n{3,}/g, '\n\n')
         .trim();
