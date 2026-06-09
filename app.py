@@ -124,6 +124,13 @@ def init_db():
                 note       TEXT DEFAULT '',
                 sort_order INTEGER DEFAULT 0
             );
+
+            CREATE TABLE IF NOT EXISTS fussnoten (
+                id         TEXT PRIMARY KEY,
+                number     TEXT DEFAULT '',
+                text       TEXT DEFAULT '',
+                sort_order INTEGER DEFAULT 0
+            );
         """)
         _seed_defaults(db)
 
@@ -325,6 +332,13 @@ def get_all_data():
         ).fetchall()
     ]
 
+    fussnoten = [
+        dict(r)
+        for r in db.execute(
+            "SELECT * FROM fussnoten ORDER BY sort_order"
+        ).fetchall()
+    ]
+
     db.close()
 
     return {
@@ -337,6 +351,7 @@ def get_all_data():
         'comment_count':     comment_count,
         'standalone_images': standalone_images,
         'quellen':           quellen,
+        'fussnoten':         fussnoten,
     }
 
 
@@ -741,6 +756,39 @@ def api_quelle_update(qid):
 def api_quelle_delete(qid):
     with get_db() as db:
         db.execute("DELETE FROM quellen WHERE id=?", (qid,))
+    return jsonify({'ok': True})
+
+
+# ── Fussnoten ────────────────────────────────
+
+@app.route('/api/fussnote', methods=['POST'])
+def api_fussnote_create():
+    d = request.json
+    nid = 'f' + uuid.uuid4().hex[:8]
+    with get_db() as db:
+        count = db.execute("SELECT COUNT(*) FROM fussnoten").fetchone()[0]
+        db.execute(
+            "INSERT INTO fussnoten VALUES(?,?,?,?)",
+            (nid, d.get('number', ''), d.get('text', ''), count)
+        )
+    return jsonify({'ok': True, 'id': nid})
+
+
+@app.route('/api/fussnote/<fid>', methods=['PUT'])
+def api_fussnote_update(fid):
+    d = request.json
+    with get_db() as db:
+        db.execute(
+            "UPDATE fussnoten SET number=?, text=? WHERE id=?",
+            (d.get('number', ''), d.get('text', ''), fid)
+        )
+    return jsonify({'ok': True})
+
+
+@app.route('/api/fussnote/<fid>', methods=['DELETE'])
+def api_fussnote_delete(fid):
+    with get_db() as db:
+        db.execute("DELETE FROM fussnoten WHERE id=?", (fid,))
     return jsonify({'ok': True})
 
 
