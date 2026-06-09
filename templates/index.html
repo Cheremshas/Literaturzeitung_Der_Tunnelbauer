@@ -2441,7 +2441,8 @@ const DEFAULT_SECTIONS = [
 // ════════════════════════════════════════════
 
 async function init() {
-    await loadData();
+    const ok = await loadData();
+    if (!ok) return;
     renderAll();
     await loadComments();
     buildEmojiGrid(ALL_EMOJIS);
@@ -2449,8 +2450,26 @@ async function init() {
 }
 
 async function loadData() {
-    const res = await fetch('/api/data');
-    DATA = await res.json();
+    let res;
+    try {
+        res = await fetch('/api/data');
+    } catch (e) {
+        console.error('[loadData] Netzwerkfehler:', e);
+        showLoadError('Netzwerkfehler – Server nicht erreichbar.');
+        return false;
+    }
+    if (!res.ok) {
+        console.error('[loadData] HTTP-Fehler:', res.status, res.statusText);
+        showLoadError('Server-Fehler ' + res.status + ' beim Laden der Daten.');
+        return false;
+    }
+    try {
+        DATA = await res.json();
+    } catch (e) {
+        console.error('[loadData] JSON-Fehler:', e);
+        showLoadError('Antwort vom Server ist kein gültiges JSON.');
+        return false;
+    }
     standaloneImages = DATA.standalone_images || [];
     if (!DATA.quellen) DATA.quellen = [];
     // Parse _fn flag stored in note field as JSON prefix
@@ -2464,6 +2483,14 @@ async function loadData() {
         return q;
     });
     if (!DATA.fussnoten) DATA.fussnoten = [];
+    return true;
+}
+
+function showLoadError(msg) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c0392b;color:#fff;padding:14px 20px;font-size:15px;z-index:9999;text-align:center;';
+    banner.textContent = '⚠️ Daten konnten nicht geladen werden: ' + msg;
+    document.body.prepend(banner);
 }
 
 function renderAll() {
