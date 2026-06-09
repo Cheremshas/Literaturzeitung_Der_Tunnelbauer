@@ -2936,6 +2936,55 @@ document.addEventListener('focusin', (e) => {
     }
 });
 
+
+// ════════════════════════════════════════════
+// CLEAN PASTE — strip all formatting on paste
+// into any contenteditable element
+// ════════════════════════════════════════════
+
+document.addEventListener('paste', function(e) {
+    const target = e.target;
+
+    // Only intercept contenteditable fields
+    if (!target || target.contentEditable !== 'true') return;
+
+    e.preventDefault();
+
+    // Get plain text from clipboard
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    if (!text) return;
+
+    // Normalise whitespace:
+    // — collapse multiple spaces to one
+    // — collapse multiple newlines to max two (paragraph break)
+    // — trim leading/trailing whitespace
+    const clean = text
+        .replace(/
+/g, '\n')
+        .replace(/
+/g, '\n')
+        .replace(/[ \t]+/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+
+    // Insert at cursor using execCommand (keeps undo history)
+    // Split by double newlines to create paragraph breaks
+    const paragraphs = clean.split(/\n\n+/);
+
+    if (paragraphs.length <= 1) {
+        // Single paragraph — just insert inline, replacing newlines with spaces
+        const inline = clean.replace(/\n/g, ' ');
+        document.execCommand('insertText', false, inline);
+    } else {
+        // Multiple paragraphs — insert each separated by a newline
+        const joined = paragraphs
+            .map(p => p.replace(/\n/g, ' ').trim())
+            .filter(Boolean)
+            .join('\n');
+        document.execCommand('insertText', false, joined);
+    }
+});
+
 document.addEventListener('keyup', rememberEditableSelection);
 document.addEventListener('mouseup', rememberEditableSelection);
 document.addEventListener('selectionchange', rememberEditableSelection);
