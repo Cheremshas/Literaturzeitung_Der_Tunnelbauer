@@ -1593,8 +1593,6 @@
         opacity: 1;
     }
     .iv-collapsible.collapsed { max-height: 0; opacity: 0; }
-    /* Prevent margin bleed-through when collapsed */
-    .iv-collapsible.collapsed * { margin: 0 !important; padding: 0 !important; }
 
     /* Clickable header hint */
     .iv-header-click:hover .interviewee-info h3 { color: var(--gold); }
@@ -1615,46 +1613,18 @@
         background: var(--dark2);
         border: 1px solid var(--border2);
         border-left: 3px solid var(--gold);
-        padding: 0.75rem 1rem 0.75rem 0.9rem;
+        padding: 0.75rem 1rem;
         border-radius: 0 4px 4px 0;
-        display: grid;
-        grid-template-columns: 1.8rem 1fr auto;
-        grid-template-rows: auto auto auto;
-        column-gap: 0.6rem;
-        row-gap: 0.25rem;
-        align-items: start;
-        position: relative;
-    }
-    .quelle-num {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--gold);
-        padding-top: 2px;
-        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
     }
     .quelle-title {
         font-weight: 600;
         font-size: 13.5px;
         color: var(--white2);
         font-family: 'Playfair Display', serif;
-        outline: none;
-        grid-column: 2;
     }
-    .quelle-title:empty::before { content: 'Quellenbezeichnung…'; color: var(--muted); }
-    .quelle-del {
-        grid-column: 3;
-        grid-row: 1;
-        background: none;
-        border: none;
-        color: var(--muted);
-        cursor: pointer;
-        font-size: 13px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        display: none;
-    }
-    .admin-mode .quelle-del { display: inline-block; }
-    .quelle-del:hover { color: var(--red); }
     .quelle-url {
         font-size: 12px;
         color: var(--gold);
@@ -1667,122 +1637,6 @@
         color: var(--muted);
         font-style: italic;
     }
-    .quelle-url-field {
-        font-size: 12px;
-        color: var(--gold);
-        word-break: break-all;
-        outline: none;
-        border: none;
-        background: transparent;
-        min-height: 1em;
-        grid-column: 2 / 4;
-    }
-    .quelle-url-field:empty::before { content: 'URL (optional)…'; color: var(--muted); }
-    .quelle-note-field {
-        font-size: 12px;
-        color: var(--muted);
-        font-style: italic;
-        outline: none;
-        border: none;
-        background: transparent;
-        min-height: 1em;
-        grid-column: 2 / 4;
-    }
-    .quelle-note-field:empty::before { content: 'Anmerkung (optional)…'; color: var(--muted); opacity: 0.6; }
-
-    /* ═══════════════════════════════════════════
-       INLINE FUSSNOTE MARKERS
-    ═══════════════════════════════════════════ */
-    .fn-marker {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 16px;
-        height: 16px;
-        background: var(--gold);
-        color: #000;
-        font-size: 9px;
-        font-weight: 800;
-        border-radius: 50%;
-        cursor: pointer;
-        vertical-align: super;
-        margin: 0 1px;
-        text-decoration: none;
-        line-height: 1;
-        flex-shrink: 0;
-        transition: background 0.15s, transform 0.1s;
-        font-family: 'DM Sans', sans-serif;
-    }
-    .fn-marker:hover { background: var(--gold2); transform: scale(1.15); }
-
-    /* In quellen — footnote entry style */
-    .quelle-item.is-fussnote {
-        border-left-color: var(--muted);
-    }
-    .quelle-item.is-fussnote .quelle-num {
-        color: var(--muted);
-        font-size: 11px;
-    }
-    .quelle-fn-badge {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-        opacity: 0.7;
-        grid-column: 2;
-        margin-bottom: 1px;
-    }
-
-    /* ═══════════════════════════════════════════
-       FUSSNOTEN (standalone section — hidden now)
-    ═══════════════════════════════════════════ */
-    .fussnoten-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        margin-bottom: 1rem;
-    }
-    .fussnote-item {
-        background: var(--dark2);
-        border: 1px solid var(--border2);
-        border-left: 3px solid var(--muted);
-        padding: 0.6rem 1rem;
-        border-radius: 0 4px 4px 0;
-        display: flex;
-        align-items: baseline;
-        gap: 0.6rem;
-    }
-    .fussnote-number {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--gold);
-        min-width: 1.6rem;
-        flex-shrink: 0;
-        outline: none;
-    }
-    .fussnote-number:empty::before { content: '#'; color: var(--muted); }
-    .fussnote-text {
-        font-size: 13px;
-        color: var(--white2);
-        flex: 1;
-        outline: none;
-        line-height: 1.5;
-    }
-    .fussnote-text:empty::before { content: 'Fußnotentext eingeben…'; color: var(--muted); }
-    .fussnote-del {
-        flex-shrink: 0;
-        background: none;
-        border: none;
-        color: var(--muted);
-        cursor: pointer;
-        font-size: 13px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        display: none;
-    }
-    .admin-mode .fussnote-del { display: inline-block; }
-    .fussnote-del:hover { color: var(--red); }
 
     /* ═══════════════════════════════════════════
        FOOTER EXTRAS
@@ -1905,7 +1759,6 @@
     <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
     <button class="ab-btn" onclick="addThema()">+ Thema</button>
     <button class="ab-btn" onclick="addInterview()">+ Interview</button>
-    <button class="ab-btn" onclick="insertFussnoteAtCursor()">¹ Fußnote</button>
     <div class="ab-sep"></div>
     <button class="ab-btn danger" onclick="logout()">Abmelden</button>
 </div>
@@ -2203,10 +2056,6 @@
                 onclick="addAuthorQA()"
             >+ Frage &amp; Antwort</button>
         </div>
-
-        <div class="iv-toggle-row">
-            <button class="iv-toggle-btn iv-expand-btn" onclick="toggleAuthorInterview(this)">▶ Öffnen</button>
-        </div>
     </section>
 
 
@@ -2340,19 +2189,6 @@
 
 
     <!-- ── QUELLEN ───────────────────────────── -->
-    <section id="fussnoten" data-section-id="fussnoten">
-        <div class="section-head">
-            <div class="section-label">Anmerkungen</div>
-            <div class="section-title" contenteditable="false" data-key="fussnoten-title">Fußnoten</div>
-        </div>
-        <div class="section-admin-actions">
-            <button class="action-btn del" onclick="toggleSection('fussnoten', false)">Abschnitt ausblenden</button>
-        </div>
-
-        <div class="fussnoten-list" id="fussnoten-container"></div>
-        <button class="add-btn" onclick="addFussnote()">+ Fußnote hinzufügen</button>
-    </section>
-
     <section id="quellen" data-section-id="quellen">
         <div class="section-head">
             <div class="section-label">Literaturverzeichnis</div>
@@ -2431,7 +2267,6 @@ const DEFAULT_SECTIONS = [
     { id: 'themen', label: 'Themen & Motive' },
     { id: 'standalone-images', label: 'Bilder' },
     { id: 'kommentare', label: 'Kommentare' },
-    { id: 'fussnoten', label: 'Fußnoten' },
     { id: 'quellen', label: 'Quellen' },
 ];
 
@@ -2453,17 +2288,6 @@ async function loadData() {
     DATA = await res.json();
     standaloneImages = DATA.standalone_images || [];
     if (!DATA.quellen) DATA.quellen = [];
-    // Parse _fn flag stored in note field as JSON prefix
-    DATA.quellen = DATA.quellen.map(q => {
-        if (q.note && q.note.startsWith('__fn__')) {
-            try {
-                const meta = JSON.parse(q.note.replace('__fn__', ''));
-                return { ...q, _fn: true, _fn_num: meta.num, note: meta.note || '' };
-            } catch(e) {}
-        }
-        return q;
-    });
-    if (!DATA.fussnoten) DATA.fussnoten = [];
 }
 
 function renderAll() {
@@ -2490,7 +2314,6 @@ function renderAll() {
     renderCustomSections();
     renderStandaloneImages();
     renderQuellen();
-    renderFussnoten();
     renderSectionVisibility();
     // Auto-collapse long texts after DOM is updated
     setTimeout(applyTextCollapse, 50);
@@ -2980,18 +2803,6 @@ async function saveEditableElement(el) {
 
     if (key.startsWith('qq-') || key.startsWith('qa-')) {
         saveQAFromDOM(key.replace(/^(qq|qa)-/, ''));
-        showToast();
-        return;
-    }
-
-    if (key.startsWith('ql-title-') || key.startsWith('ql-url-') || key.startsWith('ql-note-')) {
-        const id = key.replace(/^ql-(title|url|note)-/, '');
-        saveQuelleFromDOM(id);
-        return;
-    }
-
-    if (key.startsWith('fn-num-') || key.startsWith('fn-text-')) {
-        savefussnoteFromDOM(key.replace(/^(fn-num|fn-text)-/, ''));
         showToast();
         return;
     }
@@ -4251,79 +4062,88 @@ function renderQuellen() {
     if (!container) return;
     const quellen = DATA.quellen || [];
     container.innerHTML = '';
-    quellen.forEach((q, i) => container.appendChild(buildQuelleEl(q, i)));
+    quellen.forEach(q => container.appendChild(buildQuelleEl(q)));
 }
 
-function buildQuelleEl(q, index) {
+function buildQuelleEl(q) {
     const div = document.createElement('div');
     div.className = 'quelle-item';
     div.id = 'ql-' + q.id;
 
-    const num = index !== undefined ? index + 1 : '';
-    const isFn = q._fn;
-    if (isFn) div.classList.add('is-fussnote');
+    const urlDisplay = q.url
+        ? `<a class="quelle-url" href="${escapeHtml(q.url)}" target="_blank" rel="noopener">${escapeHtml(q.url)}</a>`
+        : '';
+    const note = q.note ? `<div class="quelle-note">${escapeHtml(q.note)}</div>` : '';
 
     div.innerHTML = `
-        <div class="quelle-num">${isFn ? q._fn_num : num}${isFn ? '' : '.'}</div>
-        ${isFn ? `<div class="quelle-fn-badge">Fußnote ${q._fn_num}</div>` : ''}
         <div class="quelle-title" contenteditable="false" data-key="ql-title-${q.id}">${q.title || ''}</div>
-        <button class="quelle-del" onclick="deleteQuelle('${q.id}')">✕</button>
-        <div class="quelle-url-field" contenteditable="false" data-key="ql-url-${q.id}">${q.url || ''}</div>
-        <div class="quelle-note-field" contenteditable="false" data-key="ql-note-${q.id}">${q.note || ''}</div>
+        ${urlDisplay}
+        ${note}
+        <div class="action-row" style="margin-top:0.3rem;">
+            <button class="action-btn" onclick="editQuelle('${q.id}')">✏ Bearbeiten</button>
+            <button class="action-btn del" onclick="deleteQuelle('${q.id}')">✕ Löschen</button>
+        </div>
     `;
 
     if (isAdmin) {
         div.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = 'true');
+        div.querySelector('[data-key]')?.addEventListener('blur', () => saveQuelleTitle(q.id));
     }
-
-    div.querySelectorAll('[data-key]').forEach(el => {
-        el.addEventListener('blur', () => saveQuelleFromDOM(q.id));
-    });
 
     return div;
 }
 
-function saveQuelleFromDOM(id) {
-    const titleEl = document.querySelector('[data-key="ql-title-' + id + '"]');
-    const urlEl   = document.querySelector('[data-key="ql-url-'   + id + '"]');
-    const noteEl  = document.querySelector('[data-key="ql-note-'  + id + '"]');
+function saveQuelleTitle(id) {
+    const el = document.querySelector('[data-key="ql-title-' + id + '"]');
+    if (!el) return;
     const q = (DATA.quellen || []).find(x => x.id === id);
-    if (!q) return;
-    q.title = titleEl ? titleEl.textContent.trim() : q.title;
-    q.url   = urlEl   ? urlEl.textContent.trim()   : q.url;
-    const rawNote = noteEl ? noteEl.textContent.trim() : (q.note || '');
-    // Persist _fn metadata in note field with prefix
-    q.note = q._fn
-        ? '__fn__' + JSON.stringify({ num: q._fn_num, note: rawNote })
-        : rawNote;
+    if (q) q.title = el.textContent.trim();
     fetch('/api/quelle/' + id, {
-        method:  'PUT',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(q),
+        body: JSON.stringify(q),
     });
-    showToast();
 }
 
 async function addQuelle() {
     if (!isAdmin) return;
+    const title = prompt('Titel / Bezeichnung der Quelle:');
+    if (!title) return;
+    const url  = prompt('URL (optional, leer lassen falls nicht vorhanden):') || '';
+    const note = prompt('Anmerkung (optional):') || '';
 
     const res = await fetch('/api/quelle', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ title: 'Neue Quelle', url: '', note: '' }),
+        body: JSON.stringify({ title, url, note }),
     });
     const d = await res.json();
-    const newQ = { id: d.id, title: 'Neue Quelle', url: '', note: '' };
+    const newQ = { id: d.id, title, url, note };
     if (!DATA.quellen) DATA.quellen = [];
     DATA.quellen.push(newQ);
     const container = document.getElementById('quellen-container');
-    const idx = DATA.quellen.length - 1;
-    const el = buildQuelleEl(newQ, idx);
+    const el = buildQuelleEl(newQ);
     container.appendChild(el);
     if (isAdmin) el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
-    // Focus the title field immediately
-    const titleEl = el.querySelector('[data-key="ql-title-' + newQ.id + '"]');
-    if (titleEl) titleEl.focus();
+    showToast();
+}
+
+async function editQuelle(id) {
+    const q = (DATA.quellen || []).find(x => x.id === id);
+    if (!q) return;
+    const title = prompt('Titel:', q.title || '');
+    if (title === null) return;
+    const url   = prompt('URL:', q.url  || '');
+    if (url === null) return;
+    const note  = prompt('Anmerkung:', q.note || '');
+    if (note === null) return;
+    q.title = title; q.url = url; q.note = note;
+    await fetch('/api/quelle/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(q),
+    });
+    renderQuellen();
     showToast();
 }
 
@@ -4332,157 +4152,6 @@ async function deleteQuelle(id) {
     await fetch('/api/quelle/' + id, { method: 'DELETE' });
     DATA.quellen = (DATA.quellen || []).filter(x => x.id !== id);
     renderQuellen();
-    showToast();
-}
-
-
-// ════════════════════════════════════════════
-// FUSSNOTEN
-// ════════════════════════════════════════════
-
-function renderFussnoten() {
-    const container = document.getElementById('fussnoten-container');
-    if (!container) return;
-    container.innerHTML = '';
-    (DATA.fussnoten || []).forEach(f => container.appendChild(buildFussnoteEl(f)));
-}
-
-function buildFussnoteEl(f) {
-    const div = document.createElement('div');
-    div.className = 'fussnote-item';
-    div.id = 'fn-' + f.id;
-
-    div.innerHTML = `
-        <div class="fussnote-number" contenteditable="false" data-key="fn-num-${f.id}">${f.number || ''}</div>
-        <div class="fussnote-text" contenteditable="false" data-key="fn-text-${f.id}">${f.text || ''}</div>
-        <button class="fussnote-del" onclick="deleteFussnote('${f.id}')">✕</button>
-    `;
-
-    if (isAdmin) {
-        div.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = 'true');
-    }
-
-    div.querySelectorAll('[data-key]').forEach(el => {
-        el.addEventListener('blur', () => savefussnoteFromDOM(f.id));
-    });
-
-    return div;
-}
-
-function savefussnoteFromDOM(id) {
-    const numEl  = document.querySelector('[data-key="fn-num-'  + id + '"]');
-    const textEl = document.querySelector('[data-key="fn-text-' + id + '"]');
-    const f = (DATA.fussnoten || []).find(x => x.id === id);
-    if (!f) return;
-    f.number = numEl  ? numEl.textContent.trim()  : f.number;
-    f.text   = textEl ? textEl.textContent.trim() : f.text;
-    fetch('/api/fussnote/' + id, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(f),
-    });
-}
-
-async function addFussnote() {
-    // Legacy — kept for fussnoten section
-    if (!isAdmin) return;
-    const nextNum = String((DATA.fussnoten || []).length + 1);
-    const res = await fetch('/api/fussnote', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ number: nextNum, text: '' }),
-    });
-    const d = await res.json();
-    const newF = { id: d.id, number: nextNum, text: '' };
-    if (!DATA.fussnoten) DATA.fussnoten = [];
-    DATA.fussnoten.push(newF);
-    const container = document.getElementById('fussnoten-container');
-    const el = buildFussnoteEl(newF);
-    container.appendChild(el);
-    if (isAdmin) el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
-    showToast();
-}
-
-// ── Insert Fußnote at cursor position in text ─────────────────
-async function insertFussnoteAtCursor() {
-    if (!isAdmin) return;
-
-    rememberEditableSelection();
-
-    if (!lastEditableEl) {
-        alert('Bitte zuerst in den Text klicken, wo die Fußnote erscheinen soll.');
-        return;
-    }
-
-    // Determine next number from existing quellen-fussnoten
-    const existing = (DATA.quellen || []).filter(q => q._fn);
-    const nextNum = existing.length + 1;
-
-    // Create Quelle entry for this footnote
-    const res = await fetch('/api/quelle', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-            title: '',
-            url:   '',
-            note:  '__fn__' + JSON.stringify({ num: nextNum, note: '' }),
-        }),
-    });
-    const d = await res.json();
-    const newQ = { id: d.id, title: '', url: '', note: '', _fn: true, _fn_num: nextNum };
-    if (!DATA.quellen) DATA.quellen = [];
-    DATA.quellen.push(newQ);
-
-    // Insert marker span at cursor
-    const marker = document.createElement('a');
-    marker.className = 'fn-marker';
-    marker.textContent = String(nextNum);
-    marker.href = '#ql-' + newQ.id;
-    marker.title = 'Fußnote ' + nextNum;
-    marker.contentEditable = 'false';
-    marker.dataset.fnId = newQ.id;
-
-    // Restore cursor and insert
-    if (lastEditableRange) {
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(lastEditableRange);
-        lastEditableRange.deleteContents();
-        lastEditableRange.insertNode(marker);
-        // Move cursor after marker
-        const range = document.createRange();
-        range.setStartAfter(marker);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else {
-        lastEditableEl.appendChild(marker);
-    }
-
-    // Save the text block that now contains the marker
-    lastEditableEl.dispatchEvent(new Event('blur'));
-
-    // Render quellen so new entry appears
-    renderQuellen();
-
-    // Scroll to new quelle and focus its title
-    setTimeout(() => {
-        const qEl = document.getElementById('ql-' + newQ.id);
-        if (qEl) {
-            qEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            const titleField = qEl.querySelector('[data-key^="ql-title"]');
-            if (titleField) titleField.focus();
-        }
-    }, 300);
-
-    showToast();
-}
-
-async function deleteFussnote(id) {
-    if (!confirm('Fußnote wirklich löschen?')) return;
-    await fetch('/api/fussnote/' + id, { method: 'DELETE' });
-    DATA.fussnoten = (DATA.fussnoten || []).filter(x => x.id !== id);
-    renderFussnoten();
     showToast();
 }
 
