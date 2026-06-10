@@ -32,6 +32,16 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_MB * 1024 * 1024
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Copy bundled static assets into Flask's static folder on first run
+import shutil as _shutil
+_STATIC_DIR = os.path.join(BASE_DIR, 'static')
+os.makedirs(_STATIC_DIR, exist_ok=True)
+for _asset in ['tunnel-bg.png']:
+    _src = os.path.join(BASE_DIR, _asset)
+    _dst = os.path.join(_STATIC_DIR, _asset)
+    if os.path.exists(_src) and not os.path.exists(_dst):
+        _shutil.copy2(_src, _dst)
+
 
 # ─────────────────────────────────────────────
 #  DATABASE HELPERS
@@ -96,6 +106,30 @@ def init_db():
                 body       TEXT,
                 rating     INTEGER DEFAULT 5,
                 created_at TEXT DEFAULT (datetime('now'))
+            );
+
+            CREATE TABLE IF NOT EXISTS standalone_images (
+                id         TEXT PRIMARY KEY,
+                url        TEXT NOT NULL,
+                caption    TEXT DEFAULT '',
+                width      INTEGER DEFAULT 400,
+                align      TEXT DEFAULT 'center',
+                sort_order INTEGER DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS quellen (
+                id         TEXT PRIMARY KEY,
+                title      TEXT NOT NULL,
+                url        TEXT DEFAULT '',
+                note       TEXT DEFAULT '',
+                sort_order INTEGER DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS fussnoten (
+                id         TEXT PRIMARY KEY,
+                number     TEXT DEFAULT '',
+                text       TEXT DEFAULT '',
+                sort_order INTEGER DEFAULT 0
             );
         """)
         _seed_defaults(db)
@@ -284,16 +318,40 @@ def get_all_data():
     avg_rating = round(row['avg'], 1) if row['avg'] else 0
     comment_count = row['cnt']
 
+    standalone_images = [
+        dict(r)
+        for r in db.execute(
+            "SELECT * FROM standalone_images ORDER BY sort_order"
+        ).fetchall()
+    ]
+
+    quellen = [
+        dict(r)
+        for r in db.execute(
+            "SELECT * FROM quellen ORDER BY sort_order"
+        ).fetchall()
+    ]
+
+    fussnoten = [
+        dict(r)
+        for r in db.execute(
+            "SELECT * FROM fussnoten ORDER BY sort_order"
+        ).fetchall()
+    ]
+
     db.close()
 
     return {
-        'kv':            kv,
-        'zitate':        zitate,
-        'themen':        themen,
-        'interviews':    interviews,
-        'comments':      comments,
-        'avg_rating':    avg_rating,
-        'comment_count': comment_count,
+        'kv':                kv,
+        'zitate':            zitate,
+        'themen':            themen,
+        'interviews':        interviews,
+        'comments':          comments,
+        'avg_rating':        avg_rating,
+        'comment_count':     comment_count,
+        'standalone_images': standalone_images,
+        'quellen':           quellen,
+        'fussnoten':         fussnoten,
     }
 
 
@@ -302,6 +360,11 @@ def get_all_data():
 # ─────────────────────────────────────────────
 
 @app.route('/')
+def cover():
+    return render_template('cover.html')
+
+
+@app.route('/zeitung')
 def index():
     return render_template('index.html')
 
@@ -600,6 +663,132 @@ def api_comments_post():
 def api_comments_delete(cid):
     with get_db() as db:
         db.execute("DELETE FROM comments WHERE id=?", (cid,))
+    return jsonify({'ok': True})
+
+
+# ── Standalone Images ────────────────────────
+
+@app.route('/api/images', methods=['GET'])
+def api_images_get():
+    db = get_db()
+    images = [
+        dict(r)
+        for r in db.execute(
+            "SELECT * FROM standalone_images ORDER BY sort_order"
+        ).fetchall()
+    ]
+    db.close()
+    return jsonify({'images': images})
+
+
+@app.route('/api/images', methods=['POST'])
+def api_images_create():
+    d   = request.json
+    nid = d.get('id', 'img' + uuid.uuid4().hex[:8])
+    with get_db() as db:
+        count = db.execute(
+            "SELECT COUNT(*) FROM standalone_images"
+        ).fetchone()[0]
+        db.execute(
+            "INSERT INTO standalone_images VALUES(?,?,?,?,?,?) "
+            "ON CONFLICT(id) DO UPDATE SET "
+            "url=excluded.url, caption=excluded.caption, "
+            "width=excluded.width, align=excluded.align, "
+            "sort_order=excluded.sort_order",
+            (
+                nid,
+                d.get('url', ''),
+                d.get('caption', ''),
+                d.get('width', 400),
+                d.get('align', 'center'),
+                d.get('sort_order', count),
+            )
+        )
+    return jsonify({'ok': True, 'id': nid})
+
+
+@app.route('/api/images/<iid>', methods=['PUT'])
+def api_images_update(iid):
+    d = request.json
+    with get_db() as db:
+        db.execute(
+            "UPDATE standalone_images SET "
+            "caption=?, width=?, align=? WHERE id=?",
+            (d.get('caption'), d.get('width'), d.get('align'), iid)
+        )
+    return jsonify({'ok': True})
+
+
+@app.route('/api/images/<iid>', methods=['DELETE'])
+def api_images_delete(iid):
+    with get_db() as db:
+        db.execute("DELETE FROM standalone_images WHERE id=?", (iid,))
+    return jsonify({'ok': True})
+
+
+# ── Quellen ─────────────────────────────────
+
+@app.route('/api/quelle', methods=['POST'])
+def api_quelle_create():
+    d = request.json
+    nid = 'q' + uuid.uuid4().hex[:8]
+    with get_db() as db:
+        count = db.execute("SELECT COUNT(*) FROM quellen").fetchone()[0]
+        db.execute(
+            "INSERT INTO quellen VALUES(?,?,?,?,?)",
+            (nid, d.get('title',''), d.get('url',''), d.get('note',''), count)
+        )
+    return jsonify({'ok': True, 'id': nid})
+
+
+@app.route('/api/quelle/<qid>', methods=['PUT'])
+def api_quelle_update(qid):
+    d = request.json
+    with get_db() as db:
+        db.execute(
+            "UPDATE quellen SET title=?, url=?, note=? WHERE id=?",
+            (d.get('title',''), d.get('url',''), d.get('note',''), qid)
+        )
+    return jsonify({'ok': True})
+
+
+@app.route('/api/quelle/<qid>', methods=['DELETE'])
+def api_quelle_delete(qid):
+    with get_db() as db:
+        db.execute("DELETE FROM quellen WHERE id=?", (qid,))
+    return jsonify({'ok': True})
+
+
+# ── Fussnoten ────────────────────────────────
+
+@app.route('/api/fussnote', methods=['POST'])
+def api_fussnote_create():
+    d = request.json
+    nid = 'f' + uuid.uuid4().hex[:8]
+    with get_db() as db:
+        count = db.execute("SELECT COUNT(*) FROM fussnoten").fetchone()[0]
+        db.execute(
+            "INSERT INTO fussnoten VALUES(?,?,?,?)",
+            (nid, d.get('number', ''), d.get('text', ''), count)
+        )
+    return jsonify({'ok': True, 'id': nid})
+
+
+@app.route('/api/fussnote/<fid>', methods=['PUT'])
+def api_fussnote_update(fid):
+    d = request.json
+    with get_db() as db:
+        db.execute(
+            "UPDATE fussnoten SET number=?, text=? WHERE id=?",
+            (d.get('number', ''), d.get('text', ''), fid)
+        )
+    return jsonify({'ok': True})
+
+
+@app.route('/api/fussnote/<fid>', methods=['DELETE'])
+def api_fussnote_delete(fid):
+    with get_db() as db:
+        db.execute("DELETE FROM fussnoten WHERE id=?", (fid,))
     return jsonify({'ok': True})
 
 

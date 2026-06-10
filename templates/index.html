@@ -51,8 +51,6 @@
     }
 
 
-
-
     /* ═══════════════════════════════════════════
        ADMIN BAR
     ═══════════════════════════════════════════ */
@@ -492,18 +490,6 @@
         background: rgba(232, 160, 32, 0.04);
     }
 
-    /* Reset any inline styles pasted from Word / Google Docs */
-    [contenteditable] * {
-        font-family: inherit !important;
-        font-size:   inherit !important;
-        font-weight: inherit !important;
-        line-height: inherit !important;
-        color:       inherit !important;
-        background:  transparent !important;
-        letter-spacing: inherit !important;
-        word-spacing:   inherit !important;
-    }
-
     .edit-hint {
         display: none;
         font-size: 10px;
@@ -600,115 +586,9 @@
 
 
     /* ═══════════════════════════════════════════
-       SCROLL-TO-TOP BUTTON
+       NEWSPAPER HEADER
     ═══════════════════════════════════════════ */
-    #scroll-top-btn {
-        position: fixed;
-        bottom: 2rem;
-        right: 1.5rem;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: var(--dark2);
-        border: 1px solid var(--gold);
-        color: var(--gold);
-        font-size: 1.1rem;
-        cursor: pointer;
-        z-index: 8000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transform: translateY(10px);
-        transition: opacity 0.3s, transform 0.3s, background 0.2s;
-        pointer-events: none;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-    }
-
-    #scroll-top-btn.visible {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-    }
-
-    #scroll-top-btn:hover {
-        background: var(--gold);
-        color: var(--black);
-    }
-
-    /* ═══════════════════════════════════════════
-       COLLAPSIBLE PROSE
-    ═══════════════════════════════════════════ */
-    .prose-collapsible {
-        position: relative;
-    }
-
-    .prose-collapsible .prose-preview {
-        display: block;
-    }
-
-    .prose-collapsible .prose-full {
-        display: none;
-    }
-
-    .prose-collapsible.expanded .prose-preview {
-        display: none;
-    }
-
-    .prose-collapsible.expanded .prose-full {
-        display: block;
-    }
-
-    .prose-fade {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .prose-fade::after {
-        content: '';
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 60px;
-        background: linear-gradient(transparent, var(--dark));
-        pointer-events: none;
-        transition: opacity 0.3s;
-    }
-
-    .prose-collapsible.expanded .prose-fade::after {
-        opacity: 0;
-    }
-
-    .read-more-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: none;
-        border: none;
-        color: var(--gold);
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        cursor: pointer;
-        padding: 6px 0;
-        margin-top: 6px;
-        font-family: inherit;
-        transition: opacity 0.15s;
-    }
-
-    .read-more-btn:hover { opacity: 0.75; }
-
-    .read-more-btn .rm-arrow {
-        font-size: 10px;
-        transition: transform 0.2s;
-        display: inline-block;
-    }
-
-    .prose-collapsible.expanded .read-more-btn .rm-arrow {
-        transform: rotate(180deg);
-    }
-
-
+    .paper-header {
         background: var(--dark);
         border-bottom: 2px solid var(--gold);
     }
@@ -959,6 +839,9 @@
         gap: 3rem;
         align-items: start;
     }
+
+    /* Fix: no ghost space below collapsed Weiterlesen text */
+    .rez-grid > div:first-child { align-self: start; min-height: 0; }
 
     @media (max-width: 640px) {
         .rez-grid { grid-template-columns: 1fr; }
@@ -1664,6 +1547,341 @@
     }
 
     body.admin-mode .simg-add-btn { display: inline-block; }
+
+    /* ═══════════════════════════════════════════
+       INTERVIEW COLLAPSE
+    ═══════════════════════════════════════════ */
+    .iv-toggle-row {
+        display: flex;
+        justify-content: center;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border2);
+    }
+
+    .iv-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: linear-gradient(135deg, rgba(232,160,32,0.08), rgba(232,160,32,0.03));
+        border: 1px solid rgba(232,160,32,0.3);
+        color: var(--gold);
+        font-size: 11px;
+        font-weight: 700;
+        font-family: inherit;
+        padding: 7px 24px;
+        border-radius: 20px;
+        cursor: pointer;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .iv-toggle-btn:hover {
+        background: rgba(232,160,32,0.14);
+        border-color: var(--gold);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(232,160,32,0.15);
+    }
+
+    .iv-toggle-btn:active { transform: translateY(0); }
+
+    .iv-collapsible {
+        overflow: hidden;
+        transition: max-height 0.4s ease, opacity 0.3s ease;
+        max-height: 9999px;
+        opacity: 1;
+    }
+    .iv-collapsible.collapsed { max-height: 0; opacity: 0; }
+    /* Prevent margin bleed-through when collapsed */
+    .iv-collapsible.collapsed * { margin: 0 !important; padding: 0 !important; }
+
+    /* Clickable header hint */
+    .iv-header-click:hover .interviewee-info h3 { color: var(--gold); }
+
+    /* Fix: no ghost space below collapsed Weiterlesen */
+    .rez-grid > div:first-child { align-self: start; min-height: 0; }
+
+    /* ═══════════════════════════════════════════
+       QUELLEN
+    ═══════════════════════════════════════════ */
+    .quellen-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .quelle-item {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--gold);
+        padding: 0.75rem 1rem 0.75rem 0.9rem;
+        border-radius: 0 4px 4px 0;
+        display: grid;
+        grid-template-columns: 1.8rem 1fr auto;
+        grid-template-rows: auto auto auto;
+        column-gap: 0.6rem;
+        row-gap: 0.25rem;
+        align-items: start;
+        position: relative;
+    }
+    .quelle-num {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gold);
+        padding-top: 2px;
+        text-align: right;
+    }
+    .quelle-title {
+        font-weight: 600;
+        font-size: 13.5px;
+        color: var(--white2);
+        font-family: 'Playfair Display', serif;
+        outline: none;
+        grid-column: 2;
+    }
+    .quelle-title:empty::before { content: 'Quellenbezeichnung…'; color: var(--muted); }
+    .quelle-del {
+        grid-column: 3;
+        grid-row: 1;
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 13px;
+        padding: 2px 4px;
+        border-radius: 3px;
+        display: none;
+    }
+    .admin-mode .quelle-del { display: inline-block; }
+    .quelle-del:hover { color: var(--red); }
+    .quelle-url {
+        font-size: 12px;
+        color: var(--gold);
+        word-break: break-all;
+        text-decoration: none;
+    }
+    .quelle-url:hover { text-decoration: underline; }
+    .quelle-note {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+    }
+    .quelle-url-field {
+        font-size: 12px;
+        color: var(--gold);
+        word-break: break-all;
+        outline: none;
+        border: none;
+        background: transparent;
+        min-height: 1em;
+        grid-column: 2 / 4;
+    }
+    .quelle-url-field:empty::before { content: 'URL (optional)…'; color: var(--muted); }
+    .quelle-note-field {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+        outline: none;
+        border: none;
+        background: transparent;
+        min-height: 1em;
+        grid-column: 2 / 4;
+    }
+    .quelle-note-field:empty::before { content: 'Anmerkung (optional)…'; color: var(--muted); opacity: 0.6; }
+
+    /* ═══════════════════════════════════════════
+       INLINE FUSSNOTE MARKERS
+    ═══════════════════════════════════════════ */
+    .fn-marker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        background: var(--gold);
+        color: #000;
+        font-size: 9px;
+        font-weight: 800;
+        border-radius: 50%;
+        cursor: pointer;
+        vertical-align: super;
+        margin: 0 1px;
+        text-decoration: none;
+        line-height: 1;
+        flex-shrink: 0;
+        transition: background 0.15s, transform 0.1s;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .fn-marker:hover { background: var(--gold2); transform: scale(1.15); }
+
+    /* In quellen — footnote entry style */
+    .quelle-item.is-fussnote {
+        border-left-color: var(--muted);
+    }
+    .quelle-item.is-fussnote .quelle-num {
+        color: var(--muted);
+        font-size: 11px;
+    }
+    .quelle-fn-badge {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        opacity: 0.7;
+        grid-column: 2;
+        margin-bottom: 1px;
+    }
+
+    /* ═══════════════════════════════════════════
+       FUSSNOTEN (standalone section — hidden now)
+    ═══════════════════════════════════════════ */
+    .fussnoten-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }
+    .fussnote-item {
+        background: var(--dark2);
+        border: 1px solid var(--border2);
+        border-left: 3px solid var(--muted);
+        padding: 0.6rem 1rem;
+        border-radius: 0 4px 4px 0;
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+    }
+    .fussnote-number {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gold);
+        min-width: 1.6rem;
+        flex-shrink: 0;
+        outline: none;
+    }
+    .fussnote-number:empty::before { content: '#'; color: var(--muted); }
+    .fussnote-text {
+        font-size: 13px;
+        color: var(--white2);
+        flex: 1;
+        outline: none;
+        line-height: 1.5;
+    }
+    .fussnote-text:empty::before { content: 'Fußnotentext eingeben…'; color: var(--muted); }
+    .fussnote-del {
+        flex-shrink: 0;
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 13px;
+        padding: 2px 4px;
+        border-radius: 3px;
+        display: none;
+    }
+    .admin-mode .fussnote-del { display: inline-block; }
+    .fussnote-del:hover { color: var(--red); }
+
+    /* ═══════════════════════════════════════════
+       FOOTER EXTRAS
+    ═══════════════════════════════════════════ */
+    .footer-copyright {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 520px;
+        margin: 0.5rem auto 0;
+    }
+    /* Footer links row */
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.2rem;
+        flex-wrap: wrap;
+    }
+
+    .discord-btn,
+    .github-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 160px;
+        padding: 9px 0;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        font-family: inherit;
+        color: #fff;
+        text-decoration: none;
+        transition: background 0.15s, transform 0.1s;
+    }
+
+    .discord-btn { background: #5865F2; }
+    .discord-btn:hover { background: #4752c4; transform: translateY(-1px); }
+
+    .github-btn { background: #24292e; }
+    .github-btn:hover { background: #3a3f44; transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════════════
+       AUTO TEXT COLLAPSE (300 chars)
+    ═══════════════════════════════════════════ */
+    .text-collapse-wrap {
+        position: relative;
+        /* no extra margin/padding — inherits from the wrapped element */
+    }
+
+    .text-collapse-inner {
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        /* expanded: no limit */
+        max-height: none;
+    }
+
+    .text-collapse-wrap.is-collapsed .text-collapse-inner {
+        max-height: 7rem;
+    }
+
+    /* Gradient fade — only when collapsed */
+    .text-collapse-wrap.is-collapsed::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0;
+        bottom: 22px;   /* just above the button */
+        height: 2.5em;
+        background: linear-gradient(to bottom, transparent, var(--dark2, #111));
+        pointer-events: none;
+    }
+
+    /* No pseudo-element when expanded */
+    .text-collapse-wrap:not(.is-collapsed)::after {
+        display: none;
+    }
+
+    .text-collapse-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--gold);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 4px 0 2px;
+        font-family: inherit;
+        line-height: 1;
+        transition: opacity 0.15s;
+    }
+    .text-collapse-btn:hover { opacity: 0.75; }
+
+
+    
     </style>
 <body>
 
@@ -1681,14 +1899,13 @@
     <span class="ab-label">Admin</span>
     <div class="ab-sep"></div>
     <button class="ab-btn" onclick="saveAll()">💾 Speichern</button>
-    <button class="ab-btn" onclick="downloadBackup('json')">⬇ База JSON</button>
-    <button class="ab-btn" onclick="downloadBackup('db')">⬇ data.db</button>
     <button class="ab-btn" onclick="addStandaloneImage()">🖼 Freies Bild</button>
     <button class="ab-btn" onclick="openInlineImageUpload()">🖼 Bild</button>
     <button class="ab-btn" onclick="openSectionsModal()">☰ Abschnitte</button>
     <button class="ab-btn" onclick="addZitat()">+ Zitat</button>
     <button class="ab-btn" onclick="addThema()">+ Thema</button>
     <button class="ab-btn" onclick="addInterview()">+ Interview</button>
+    <button class="ab-btn" onclick="insertFussnoteAtCursor()">¹ Fußnote</button>
     <div class="ab-sep"></div>
     <button class="ab-btn danger" onclick="logout()">Abmelden</button>
 </div>
@@ -1803,13 +2020,11 @@
 </div>
 
 
-
-<!-- Scroll-to-top button -->
-<button id="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Nach oben">▲</button>
-
-
 <!-- ════════════════════════════════════════
      NEWSPAPER HEADER
+════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     TUNNEL HERO
 ════════════════════════════════════════ -->
 <header class="paper-header">
     <div class="gold-stripe"></div>
@@ -1980,13 +2195,18 @@
             <button class="action-btn del" onclick="toggleSection('autor-interview', false)">Abschnitt ausblenden</button>
         </div>
 
-        <ul class="qa-list" id="author-qa-list"></ul>
+        <div class="iv-collapsible collapsed" id="ivc-author">
+            <ul class="qa-list" id="author-qa-list"></ul>
+            <button
+                class="add-btn"
+                style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
+                onclick="addAuthorQA()"
+            >+ Frage &amp; Antwort</button>
+        </div>
 
-        <button
-            class="add-btn"
-            style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
-            onclick="addAuthorQA()"
-        >+ Frage &amp; Antwort</button>
+        <div class="iv-toggle-row">
+            <button class="iv-toggle-btn iv-expand-btn" onclick="toggleAuthorInterview(this)">▶ Öffnen</button>
+        </div>
     </section>
 
 
@@ -2039,7 +2259,14 @@
 
 
     <!-- ── STANDALONE IMAGES ─────────────────── -->
-    <section id="standalone-images-section" data-section-id="standalone-images">
+    <section id="standalone-images" data-section-id="standalone-images">
+        <div class="section-head">
+            <div class="section-label">Galerie</div>
+            <div class="section-title">Bilder</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('standalone-images', false)">Abschnitt ausblenden</button>
+        </div>
         <div id="standalone-images-container"></div>
         <button class="simg-add-btn" onclick="addStandaloneImage()">+ Bild hinzufügen</button>
     </section>
@@ -2111,6 +2338,34 @@
         </div>
     </section>
 
+
+    <!-- ── QUELLEN ───────────────────────────── -->
+    <section id="fussnoten" data-section-id="fussnoten">
+        <div class="section-head">
+            <div class="section-label">Anmerkungen</div>
+            <div class="section-title" contenteditable="false" data-key="fussnoten-title">Fußnoten</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('fussnoten', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="fussnoten-list" id="fussnoten-container"></div>
+        <button class="add-btn" onclick="addFussnote()">+ Fußnote hinzufügen</button>
+    </section>
+
+    <section id="quellen" data-section-id="quellen">
+        <div class="section-head">
+            <div class="section-label">Literaturverzeichnis</div>
+            <div class="section-title" contenteditable="false" data-key="quellen-title">Quellen &amp; Referenzen</div>
+        </div>
+        <div class="section-admin-actions">
+            <button class="action-btn del" onclick="toggleSection('quellen', false)">Abschnitt ausblenden</button>
+        </div>
+
+        <div class="quellen-list" id="quellen-container"></div>
+        <button class="add-btn" onclick="addQuelle()">+ Quelle hinzufügen</button>
+    </section>
+
 </main>
 
 
@@ -2118,6 +2373,26 @@
     <strong>LiteraturZeitung – Der Tunnelbauer</strong>
     <div class="footer-rule"></div>
     <p>Schulprojekt · Maja Nielsen · Gerstenberg Verlag · © 2025</p>
+    <div class="footer-rule"></div>
+    <p class="footer-copyright">
+        Alle Texte auf dieser Seite wurden von Menschen verfasst und sind deren geistiges Eigentum.<br>
+        Eine Nutzung zu kommerziellen Zwecken ist ohne ausdrückliche Genehmigung der jeweiligen Autor·innen nicht gestattet.
+    </p>
+    <div class="footer-links">
+        <a class="discord-btn" href="https://discord.com/users/ciganismo" target="_blank" rel="noopener">
+            <!-- Full Discord logo with eyes -->
+            <svg width="22" height="22" viewBox="0 0 127.14 96.36" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+            </svg>
+            ciganismo
+        </a>
+        <a class="github-btn" href="https://github.com/Cheremshas/Literaturzeitung_Der_Tunnelbauer" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            GitHub
+        </a>
+    </div>
 </footer>
 
 
@@ -2156,6 +2431,8 @@ const DEFAULT_SECTIONS = [
     { id: 'themen', label: 'Themen & Motive' },
     { id: 'standalone-images', label: 'Bilder' },
     { id: 'kommentare', label: 'Kommentare' },
+    { id: 'fussnoten', label: 'Fußnoten' },
+    { id: 'quellen', label: 'Quellen' },
 ];
 
 
@@ -2164,18 +2441,56 @@ const DEFAULT_SECTIONS = [
 // ════════════════════════════════════════════
 
 async function init() {
-    await loadData();
+    const ok = await loadData();
+    if (!ok) return;
     renderAll();
     await loadComments();
     buildEmojiGrid(ALL_EMOJIS);
     buildSwatches();
-    if (!isAdmin) initCollapsible();
 }
 
 async function loadData() {
-    const res = await fetch('/api/data');
-    DATA = await res.json();
+    let res;
+    try {
+        res = await fetch('/api/data');
+    } catch (e) {
+        console.error('[loadData] Netzwerkfehler:', e);
+        showLoadError('Netzwerkfehler – Server nicht erreichbar.');
+        return false;
+    }
+    if (!res.ok) {
+        console.error('[loadData] HTTP-Fehler:', res.status, res.statusText);
+        showLoadError('Server-Fehler ' + res.status + ' beim Laden der Daten.');
+        return false;
+    }
+    try {
+        DATA = await res.json();
+    } catch (e) {
+        console.error('[loadData] JSON-Fehler:', e);
+        showLoadError('Antwort vom Server ist kein gültiges JSON.');
+        return false;
+    }
     standaloneImages = DATA.standalone_images || [];
+    if (!DATA.quellen) DATA.quellen = [];
+    // Parse _fn flag stored in note field as JSON prefix
+    DATA.quellen = DATA.quellen.map(q => {
+        if (q.note && q.note.startsWith('__fn__')) {
+            try {
+                const meta = JSON.parse(q.note.replace('__fn__', ''));
+                return { ...q, _fn: true, _fn_num: meta.num, note: meta.note || '' };
+            } catch(e) {}
+        }
+        return q;
+    });
+    if (!DATA.fussnoten) DATA.fussnoten = [];
+    return true;
+}
+
+function showLoadError(msg) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c0392b;color:#fff;padding:14px 20px;font-size:15px;z-index:9999;text-align:center;';
+    banner.textContent = '⚠️ Daten konnten nicht geladen werden: ' + msg;
+    document.body.prepend(banner);
 }
 
 function renderAll() {
@@ -2201,13 +2516,14 @@ function renderAll() {
     renderAuthorQA();
     renderCustomSections();
     renderStandaloneImages();
+    renderQuellen();
+    renderFussnoten();
     renderSectionVisibility();
+    // Auto-collapse long texts after DOM is updated
+    setTimeout(applyTextCollapse, 50);
 }
 
-init().catch(err => {
-    console.error('Fehler beim Laden der Zeitung:', err);
-    alert('Die Zeitung konnte nicht geladen werden. Bitte /api/data prüfen.');
-});
+init();
 
 
 // ════════════════════════════════════════════
@@ -2615,44 +2931,6 @@ function adminAction(fn) {
     if (isAdmin) fn();
 }
 
-async function downloadBackup(type) {
-    if (!isAdmin) return;
-
-    const password = prompt('Admin-Passwort für den Download eingeben:');
-    if (!password) return;
-
-    const endpoint = type === 'db' ? '/api/export/db' : '/api/export/json';
-    const filename = type === 'db'
-        ? 'literaturzeitung-data.db'
-        : 'literaturzeitung-backup.json';
-
-    const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-    });
-
-    if (!res.ok) {
-        let message = 'Download fehlgeschlagen.';
-        try {
-            const data = await res.json();
-            message = data.error || message;
-        } catch {}
-        alert(message);
-        return;
-    }
-
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-}
-
 function findEditableByKey(key) {
     return [...document.querySelectorAll('[data-key]')]
         .find(el => el.dataset.key === key) || null;
@@ -2682,6 +2960,53 @@ document.addEventListener('focusin', (e) => {
     const editable = e.target.closest?.('[data-key][contenteditable="true"]');
     if (editable) {
         lastEditableEl = editable;
+    }
+});
+
+
+// ════════════════════════════════════════════
+// CLEAN PASTE — strip all formatting on paste
+// into any contenteditable element
+// ════════════════════════════════════════════
+
+document.addEventListener('paste', function(e) {
+    const target = e.target;
+
+    // Only intercept contenteditable fields
+    if (!target || target.contentEditable !== 'true') return;
+
+    e.preventDefault();
+
+    // Get plain text from clipboard
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    if (!text) return;
+
+    // Normalise whitespace:
+    // — collapse multiple spaces to one
+    // — collapse multiple newlines to max two (paragraph break)
+    // — trim leading/trailing whitespace
+    const clean = text
+        .replace(/\n/g, '\n')
+        .replace(/\n/g, '\n')
+        .replace(/[ \t]+/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+
+    // Insert at cursor using execCommand (keeps undo history)
+    // Split by double newlines to create paragraph breaks
+    const paragraphs = clean.split(/\n\n+/);
+
+    if (paragraphs.length <= 1) {
+        // Single paragraph — just insert inline, replacing newlines with spaces
+        const inline = clean.replace(/\n/g, ' ');
+        document.execCommand('insertText', false, inline);
+    } else {
+        // Multiple paragraphs — insert each separated by a newline
+        const joined = paragraphs
+            .map(p => p.replace(/\n/g, ' ').trim())
+            .filter(Boolean)
+            .join('\n');
+        document.execCommand('insertText', false, joined);
     }
 });
 
@@ -2729,6 +3054,18 @@ async function saveEditableElement(el) {
 
     if (key.startsWith('qq-') || key.startsWith('qa-')) {
         saveQAFromDOM(key.replace(/^(qq|qa)-/, ''));
+        showToast();
+        return;
+    }
+
+    if (key.startsWith('ql-title-') || key.startsWith('ql-url-') || key.startsWith('ql-note-')) {
+        const id = key.replace(/^ql-(title|url|note)-/, '');
+        saveQuelleFromDOM(id);
+        return;
+    }
+
+    if (key.startsWith('fn-num-') || key.startsWith('fn-text-')) {
+        savefussnoteFromDOM(key.replace(/^(fn-num|fn-text)-/, ''));
         showToast();
         return;
     }
@@ -3560,7 +3897,7 @@ function buildInterviewEl(iv) {
                 <button class="action-btn del" data-action="delete">✕ Löschen</button>
             </div>
 
-            <div class="interviewee">
+            <div class="interviewee iv-header-click" onclick="toggleInterview('${iv.id}', this.closest('.interview-body').querySelector('.iv-expand-btn'))" style="cursor:pointer;" title="Klicken zum Öffnen">
                 <div class="avatar-wrap">
                     <div
                         class="avatar"
@@ -3578,15 +3915,17 @@ function buildInterviewEl(iv) {
                 </div>
             </div>
 
-            <ul class="qa-list" id="qal-${iv.id}">
-                ${(iv.qa || []).map(q => buildQAHtml(q)).join('')}
-            </ul>
+            <div class="iv-collapsible collapsed" id="ivc-${iv.id}">
+                <ul class="qa-list" id="qal-${iv.id}">
+                    ${(iv.qa || []).map(q => buildQAHtml(q)).join('')}
+                </ul>
 
-            <button
-                class="add-btn"
-                style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
-                onclick="addQA('${iv.id}')"
-            >+ Frage &amp; Antwort</button>
+                <button
+                    class="add-btn"
+                    style="font-size:11px; padding:5px 14px; margin-top:0.75rem;"
+                    onclick="addQA('${iv.id}')"
+                >+ Frage &amp; Antwort</button>
+            </div>
 
         </div>
     `;
@@ -3920,112 +4259,6 @@ function escapeHtml(str) {
         .replace(/'/g,  '&#39;');
 }
 
-// ════════════════════════════════════════════
-// COVER PAGE
-// ════════════════════════════════════════════
-
-
-// ════════════════════════════════════════════
-// CLEAN PASTE — strip formatting on paste
-// ════════════════════════════════════════════
-
-document.addEventListener('paste', function (e) {
-    const target = e.target.closest('[contenteditable="true"]');
-    if (!target) return;
-
-    e.preventDefault();
-
-    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-    const sel  = window.getSelection();
-    if (!sel.rangeCount) return;
-    const range = sel.getRangeAt(0);
-    range.deleteContents();
-
-    const lines = text.split(/\r?\n/);
-    const frag  = document.createDocumentFragment();
-    lines.forEach(function (line, i) {
-        if (i > 0) frag.appendChild(document.createElement('br'));
-        if (line)  frag.appendChild(document.createTextNode(line));
-    });
-    range.insertNode(frag);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
-    target.dispatchEvent(new Event('input', { bubbles: true }));
-}, true);
-
-// ════════════════════════════════════════════
-// SCROLL-TO-TOP BUTTON
-// ════════════════════════════════════════════
-
-(function () {
-    const btn = document.getElementById('scroll-top-btn');
-    window.addEventListener('scroll', () => {
-        btn.classList.toggle('visible', window.scrollY > 300);
-    }, { passive: true });
-})();
-
-// ════════════════════════════════════════════
-// COLLAPSIBLE PROSE SECTIONS
-// ════════════════════════════════════════════
-
-function initCollapsible() {
-    // Target all .prose elements that are NOT inside admin-only areas
-    document.querySelectorAll('.prose[data-key]').forEach(el => {
-        // Skip if already wrapped
-        if (el.closest('.prose-collapsible')) return;
-
-        const text = el.innerText.trim();
-        // Only collapse if the text is long enough (> 300 chars)
-        if (text.length < 300) return;
-
-        // Get first ~2 sentences for preview
-        const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-        const previewText = sentences.slice(0, 2).join(' ').trim();
-
-        if (!previewText) return;
-
-        // Clone the full content
-        const fullHTML = el.innerHTML;
-
-        // Build collapsible wrapper
-        const wrapper = document.createElement('div');
-        wrapper.className = 'prose-collapsible';
-
-        // Preview element
-        const preview = document.createElement('div');
-        preview.className = 'prose prose-preview prose-fade';
-        preview.setAttribute('data-key', el.getAttribute('data-key') + '-preview');
-        preview.innerHTML = '<p>' + escapeHtml(previewText) + '…</p>';
-
-        // Full content element
-        const full = document.createElement('div');
-        full.className = 'prose prose-full';
-        full.setAttribute('contenteditable', el.getAttribute('contenteditable') || 'false');
-        full.setAttribute('data-key', el.getAttribute('data-key'));
-        full.innerHTML = fullHTML;
-
-        // Button
-        const btn = document.createElement('button');
-        btn.className = 'read-more-btn';
-        btn.innerHTML = 'Weiterlesen <span class="rm-arrow">▼</span>';
-        btn.onclick = function () {
-            wrapper.classList.toggle('expanded');
-            btn.innerHTML = wrapper.classList.contains('expanded')
-                ? 'Zuklappen <span class="rm-arrow">▼</span>'
-                : 'Weiterlesen <span class="rm-arrow">▼</span>';
-        };
-
-        wrapper.appendChild(preview);
-        wrapper.appendChild(full);
-        wrapper.appendChild(btn);
-
-        el.replaceWith(wrapper);
-    });
-}
-
-// Run after page data is loaded
-
 function formatDate(iso) {
     if (!iso) return '';
     try {
@@ -4060,6 +4293,319 @@ window.addEventListener('scroll', () => {
         a.classList.toggle('active', a.getAttribute('href') === '#' + current);
     });
 });
+
+
+// ════════════════════════════════════════════
+// INTERVIEW COLLAPSE
+// ════════════════════════════════════════════
+
+function toggleInterview(id, btn) {
+    const panel = document.getElementById('ivc-' + id);
+    if (!panel) return;
+    const collapsed = panel.classList.toggle('collapsed');
+    btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
+    btn.style.borderColor = collapsed ? '' : 'var(--gold)';
+}
+
+function toggleAuthorInterview(btn) {
+    const panel = document.getElementById('ivc-author');
+    if (!panel) return;
+    const collapsed = panel.classList.toggle('collapsed');
+    btn.textContent = collapsed ? '▶ Öffnen' : '▼ Schließen';
+    btn.style.borderColor = collapsed ? '' : 'var(--gold)';
+}
+
+
+// ════════════════════════════════════════════
+// QUELLEN (Источники)
+// ════════════════════════════════════════════
+
+function renderQuellen() {
+    const container = document.getElementById('quellen-container');
+    if (!container) return;
+    const quellen = DATA.quellen || [];
+    container.innerHTML = '';
+    quellen.forEach((q, i) => container.appendChild(buildQuelleEl(q, i)));
+}
+
+function buildQuelleEl(q, index) {
+    const div = document.createElement('div');
+    div.className = 'quelle-item';
+    div.id = 'ql-' + q.id;
+
+    const num = index !== undefined ? index + 1 : '';
+    const isFn = q._fn;
+    if (isFn) div.classList.add('is-fussnote');
+
+    div.innerHTML = `
+        <div class="quelle-num">${isFn ? q._fn_num : num}${isFn ? '' : '.'}</div>
+        ${isFn ? `<div class="quelle-fn-badge">Fußnote ${q._fn_num}</div>` : ''}
+        <div class="quelle-title" contenteditable="false" data-key="ql-title-${q.id}">${q.title || ''}</div>
+        <button class="quelle-del" onclick="deleteQuelle('${q.id}')">✕</button>
+        <div class="quelle-url-field" contenteditable="false" data-key="ql-url-${q.id}">${q.url || ''}</div>
+        <div class="quelle-note-field" contenteditable="false" data-key="ql-note-${q.id}">${q.note || ''}</div>
+    `;
+
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = 'true');
+    }
+
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => saveQuelleFromDOM(q.id));
+    });
+
+    return div;
+}
+
+function saveQuelleFromDOM(id) {
+    const titleEl = document.querySelector('[data-key="ql-title-' + id + '"]');
+    const urlEl   = document.querySelector('[data-key="ql-url-'   + id + '"]');
+    const noteEl  = document.querySelector('[data-key="ql-note-'  + id + '"]');
+    const q = (DATA.quellen || []).find(x => x.id === id);
+    if (!q) return;
+    q.title = titleEl ? titleEl.textContent.trim() : q.title;
+    q.url   = urlEl   ? urlEl.textContent.trim()   : q.url;
+    const rawNote = noteEl ? noteEl.textContent.trim() : (q.note || '');
+    // Persist _fn metadata in note field with prefix
+    q.note = q._fn
+        ? '__fn__' + JSON.stringify({ num: q._fn_num, note: rawNote })
+        : rawNote;
+    fetch('/api/quelle/' + id, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(q),
+    });
+    showToast();
+}
+
+async function addQuelle() {
+    if (!isAdmin) return;
+
+    const res = await fetch('/api/quelle', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ title: 'Neue Quelle', url: '', note: '' }),
+    });
+    const d = await res.json();
+    const newQ = { id: d.id, title: 'Neue Quelle', url: '', note: '' };
+    if (!DATA.quellen) DATA.quellen = [];
+    DATA.quellen.push(newQ);
+    const container = document.getElementById('quellen-container');
+    const idx = DATA.quellen.length - 1;
+    const el = buildQuelleEl(newQ, idx);
+    container.appendChild(el);
+    if (isAdmin) el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+    // Focus the title field immediately
+    const titleEl = el.querySelector('[data-key="ql-title-' + newQ.id + '"]');
+    if (titleEl) titleEl.focus();
+    showToast();
+}
+
+async function deleteQuelle(id) {
+    if (!confirm('Quelle wirklich löschen?')) return;
+    await fetch('/api/quelle/' + id, { method: 'DELETE' });
+    DATA.quellen = (DATA.quellen || []).filter(x => x.id !== id);
+    renderQuellen();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// FUSSNOTEN
+// ════════════════════════════════════════════
+
+function renderFussnoten() {
+    const container = document.getElementById('fussnoten-container');
+    if (!container) return;
+    container.innerHTML = '';
+    (DATA.fussnoten || []).forEach(f => container.appendChild(buildFussnoteEl(f)));
+}
+
+function buildFussnoteEl(f) {
+    const div = document.createElement('div');
+    div.className = 'fussnote-item';
+    div.id = 'fn-' + f.id;
+
+    div.innerHTML = `
+        <div class="fussnote-number" contenteditable="false" data-key="fn-num-${f.id}">${f.number || ''}</div>
+        <div class="fussnote-text" contenteditable="false" data-key="fn-text-${f.id}">${f.text || ''}</div>
+        <button class="fussnote-del" onclick="deleteFussnote('${f.id}')">✕</button>
+    `;
+
+    if (isAdmin) {
+        div.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = 'true');
+    }
+
+    div.querySelectorAll('[data-key]').forEach(el => {
+        el.addEventListener('blur', () => savefussnoteFromDOM(f.id));
+    });
+
+    return div;
+}
+
+function savefussnoteFromDOM(id) {
+    const numEl  = document.querySelector('[data-key="fn-num-'  + id + '"]');
+    const textEl = document.querySelector('[data-key="fn-text-' + id + '"]');
+    const f = (DATA.fussnoten || []).find(x => x.id === id);
+    if (!f) return;
+    f.number = numEl  ? numEl.textContent.trim()  : f.number;
+    f.text   = textEl ? textEl.textContent.trim() : f.text;
+    fetch('/api/fussnote/' + id, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(f),
+    });
+}
+
+async function addFussnote() {
+    // Legacy — kept for fussnoten section
+    if (!isAdmin) return;
+    const nextNum = String((DATA.fussnoten || []).length + 1);
+    const res = await fetch('/api/fussnote', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ number: nextNum, text: '' }),
+    });
+    const d = await res.json();
+    const newF = { id: d.id, number: nextNum, text: '' };
+    if (!DATA.fussnoten) DATA.fussnoten = [];
+    DATA.fussnoten.push(newF);
+    const container = document.getElementById('fussnoten-container');
+    const el = buildFussnoteEl(newF);
+    container.appendChild(el);
+    if (isAdmin) el.querySelectorAll('[contenteditable]').forEach(e => e.contentEditable = 'true');
+    showToast();
+}
+
+// ── Insert Fußnote at cursor position in text ─────────────────
+async function insertFussnoteAtCursor() {
+    if (!isAdmin) return;
+
+    rememberEditableSelection();
+
+    if (!lastEditableEl) {
+        alert('Bitte zuerst in den Text klicken, wo die Fußnote erscheinen soll.');
+        return;
+    }
+
+    // Determine next number from existing quellen-fussnoten
+    const existing = (DATA.quellen || []).filter(q => q._fn);
+    const nextNum = existing.length + 1;
+
+    // Create Quelle entry for this footnote
+    const res = await fetch('/api/quelle', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            title: '',
+            url:   '',
+            note:  '__fn__' + JSON.stringify({ num: nextNum, note: '' }),
+        }),
+    });
+    const d = await res.json();
+    const newQ = { id: d.id, title: '', url: '', note: '', _fn: true, _fn_num: nextNum };
+    if (!DATA.quellen) DATA.quellen = [];
+    DATA.quellen.push(newQ);
+
+    // Insert marker span at cursor
+    const marker = document.createElement('a');
+    marker.className = 'fn-marker';
+    marker.textContent = String(nextNum);
+    marker.href = '#ql-' + newQ.id;
+    marker.title = 'Fußnote ' + nextNum;
+    marker.contentEditable = 'false';
+    marker.dataset.fnId = newQ.id;
+
+    // Restore cursor and insert
+    if (lastEditableRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(lastEditableRange);
+        lastEditableRange.deleteContents();
+        lastEditableRange.insertNode(marker);
+        // Move cursor after marker
+        const range = document.createRange();
+        range.setStartAfter(marker);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else {
+        lastEditableEl.appendChild(marker);
+    }
+
+    // Save the text block that now contains the marker
+    lastEditableEl.dispatchEvent(new Event('blur'));
+
+    // Render quellen so new entry appears
+    renderQuellen();
+
+    // Scroll to new quelle and focus its title
+    setTimeout(() => {
+        const qEl = document.getElementById('ql-' + newQ.id);
+        if (qEl) {
+            qEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const titleField = qEl.querySelector('[data-key^="ql-title"]');
+            if (titleField) titleField.focus();
+        }
+    }, 300);
+
+    showToast();
+}
+
+async function deleteFussnote(id) {
+    if (!confirm('Fußnote wirklich löschen?')) return;
+    await fetch('/api/fussnote/' + id, { method: 'DELETE' });
+    DATA.fussnoten = (DATA.fussnoten || []).filter(x => x.id !== id);
+    renderFussnoten();
+    showToast();
+}
+
+
+// ════════════════════════════════════════════
+// AUTO TEXT COLLAPSE (≤300 chars visible)
+// ════════════════════════════════════════════
+
+// Wrap an entire CONTAINER block (not individual paragraphs)
+// Show first ~300 chars worth, hide the rest behind "Weiterlesen"
+function applyTextCollapse() {
+    // Each selector is a WHOLE block — we collapse the block, not its children
+    const selectors = [
+        '.prose',
+        '.zitat-text',
+        '.thema-body',
+        '.section-body',
+    ];
+
+    selectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => {
+            if (el.closest('.text-collapse-wrap')) return;
+            if (el.closest('.admin-bar, .ab-bar, .section-admin-actions')) return;
+
+            const text = (el.textContent || '').trim();
+            if (text.length <= 300) return;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'text-collapse-wrap is-collapsed';
+
+            const inner = document.createElement('div');
+            inner.className = 'text-collapse-inner';
+
+            const btn = document.createElement('button');
+            btn.className = 'text-collapse-btn';
+            btn.textContent = '▼ Weiterlesen';
+
+            el.parentNode.insertBefore(wrap, el);
+            inner.appendChild(el);
+            wrap.appendChild(inner);
+            wrap.appendChild(btn);
+
+            btn.addEventListener('click', () => {
+                const collapsed = wrap.classList.toggle('is-collapsed');
+                btn.textContent = collapsed ? '▼ Weiterlesen' : '▲ Weniger';
+            });
+        });
+    });
+}
 
 // ════════════════════════════════════════════
 // STANDALONE IMAGES
@@ -4111,7 +4657,7 @@ function renderStandaloneImages() {
     });
 
     // Show/hide section
-    const section = document.getElementById('standalone-images-section');
+    const section = document.getElementById('standalone-images');
     if (section) {
         section.hidden = standaloneImages.length === 0 && !isAdmin;
     }
